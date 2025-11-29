@@ -68,12 +68,12 @@ class ProfileScreen extends ConsumerWidget {
                    child: const Text('Редактировать профиль'),
                  ),
                  const SizedBox(height: 10),
-                 // ElevatedButton(
-                 //   onPressed: () {
-                 //     context.push('/profile/ebs-verification');
-                 //   },
-                 //   child: const Text('Подтвердить личность через ЕБС'),
-                 // ),
+                 ElevatedButton(
+                   onPressed: () {
+                     context.push('/profile/ebs-verification');
+                   },
+                   child: const Text('Подтвердить личность через ЕБС'),
+                 ),
                  const SizedBox(height: 10),
                  ElevatedButton(
                    onPressed: () async {

@@ -25,7 +25,7 @@ import 'package:winepool_final/features/wines/presentation/add_edit_wine_screen.
 import 'package:winepool_final/features/orders/presentation/checkout_screen.dart';
 import 'package:winepool_final/features/orders/presentation/my_orders_screen.dart';
 import 'package:winepool_final/features/profile/presentation/profile_screen.dart';
-// import 'package:winepool_final/features/profile/presentation/ebs_verification_screen.dart';
+import 'package:winepool_final/features/profile/presentation/ebs_verification_screen.dart';
 
 // Создаем ключ над провайдером
 final _shellNavigatorKey = GlobalKey<NavigatorState>();
@@ -169,11 +169,11 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: '/profile',
         builder: (_, __) => const ProfileScreen(),
       ),
-      // GoRoute(
-      //   path: '/profile/ebs-verification',
-      //   name: 'ebsVerification',
-      //   builder: (context, state) => const EbsVerificationScreen(),
-      // ),
+      GoRoute(
+        path: '/profile/ebs-verification',
+        name: 'ebsVerification',
+        builder: (context, state) => const EbsVerificationScreen(),
+      ),
     ],
     redirect: (context, state) {
       final isLoggedIn = authState.asData?.value != null;
