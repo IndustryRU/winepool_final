@@ -18,31 +18,31 @@ public class EbsActivity extends AppCompatActivity {
   // Используется в onActivityResult
   int REQUEST_CODE_VERIFICATION = 122;
   // Используется для возврата результата в FlutterActivity
-  static int RESULT_CODE_OK = 234;
+  public static int RESULT_CODE_OK = 234;
   // Используется для возврата результата в FlutterActivity
-  static int RESULT_CODE_ERROR = 235;
+  public static int RESULT_CODE_ERROR = 235;
 
   // Описание ошибки
-  static final String CAUSE_FIELD = "cause";
+  public static final String CAUSE_FIELD = "cause";
   // Секретный токен
-  static final String SECRET_FIELD = "secret";
+  public static final String SECRET_FIELD = "secret";
 
   // Служебные Extras
-  static final String INPUT_INFO_SYSTEM = "infoSystem";
-  static final String INPUT_ADAPTER_URI = "adapterUri";
-  static final String INPUT_SID = "sid";
-  static final String INPUT_DBO_KO_URI = "dboKoUri";
-  static final String INPUT_DBO_KO_PUBLIC_URI = "dbkKoPublicUri";
+  public static final String INPUT_INFO_SYSTEM = "infoSystem";
+  public static final String INPUT_ADAPTER_URI = "adapterUri";
+  public static final String INPUT_SID = "sid";
+  public static final String INPUT_DBO_KO_URI = "dboKoUri";
+  public static final String INPUT_DBO_KO_PUBLIC_URI = "dbkKoPublicUri";
 
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    int hasPerm = this.checkSelfPermission(EbsApi.PERMISSION_VERIFICATION);
+    int hasPerm = this.checkSelfPermission(EbsApi.PERMISSION__VERIFICATION);
     if (hasPerm == PackageManager.PERMISSION_GRANTED) {
       processVerification();
     } else {
-      this.requestPermissions(new String[]{EbsApi.PERMISSION_VERIFICATION}, REQUEST_CODE_PERMISSION);
+      this.requestPermissions(new String[]{EbsApi.PERMISSION__VERIFICATION}, REQUEST_CODE_PERMISSION);
     }
   }
 
@@ -50,7 +50,7 @@ public class EbsActivity extends AppCompatActivity {
   public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
     super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     if(requestCode == REQUEST_CODE_PERMISSION) {
-      if(permissions.length != 0 && Objects.equals(permissions[0], EbsApi.PERMISSION_VERIFICATION)) {
+      if(permissions.length != 0 && Objects.equals(permissions[0], EbsApi.PERMISSION__VERIFICATION)) {
         if(grantResults[0] == PackageManager.PERMISSION_GRANTED) {
           processVerification();
         } else {
@@ -89,7 +89,7 @@ public class EbsActivity extends AppCompatActivity {
               processError("Верификация отменена");
               break;
             case FAILURE:
-              processError("Ошибка верификации: " + result.getErrorDescription()); // Предполагаем, что есть метод getErrorDescription
+              processError("Ошибка верификации: " + result.getErrors()); // Используем доступный метод
               break;
             case REPEAT:
               processError("Ошибка верификации, повторите попытку");
