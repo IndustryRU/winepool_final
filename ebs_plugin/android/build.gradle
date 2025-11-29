@@ -16,6 +16,9 @@ rootProject.allprojects {
     repositories {
         google()
         mavenCentral()
+        flatDir {
+            dirs file('libs')
+        }
     }
 }
 
@@ -38,7 +41,9 @@ android {
     dependencies {
         testImplementation("junit:junit:4.13.2")
         testImplementation("org.mockito:mockito-core:5.0.0")
+        implementation(files('libs/gosuslugi.ebs.sdk.adapter.aar'))
         implementation 'androidx.appcompat:appcompat:1.7.0'
+        implementation 'androidx.annotation:annotation:1.9.1'
     }
 
     testOptions {

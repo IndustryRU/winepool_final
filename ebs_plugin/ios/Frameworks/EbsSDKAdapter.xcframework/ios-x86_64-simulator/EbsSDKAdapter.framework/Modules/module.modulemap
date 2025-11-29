@@ -1,0 +1,11 @@
+framework module EbsSDKAdapter {
+  umbrella header "EbsSDKAdapter.h"
+  export *
+
+  module * { export * }
+}
+
+module EbsSDKAdapter.Swift {
+  header "EbsSDKAdapter-Swift.h"
+  requires objc
+}

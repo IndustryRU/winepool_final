@@ -58,8 +58,8 @@ dependencies:
   hooks_riverpod: ^3.0.3
 
   # Наш плагин
-  # ebs_plugin:
-  #   path: ./ebs_plugin
+  ebs_plugin:
+    path: ./ebs_plugin
 
 dev_dependencies:
   flutter_test:

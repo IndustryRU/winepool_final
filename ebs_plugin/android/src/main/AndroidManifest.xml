@@ -1,3 +1,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
   package="com.example.ebs_plugin">
+  <uses-permission android:name="ru.rtlabs.mobile.ebs.gosuslugi.permission.VERIFICATION" />
+  <queries>
+    <intent>
+      <action android:name="ru.rtlabs.mobile.ebs.gosuslugi.action.VERIFICATION" />
+      <category android:name="android.intent.category.DEFAULT" />
+    </intent>
+  </queries>
 </manifest>

@@ -321,6 +321,13 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.1.1"
+  ebs_plugin:
+    dependency: "direct main"
+    description:
+      path: ebs_plugin
+      relative: true
+    source: path
+    version: "0.0.1"
   fake_async:
     dependency: transitive
     description:

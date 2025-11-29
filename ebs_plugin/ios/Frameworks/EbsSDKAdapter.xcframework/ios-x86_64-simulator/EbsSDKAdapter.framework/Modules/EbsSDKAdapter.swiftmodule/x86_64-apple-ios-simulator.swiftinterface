@@ -1,0 +1,48 @@
+// swift-interface-format-version: 1.0
+// swift-compiler-version: Apple Swift version 6.0 effective-5.10 (swiftlang-6.0.0.9.10 clang-1600.0.26.2)
+// swift-module-flags: -target x86_64-apple-ios10.0-simulator -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -enable-bare-slash-regex -module-name EbsSDKAdapter
+// swift-module-flags-ignorable: -no-verify-emitted-module-interface
+@_exported import EbsSDKAdapter
+import Foundation
+import Swift
+import _Concurrency
+import _StringProcessing
+import _SwiftConcurrencyShims
+extension EbsSDKAdapter.EbsSDKClient {
+  public typealias RequestEBSVerificationCompletion = (EbsSDKAdapter.EbsSDKClient.RequestEBSVerificationResult) -> Swift.Void
+  public enum RequestEBSVerificationResult {
+    case success(details: EbsSDKAdapter.EbsVerificationDetails)
+    case failure(error: EbsSDKAdapter.EbsSDKClient.RequestEBSVerificationError)
+    case cancel
+  }
+  public enum RequestEBSVerificationError {
+    case ebsNotInstalled
+    case verificationFailed
+    case sdkIsNotConfigured
+    case unknown
+    public static func == (a: EbsSDKAdapter.EbsSDKClient.RequestEBSVerificationError, b: EbsSDKAdapter.EbsSDKClient.RequestEBSVerificationError) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+@_hasMissingDesignatedInitializers public class EbsSDKClient {
+  public static let shared: EbsSDKAdapter.EbsSDKClient
+  public var ebsAppIsInstalled: Swift.Bool {
+    get
+  }
+  public func set(scheme: Swift.String, title: Swift.String, infoSystem: Swift.String, presenting controller: UIKit.UIViewController?)
+  public func requestEBSVerification(sessionDetails: EbsSDKAdapter.EbsSessionDetails, completion: @escaping EbsSDKAdapter.EbsSDKClient.RequestEBSVerificationCompletion)
+  public func processEbsVerification(openUrl: Foundation.URL, options: [UIKit.UIApplication.OpenURLOptionsKey : Any])
+  public func openEbsInAppStore()
+  @objc deinit
+}
+public struct EbsSessionDetails {
+  public init(sid: Swift.String, dboKoUri: Swift.String, dboKoPublicUri: Swift.String, adapterUrl: Swift.String)
+}
+public struct EbsVerificationDetails {
+  public var resSecret: Swift.String
+}
+extension EbsSDKAdapter.EbsSDKClient.RequestEBSVerificationError : Swift.Equatable {}
+extension EbsSDKAdapter.EbsSDKClient.RequestEBSVerificationError : Swift.Hashable {}

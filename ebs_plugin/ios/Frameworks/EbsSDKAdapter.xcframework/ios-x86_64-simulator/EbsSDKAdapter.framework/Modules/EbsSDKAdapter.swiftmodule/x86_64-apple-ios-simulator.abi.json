@@ -1,0 +1,1109 @@
+{
+  "ABIRoot": {
+    "kind": "Root",
+    "name": "EbsSDKAdapter",
+    "printedName": "EbsSDKAdapter",
+    "children": [
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "EbsSDKAdapter",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "TypeDecl",
+        "name": "EbsSDKClient",
+        "printedName": "EbsSDKClient",
+        "children": [
+          {
+            "kind": "Var",
+            "name": "shared",
+            "printedName": "shared",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "EbsSDKClient",
+                "printedName": "EbsSDKAdapter.EbsSDKClient",
+                "usr": "s:13EbsSDKAdapter0A9SDKClientC"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:13EbsSDKAdapter0A9SDKClientC6sharedACvpZ",
+            "mangledName": "$s13EbsSDKAdapter0A9SDKClientC6sharedACvpZ",
+            "moduleName": "EbsSDKAdapter",
+            "static": true,
+            "declAttributes": [
+              "HasInitialValue",
+              "Final",
+              "HasStorage",
+              "AccessControl",
+              "RawDocComment"
+            ],
+            "isLet": true,
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "EbsSDKClient",
+                    "printedName": "EbsSDKAdapter.EbsSDKClient",
+                    "usr": "s:13EbsSDKAdapter0A9SDKClientC"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:13EbsSDKAdapter0A9SDKClientC6sharedACvgZ",
+                "mangledName": "$s13EbsSDKAdapter0A9SDKClientC6sharedACvgZ",
+                "moduleName": "EbsSDKAdapter",
+                "static": true,
+                "implicit": true,
+                "declAttributes": [
+                  "Final"
+                ],
+                "accessorKind": "get"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "ebsAppIsInstalled",
+            "printedName": "ebsAppIsInstalled",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Bool",
+                "printedName": "Swift.Bool",
+                "usr": "s:Sb"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:13EbsSDKAdapter0A9SDKClientC17ebsAppIsInstalledSbvp",
+            "mangledName": "$s13EbsSDKAdapter0A9SDKClientC17ebsAppIsInstalledSbvp",
+            "moduleName": "EbsSDKAdapter",
+            "declAttributes": [
+              "AccessControl",
+              "RawDocComment"
+            ],
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Bool",
+                    "printedName": "Swift.Bool",
+                    "usr": "s:Sb"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:13EbsSDKAdapter0A9SDKClientC17ebsAppIsInstalledSbvg",
+                "mangledName": "$s13EbsSDKAdapter0A9SDKClientC17ebsAppIsInstalledSbvg",
+                "moduleName": "EbsSDKAdapter",
+                "accessorKind": "get"
+              }
+            ]
+          },
+          {
+            "kind": "Function",
+            "name": "set",
+            "printedName": "set(scheme:title:infoSystem:presenting:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "UIKit.UIViewController?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "UIViewController",
+                    "printedName": "UIKit.UIViewController",
+                    "usr": "c:objc(cs)UIViewController"
+                  }
+                ],
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:13EbsSDKAdapter0A9SDKClientC3set6scheme5title10infoSystem10presentingySS_S2SSo16UIViewControllerCSgtF",
+            "mangledName": "$s13EbsSDKAdapter0A9SDKClientC3set6scheme5title10infoSystem10presentingySS_S2SSo16UIViewControllerCSgtF",
+            "moduleName": "EbsSDKAdapter",
+            "declAttributes": [
+              "AccessControl",
+              "RawDocComment"
+            ],
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "requestEBSVerification",
+            "printedName": "requestEBSVerification(sessionDetails:completion:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "EbsSessionDetails",
+                "printedName": "EbsSDKAdapter.EbsSessionDetails",
+                "usr": "s:13EbsSDKAdapter0A14SessionDetailsV"
+              },
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(EbsSDKAdapter.EbsSDKClient.RequestEBSVerificationResult) -> ()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "RequestEBSVerificationResult",
+                    "printedName": "EbsSDKAdapter.EbsSDKClient.RequestEBSVerificationResult",
+                    "usr": "s:13EbsSDKAdapter0A9SDKClientC28RequestEBSVerificationResultO"
+                  }
+                ]
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:13EbsSDKAdapter0A9SDKClientC22requestEBSVerification14sessionDetails10completionyAA0a7SessionG0V_yAC07RequestE6ResultOctF",
+            "mangledName": "$s13EbsSDKAdapter0A9SDKClientC22requestEBSVerification14sessionDetails10completionyAA0a7SessionG0V_yAC07RequestE6ResultOctF",
+            "moduleName": "EbsSDKAdapter",
+            "declAttributes": [
+              "AccessControl",
+              "RawDocComment"
+            ],
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "processEbsVerification",
+            "printedName": "processEbsVerification(openUrl:options:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "URL",
+                "printedName": "Foundation.URL",
+                "usr": "s:10Foundation3URLV"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Dictionary",
+                "printedName": "[UIKit.UIApplication.OpenURLOptionsKey : Any]",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "OpenURLOptionsKey",
+                    "printedName": "UIKit.UIApplication.OpenURLOptionsKey",
+                    "usr": "c:@T@UIApplicationOpenURLOptionsKey"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "ProtocolComposition",
+                    "printedName": "Any"
+                  }
+                ],
+                "usr": "s:SD"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:13EbsSDKAdapter0A9SDKClientC07processA12Verification7openUrl7optionsy10Foundation3URLV_SDySo30UIApplicationOpenURLOptionsKeyaypGtF",
+            "mangledName": "$s13EbsSDKAdapter0A9SDKClientC07processA12Verification7openUrl7optionsy10Foundation3URLV_SDySo30UIApplicationOpenURLOptionsKeyaypGtF",
+            "moduleName": "EbsSDKAdapter",
+            "declAttributes": [
+              "AccessControl",
+              "RawDocComment"
+            ],
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "openEbsInAppStore",
+            "printedName": "openEbsInAppStore()",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:13EbsSDKAdapter0A9SDKClientC04openA10InAppStoreyyF",
+            "mangledName": "$s13EbsSDKAdapter0A9SDKClientC04openA10InAppStoreyyF",
+            "moduleName": "EbsSDKAdapter",
+            "declAttributes": [
+              "AccessControl",
+              "RawDocComment"
+            ],
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "TypeDecl",
+            "name": "RequestEBSVerificationResult",
+            "printedName": "RequestEBSVerificationResult",
+            "children": [
+              {
+                "kind": "Var",
+                "name": "success",
+                "printedName": "success",
+                "children": [
+                  {
+                    "kind": "TypeFunc",
+                    "name": "Function",
+                    "printedName": "(EbsSDKAdapter.EbsSDKClient.RequestEBSVerificationResult.Type) -> (EbsSDKAdapter.EbsVerificationDetails) -> EbsSDKAdapter.EbsSDKClient.RequestEBSVerificationResult",
+                    "children": [
+                      {
+                        "kind": "TypeFunc",
+                        "name": "Function",
+                        "printedName": "(EbsSDKAdapter.EbsVerificationDetails) -> EbsSDKAdapter.EbsSDKClient.RequestEBSVerificationResult",
+                        "children": [
+                          {
+                            "kind": "TypeNominal",
+                            "name": "RequestEBSVerificationResult",
+                            "printedName": "EbsSDKAdapter.EbsSDKClient.RequestEBSVerificationResult",
+                            "usr": "s:13EbsSDKAdapter0A9SDKClientC28RequestEBSVerificationResultO"
+                          },
+                          {
+                            "kind": "TypeNominal",
+                            "name": "Tuple",
+                            "printedName": "(details: EbsSDKAdapter.EbsVerificationDetails)",
+                            "children": [
+                              {
+                                "kind": "TypeNominal",
+                                "name": "EbsVerificationDetails",
+                                "printedName": "EbsSDKAdapter.EbsVerificationDetails",
+                                "usr": "s:13EbsSDKAdapter0A19VerificationDetailsV"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Metatype",
+                        "printedName": "EbsSDKAdapter.EbsSDKClient.RequestEBSVerificationResult.Type",
+                        "children": [
+                          {
+                            "kind": "TypeNominal",
+                            "name": "RequestEBSVerificationResult",
+                            "printedName": "EbsSDKAdapter.EbsSDKClient.RequestEBSVerificationResult",
+                            "usr": "s:13EbsSDKAdapter0A9SDKClientC28RequestEBSVerificationResultO"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "declKind": "EnumElement",
+                "usr": "s:13EbsSDKAdapter0A9SDKClientC28RequestEBSVerificationResultO7successyAeA0A19VerificationDetailsV_tcAEmF",
+                "mangledName": "$s13EbsSDKAdapter0A9SDKClientC28RequestEBSVerificationResultO7successyAeA0A19VerificationDetailsV_tcAEmF",
+                "moduleName": "EbsSDKAdapter"
+              },
+              {
+                "kind": "Var",
+                "name": "failure",
+                "printedName": "failure",
+                "children": [
+                  {
+                    "kind": "TypeFunc",
+                    "name": "Function",
+                    "printedName": "(EbsSDKAdapter.EbsSDKClient.RequestEBSVerificationResult.Type) -> (EbsSDKAdapter.EbsSDKClient.RequestEBSVerificationError) -> EbsSDKAdapter.EbsSDKClient.RequestEBSVerificationResult",
+                    "children": [
+                      {
+                        "kind": "TypeFunc",
+                        "name": "Function",
+                        "printedName": "(EbsSDKAdapter.EbsSDKClient.RequestEBSVerificationError) -> EbsSDKAdapter.EbsSDKClient.RequestEBSVerificationResult",
+                        "children": [
+                          {
+                            "kind": "TypeNominal",
+                            "name": "RequestEBSVerificationResult",
+                            "printedName": "EbsSDKAdapter.EbsSDKClient.RequestEBSVerificationResult",
+                            "usr": "s:13EbsSDKAdapter0A9SDKClientC28RequestEBSVerificationResultO"
+                          },
+                          {
+                            "kind": "TypeNominal",
+                            "name": "Tuple",
+                            "printedName": "(error: EbsSDKAdapter.EbsSDKClient.RequestEBSVerificationError)",
+                            "children": [
+                              {
+                                "kind": "TypeNominal",
+                                "name": "RequestEBSVerificationError",
+                                "printedName": "EbsSDKAdapter.EbsSDKClient.RequestEBSVerificationError",
+                                "usr": "s:13EbsSDKAdapter0A9SDKClientC27RequestEBSVerificationErrorO"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Metatype",
+                        "printedName": "EbsSDKAdapter.EbsSDKClient.RequestEBSVerificationResult.Type",
+                        "children": [
+                          {
+                            "kind": "TypeNominal",
+                            "name": "RequestEBSVerificationResult",
+                            "printedName": "EbsSDKAdapter.EbsSDKClient.RequestEBSVerificationResult",
+                            "usr": "s:13EbsSDKAdapter0A9SDKClientC28RequestEBSVerificationResultO"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "declKind": "EnumElement",
+                "usr": "s:13EbsSDKAdapter0A9SDKClientC28RequestEBSVerificationResultO7failureyAeC0dE5ErrorO_tcAEmF",
+                "mangledName": "$s13EbsSDKAdapter0A9SDKClientC28RequestEBSVerificationResultO7failureyAeC0dE5ErrorO_tcAEmF",
+                "moduleName": "EbsSDKAdapter"
+              },
+              {
+                "kind": "Var",
+                "name": "cancel",
+                "printedName": "cancel",
+                "children": [
+                  {
+                    "kind": "TypeFunc",
+                    "name": "Function",
+                    "printedName": "(EbsSDKAdapter.EbsSDKClient.RequestEBSVerificationResult.Type) -> EbsSDKAdapter.EbsSDKClient.RequestEBSVerificationResult",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "RequestEBSVerificationResult",
+                        "printedName": "EbsSDKAdapter.EbsSDKClient.RequestEBSVerificationResult",
+                        "usr": "s:13EbsSDKAdapter0A9SDKClientC28RequestEBSVerificationResultO"
+                      },
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Metatype",
+                        "printedName": "EbsSDKAdapter.EbsSDKClient.RequestEBSVerificationResult.Type",
+                        "children": [
+                          {
+                            "kind": "TypeNominal",
+                            "name": "RequestEBSVerificationResult",
+                            "printedName": "EbsSDKAdapter.EbsSDKClient.RequestEBSVerificationResult",
+                            "usr": "s:13EbsSDKAdapter0A9SDKClientC28RequestEBSVerificationResultO"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "declKind": "EnumElement",
+                "usr": "s:13EbsSDKAdapter0A9SDKClientC28RequestEBSVerificationResultO6cancelyA2EmF",
+                "mangledName": "$s13EbsSDKAdapter0A9SDKClientC28RequestEBSVerificationResultO6cancelyA2EmF",
+                "moduleName": "EbsSDKAdapter"
+              }
+            ],
+            "declKind": "Enum",
+            "usr": "s:13EbsSDKAdapter0A9SDKClientC28RequestEBSVerificationResultO",
+            "mangledName": "$s13EbsSDKAdapter0A9SDKClientC28RequestEBSVerificationResultO",
+            "moduleName": "EbsSDKAdapter",
+            "declAttributes": [
+              "AccessControl",
+              "RawDocComment"
+            ],
+            "isFromExtension": true,
+            "conformances": [
+              {
+                "kind": "Conformance",
+                "name": "Copyable",
+                "printedName": "Copyable",
+                "usr": "s:s8CopyableP",
+                "mangledName": "$ss8CopyableP"
+              },
+              {
+                "kind": "Conformance",
+                "name": "Escapable",
+                "printedName": "Escapable",
+                "usr": "s:s9EscapableP",
+                "mangledName": "$ss9EscapableP"
+              }
+            ]
+          },
+          {
+            "kind": "TypeDecl",
+            "name": "RequestEBSVerificationError",
+            "printedName": "RequestEBSVerificationError",
+            "children": [
+              {
+                "kind": "Var",
+                "name": "ebsNotInstalled",
+                "printedName": "ebsNotInstalled",
+                "children": [
+                  {
+                    "kind": "TypeFunc",
+                    "name": "Function",
+                    "printedName": "(EbsSDKAdapter.EbsSDKClient.RequestEBSVerificationError.Type) -> EbsSDKAdapter.EbsSDKClient.RequestEBSVerificationError",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "RequestEBSVerificationError",
+                        "printedName": "EbsSDKAdapter.EbsSDKClient.RequestEBSVerificationError",
+                        "usr": "s:13EbsSDKAdapter0A9SDKClientC27RequestEBSVerificationErrorO"
+                      },
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Metatype",
+                        "printedName": "EbsSDKAdapter.EbsSDKClient.RequestEBSVerificationError.Type",
+                        "children": [
+                          {
+                            "kind": "TypeNominal",
+                            "name": "RequestEBSVerificationError",
+                            "printedName": "EbsSDKAdapter.EbsSDKClient.RequestEBSVerificationError",
+                            "usr": "s:13EbsSDKAdapter0A9SDKClientC27RequestEBSVerificationErrorO"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "declKind": "EnumElement",
+                "usr": "s:13EbsSDKAdapter0A9SDKClientC27RequestEBSVerificationErrorO15ebsNotInstalledyA2EmF",
+                "mangledName": "$s13EbsSDKAdapter0A9SDKClientC27RequestEBSVerificationErrorO15ebsNotInstalledyA2EmF",
+                "moduleName": "EbsSDKAdapter"
+              },
+              {
+                "kind": "Var",
+                "name": "verificationFailed",
+                "printedName": "verificationFailed",
+                "children": [
+                  {
+                    "kind": "TypeFunc",
+                    "name": "Function",
+                    "printedName": "(EbsSDKAdapter.EbsSDKClient.RequestEBSVerificationError.Type) -> EbsSDKAdapter.EbsSDKClient.RequestEBSVerificationError",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "RequestEBSVerificationError",
+                        "printedName": "EbsSDKAdapter.EbsSDKClient.RequestEBSVerificationError",
+                        "usr": "s:13EbsSDKAdapter0A9SDKClientC27RequestEBSVerificationErrorO"
+                      },
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Metatype",
+                        "printedName": "EbsSDKAdapter.EbsSDKClient.RequestEBSVerificationError.Type",
+                        "children": [
+                          {
+                            "kind": "TypeNominal",
+                            "name": "RequestEBSVerificationError",
+                            "printedName": "EbsSDKAdapter.EbsSDKClient.RequestEBSVerificationError",
+                            "usr": "s:13EbsSDKAdapter0A9SDKClientC27RequestEBSVerificationErrorO"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "declKind": "EnumElement",
+                "usr": "s:13EbsSDKAdapter0A9SDKClientC27RequestEBSVerificationErrorO18verificationFailedyA2EmF",
+                "mangledName": "$s13EbsSDKAdapter0A9SDKClientC27RequestEBSVerificationErrorO18verificationFailedyA2EmF",
+                "moduleName": "EbsSDKAdapter"
+              },
+              {
+                "kind": "Var",
+                "name": "sdkIsNotConfigured",
+                "printedName": "sdkIsNotConfigured",
+                "children": [
+                  {
+                    "kind": "TypeFunc",
+                    "name": "Function",
+                    "printedName": "(EbsSDKAdapter.EbsSDKClient.RequestEBSVerificationError.Type) -> EbsSDKAdapter.EbsSDKClient.RequestEBSVerificationError",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "RequestEBSVerificationError",
+                        "printedName": "EbsSDKAdapter.EbsSDKClient.RequestEBSVerificationError",
+                        "usr": "s:13EbsSDKAdapter0A9SDKClientC27RequestEBSVerificationErrorO"
+                      },
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Metatype",
+                        "printedName": "EbsSDKAdapter.EbsSDKClient.RequestEBSVerificationError.Type",
+                        "children": [
+                          {
+                            "kind": "TypeNominal",
+                            "name": "RequestEBSVerificationError",
+                            "printedName": "EbsSDKAdapter.EbsSDKClient.RequestEBSVerificationError",
+                            "usr": "s:13EbsSDKAdapter0A9SDKClientC27RequestEBSVerificationErrorO"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "declKind": "EnumElement",
+                "usr": "s:13EbsSDKAdapter0A9SDKClientC27RequestEBSVerificationErrorO18sdkIsNotConfiguredyA2EmF",
+                "mangledName": "$s13EbsSDKAdapter0A9SDKClientC27RequestEBSVerificationErrorO18sdkIsNotConfiguredyA2EmF",
+                "moduleName": "EbsSDKAdapter"
+              },
+              {
+                "kind": "Var",
+                "name": "unknown",
+                "printedName": "unknown",
+                "children": [
+                  {
+                    "kind": "TypeFunc",
+                    "name": "Function",
+                    "printedName": "(EbsSDKAdapter.EbsSDKClient.RequestEBSVerificationError.Type) -> EbsSDKAdapter.EbsSDKClient.RequestEBSVerificationError",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "RequestEBSVerificationError",
+                        "printedName": "EbsSDKAdapter.EbsSDKClient.RequestEBSVerificationError",
+                        "usr": "s:13EbsSDKAdapter0A9SDKClientC27RequestEBSVerificationErrorO"
+                      },
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Metatype",
+                        "printedName": "EbsSDKAdapter.EbsSDKClient.RequestEBSVerificationError.Type",
+                        "children": [
+                          {
+                            "kind": "TypeNominal",
+                            "name": "RequestEBSVerificationError",
+                            "printedName": "EbsSDKAdapter.EbsSDKClient.RequestEBSVerificationError",
+                            "usr": "s:13EbsSDKAdapter0A9SDKClientC27RequestEBSVerificationErrorO"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "declKind": "EnumElement",
+                "usr": "s:13EbsSDKAdapter0A9SDKClientC27RequestEBSVerificationErrorO7unknownyA2EmF",
+                "mangledName": "$s13EbsSDKAdapter0A9SDKClientC27RequestEBSVerificationErrorO7unknownyA2EmF",
+                "moduleName": "EbsSDKAdapter"
+              },
+              {
+                "kind": "Function",
+                "name": "==",
+                "printedName": "==(_:_:)",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Bool",
+                    "printedName": "Swift.Bool",
+                    "usr": "s:Sb"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "RequestEBSVerificationError",
+                    "printedName": "EbsSDKAdapter.EbsSDKClient.RequestEBSVerificationError",
+                    "usr": "s:13EbsSDKAdapter0A9SDKClientC27RequestEBSVerificationErrorO"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "RequestEBSVerificationError",
+                    "printedName": "EbsSDKAdapter.EbsSDKClient.RequestEBSVerificationError",
+                    "usr": "s:13EbsSDKAdapter0A9SDKClientC27RequestEBSVerificationErrorO"
+                  }
+                ],
+                "declKind": "Func",
+                "usr": "s:13EbsSDKAdapter0A9SDKClientC27RequestEBSVerificationErrorO2eeoiySbAE_AEtFZ",
+                "mangledName": "$s13EbsSDKAdapter0A9SDKClientC27RequestEBSVerificationErrorO2eeoiySbAE_AEtFZ",
+                "moduleName": "EbsSDKAdapter",
+                "static": true,
+                "implicit": true,
+                "funcSelfKind": "NonMutating"
+              },
+              {
+                "kind": "Var",
+                "name": "hashValue",
+                "printedName": "hashValue",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Int",
+                    "printedName": "Swift.Int",
+                    "usr": "s:Si"
+                  }
+                ],
+                "declKind": "Var",
+                "usr": "s:13EbsSDKAdapter0A9SDKClientC27RequestEBSVerificationErrorO9hashValueSivp",
+                "mangledName": "$s13EbsSDKAdapter0A9SDKClientC27RequestEBSVerificationErrorO9hashValueSivp",
+                "moduleName": "EbsSDKAdapter",
+                "implicit": true,
+                "accessors": [
+                  {
+                    "kind": "Accessor",
+                    "name": "Get",
+                    "printedName": "Get()",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Int",
+                        "printedName": "Swift.Int",
+                        "usr": "s:Si"
+                      }
+                    ],
+                    "declKind": "Accessor",
+                    "usr": "s:13EbsSDKAdapter0A9SDKClientC27RequestEBSVerificationErrorO9hashValueSivg",
+                    "mangledName": "$s13EbsSDKAdapter0A9SDKClientC27RequestEBSVerificationErrorO9hashValueSivg",
+                    "moduleName": "EbsSDKAdapter",
+                    "implicit": true,
+                    "accessorKind": "get"
+                  }
+                ]
+              },
+              {
+                "kind": "Function",
+                "name": "hash",
+                "printedName": "hash(into:)",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Hasher",
+                    "printedName": "Swift.Hasher",
+                    "paramValueOwnership": "InOut",
+                    "usr": "s:s6HasherV"
+                  }
+                ],
+                "declKind": "Func",
+                "usr": "s:13EbsSDKAdapter0A9SDKClientC27RequestEBSVerificationErrorO4hash4intoys6HasherVz_tF",
+                "mangledName": "$s13EbsSDKAdapter0A9SDKClientC27RequestEBSVerificationErrorO4hash4intoys6HasherVz_tF",
+                "moduleName": "EbsSDKAdapter",
+                "implicit": true,
+                "funcSelfKind": "NonMutating"
+              }
+            ],
+            "declKind": "Enum",
+            "usr": "s:13EbsSDKAdapter0A9SDKClientC27RequestEBSVerificationErrorO",
+            "mangledName": "$s13EbsSDKAdapter0A9SDKClientC27RequestEBSVerificationErrorO",
+            "moduleName": "EbsSDKAdapter",
+            "declAttributes": [
+              "AccessControl",
+              "RawDocComment"
+            ],
+            "isFromExtension": true,
+            "conformances": [
+              {
+                "kind": "Conformance",
+                "name": "Copyable",
+                "printedName": "Copyable",
+                "usr": "s:s8CopyableP",
+                "mangledName": "$ss8CopyableP"
+              },
+              {
+                "kind": "Conformance",
+                "name": "Escapable",
+                "printedName": "Escapable",
+                "usr": "s:s9EscapableP",
+                "mangledName": "$ss9EscapableP"
+              },
+              {
+                "kind": "Conformance",
+                "name": "Equatable",
+                "printedName": "Equatable",
+                "usr": "s:SQ",
+                "mangledName": "$sSQ"
+              },
+              {
+                "kind": "Conformance",
+                "name": "Hashable",
+                "printedName": "Hashable",
+                "usr": "s:SH",
+                "mangledName": "$sSH"
+              }
+            ]
+          }
+        ],
+        "declKind": "Class",
+        "usr": "s:13EbsSDKAdapter0A9SDKClientC",
+        "mangledName": "$s13EbsSDKAdapter0A9SDKClientC",
+        "moduleName": "EbsSDKAdapter",
+        "declAttributes": [
+          "AccessControl"
+        ],
+        "hasMissingDesignatedInitializers": true,
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          }
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "EbsSDKAdapter",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "TypeDecl",
+        "name": "EbsSessionDetails",
+        "printedName": "EbsSessionDetails",
+        "children": [
+          {
+            "kind": "Constructor",
+            "name": "init",
+            "printedName": "init(sid:dboKoUri:dboKoPublicUri:adapterUrl:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "EbsSessionDetails",
+                "printedName": "EbsSDKAdapter.EbsSessionDetails",
+                "usr": "s:13EbsSDKAdapter0A14SessionDetailsV"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Constructor",
+            "usr": "s:13EbsSDKAdapter0A14SessionDetailsV3sid8dboKoUri0fg6PublicH010adapterUrlACSS_S3Stcfc",
+            "mangledName": "$s13EbsSDKAdapter0A14SessionDetailsV3sid8dboKoUri0fg6PublicH010adapterUrlACSS_S3Stcfc",
+            "moduleName": "EbsSDKAdapter",
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "init_kind": "Designated"
+          }
+        ],
+        "declKind": "Struct",
+        "usr": "s:13EbsSDKAdapter0A14SessionDetailsV",
+        "mangledName": "$s13EbsSDKAdapter0A14SessionDetailsV",
+        "moduleName": "EbsSDKAdapter",
+        "declAttributes": [
+          "AccessControl"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          }
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "EbsSDKAdapter",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "TypeDecl",
+        "name": "EbsVerificationDetails",
+        "printedName": "EbsVerificationDetails",
+        "children": [
+          {
+            "kind": "Var",
+            "name": "resSecret",
+            "printedName": "resSecret",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:13EbsSDKAdapter0A19VerificationDetailsV9resSecretSSvp",
+            "mangledName": "$s13EbsSDKAdapter0A19VerificationDetailsV9resSecretSSvp",
+            "moduleName": "EbsSDKAdapter",
+            "declAttributes": [
+              "HasStorage",
+              "AccessControl"
+            ],
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:13EbsSDKAdapter0A19VerificationDetailsV9resSecretSSvg",
+                "mangledName": "$s13EbsSDKAdapter0A19VerificationDetailsV9resSecretSSvg",
+                "moduleName": "EbsSDKAdapter",
+                "implicit": true,
+                "accessorKind": "get"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Set",
+                "printedName": "Set()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:13EbsSDKAdapter0A19VerificationDetailsV9resSecretSSvs",
+                "mangledName": "$s13EbsSDKAdapter0A19VerificationDetailsV9resSecretSSvs",
+                "moduleName": "EbsSDKAdapter",
+                "implicit": true,
+                "accessorKind": "set"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Modify",
+                "printedName": "Modify()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:13EbsSDKAdapter0A19VerificationDetailsV9resSecretSSvM",
+                "mangledName": "$s13EbsSDKAdapter0A19VerificationDetailsV9resSecretSSvM",
+                "moduleName": "EbsSDKAdapter",
+                "implicit": true,
+                "accessorKind": "_modify"
+              }
+            ]
+          }
+        ],
+        "declKind": "Struct",
+        "usr": "s:13EbsSDKAdapter0A19VerificationDetailsV",
+        "mangledName": "$s13EbsSDKAdapter0A19VerificationDetailsV",
+        "moduleName": "EbsSDKAdapter",
+        "declAttributes": [
+          "AccessControl"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          }
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "EbsSDKAdapter",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      }
+    ],
+    "json_format_version": 8
+  },
+  "ConstValues": [
+    {
+      "filePath": "\/Users\/umetskayairina\/work\/OTIBMOBSDK\/EbsSDKAdapter\/EbsSDKClient.swift",
+      "kind": "StringLiteral",
+      "offset": 841,
+      "length": 47,
+      "value": "\"itms-apps:\/\/itunes.apple.com\/app\/id6443499542\""
+    },
+    {
+      "filePath": "\/Users\/umetskayairina\/work\/OTIBMOBSDK\/EbsSDKAdapter\/EbsSDKClient.swift",
+      "kind": "StringLiteral",
+      "offset": 952,
+      "length": 10,
+      "value": "\"ebsgu:\/\/\""
+    },
+    {
+      "filePath": "\/Users\/umetskayairina\/work\/OTIBMOBSDK\/EbsSDKAdapter\/EbsSDKClient.swift",
+      "kind": "StringLiteral",
+      "offset": 1145,
+      "length": 11,
+      "value": "\"appScheme\""
+    },
+    {
+      "filePath": "\/Users\/umetskayairina\/work\/OTIBMOBSDK\/EbsSDKAdapter\/EbsSDKClient.swift",
+      "kind": "StringLiteral",
+      "offset": 1236,
+      "length": 7,
+      "value": "\"title\""
+    },
+    {
+      "filePath": "\/Users\/umetskayairina\/work\/OTIBMOBSDK\/EbsSDKAdapter\/EbsSDKClient.swift",
+      "kind": "StringLiteral",
+      "offset": 1347,
+      "length": 13,
+      "value": "\"info_system\""
+    },
+    {
+      "filePath": "\/Users\/umetskayairina\/work\/OTIBMOBSDK\/EbsSDKAdapter\/EbsSDKClient.swift",
+      "kind": "StringLiteral",
+      "offset": 1418,
+      "length": 8,
+      "value": "\"cancel\""
+    },
+    {
+      "filePath": "\/Users\/umetskayairina\/work\/OTIBMOBSDK\/EbsSDKAdapter\/EbsSDKClient.swift",
+      "kind": "StringLiteral",
+      "offset": 1513,
+      "length": 151,
+      "value": "\"Для авторизации необходимо установить приложение Единая биометрическая система\""
+    },
+    {
+      "filePath": "\/Users\/umetskayairina\/work\/OTIBMOBSDK\/EbsSDKAdapter\/EbsSDKClient.swift",
+      "kind": "StringLiteral",
+      "offset": 1713,
+      "length": 14,
+      "value": "\"Отмена\""
+    },
+    {
+      "filePath": "\/Users\/umetskayairina\/work\/OTIBMOBSDK\/EbsSDKAdapter\/EbsSDKClient.swift",
+      "kind": "StringLiteral",
+      "offset": 1764,
+      "length": 22,
+      "value": "\"Установить\""
+    },
+    {
+      "filePath": "\/Users\/umetskayairina\/work\/OTIBMOBSDK\/EbsSDKAdapter\/EbsSDKClient.swift",
+      "kind": "StringLiteral",
+      "offset": 1822,
+      "length": 58,
+      "value": "\"Единая биометрическая система\""
+    },
+    {
+      "filePath": "\/Users\/umetskayairina\/work\/OTIBMOBSDK\/EbsSDKAdapter\/EbsSessionDetails.swift",
+      "kind": "StringLiteral",
+      "offset": 207,
+      "length": 5,
+      "value": "\"sid\""
+    },
+    {
+      "filePath": "\/Users\/umetskayairina\/work\/OTIBMOBSDK\/EbsSDKAdapter\/EbsSessionDetails.swift",
+      "kind": "StringLiteral",
+      "offset": 231,
+      "length": 12,
+      "value": "\"dbo_ko_uri\""
+    },
+    {
+      "filePath": "\/Users\/umetskayairina\/work\/OTIBMOBSDK\/EbsSDKAdapter\/EbsSessionDetails.swift",
+      "kind": "StringLiteral",
+      "offset": 268,
+      "length": 19,
+      "value": "\"dbo_ko_public_uri\""
+    },
+    {
+      "filePath": "\/Users\/umetskayairina\/work\/OTIBMOBSDK\/EbsSDKAdapter\/EbsSessionDetails.swift",
+      "kind": "StringLiteral",
+      "offset": 308,
+      "length": 13,
+      "value": "\"adapter_url\""
+    },
+    {
+      "filePath": "\/Users\/umetskayairina\/work\/OTIBMOBSDK\/EbsSDKAdapter\/EbsVerificationDetails.swift",
+      "kind": "StringLiteral",
+      "offset": 217,
+      "length": 12,
+      "value": "\"res_secret\""
+    }
+  ]
+}
