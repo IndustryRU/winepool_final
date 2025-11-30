@@ -7,6 +7,7 @@ import 'package:winepool_final/features/wines/domain/wine_characteristics.dart';
 import 'package:winepool_final/features/reviews/application/reviews_controller.dart';
 import 'package:winepool_final/features/reviews/domain/review.dart';
 import 'package:winepool_final/features/reviews/presentation/add_review_screen.dart';
+import 'package:winepool_final/core/providers/supabase_provider.dart';
 
 class OfferDetailsScreen extends ConsumerWidget {
   final String offerId;
@@ -117,7 +118,16 @@ class OfferDetailsScreen extends ConsumerWidget {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       children: [
+                                        // Отображение имени пользователя, если доступно
+                                        if (review.userName != null && review.userName!.isNotEmpty)
+                                          Text(
+                                            review.userName!,
+                                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                          ),
                                         // Звезды рейтинга
                                         Row(
                                           children: List.generate(5, (starIndex) {
@@ -132,16 +142,18 @@ class OfferDetailsScreen extends ConsumerWidget {
                                             );
                                           }),
                                         ),
-                                        const SizedBox(width: 8),
-                                        if (review.createdAt != null)
-                                          Text(
-                                            '${review.createdAt!.day}.${review.createdAt!.month}.${review.createdAt!.year}',
-                                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                                  color: Colors.grey,
-                                                ),
-                                          ),
                                       ],
                                     ),
+                                    if (review.createdAt != null)
+                                      Padding(
+                                        padding: const EdgeInsets.only(top: 4.0),
+                                        child: Text(
+                                          '${review.createdAt!.day}.${review.createdAt!.month}.${review.createdAt!.year}',
+                                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                                color: Colors.grey,
+                                              ),
+                                        ),
+                                      ),
                                     if (review.text != null && review.text!.isNotEmpty) ...[
                                       const SizedBox(height: 8),
                                       Text(
@@ -193,30 +205,38 @@ class OfferDetailsScreen extends ConsumerWidget {
                       ),
                     ),
                     const SizedBox(width: 16),
-                    ElevatedButton(
-                      onPressed: () {
-                        // Нужно получить ID текущего пользователя для добавления отзыва
-                        // Пока используем заглушку
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => AddReviewScreen(
-                              wineId: wine.id ?? '',
-                              userId: 'current_user_id', // Заглушка - нужно получить реальный ID пользователя
-                              offerId: offerId, // Передаем offerId для инвалидации провайдера
+                    Consumer(
+                      builder: (context, ref, child) {
+                        final userId = ref.watch(supabaseClientProvider).auth.currentUser?.id;
+                        
+                        if (userId == null) {
+                          return const SizedBox.shrink(); // Скрываем кнопку, если пользователь не авторизован
+                        }
+                        
+                        return ElevatedButton(
+                          onPressed: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => AddReviewScreen(
+                                  wineId: wine.id ?? '',
+                                  userId: userId, // Передаем реальный ID пользователя
+                                  offerId: offerId, // Передаем offerId для инвалидации провайдера
+                                ),
+                              ),
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
                             ),
+                          ),
+                          child: const Text(
+                            'Оставить отзыв',
+                            style: TextStyle(fontSize: 16),
                           ),
                         );
                       },
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      child: const Text(
-                        'Оставить отзыв',
-                        style: TextStyle(fontSize: 16),
-                      ),
                     ),
                   ],
                 ),

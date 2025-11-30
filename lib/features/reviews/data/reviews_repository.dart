@@ -9,7 +9,7 @@ class ReviewsRepository {
   Future<List<Review>> fetchReviews(String wineId) async {
     final response = await _supabaseClient
         .from('reviews')
-        .select()
+        .select('*, profiles(full_name)')
         .eq('wine_id', wineId)
         .order('created_at', ascending: false);
 

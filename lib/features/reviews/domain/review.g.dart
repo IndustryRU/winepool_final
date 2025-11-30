@@ -10,6 +10,7 @@ _Review _$ReviewFromJson(Map<String, dynamic> json) => _Review(
   id: json['id'] as String?,
   wineId: json['wine_id'] as String,
   userId: json['user_id'] as String,
+  userName: _userNameFromJson(json['profiles'] as Map<String, dynamic>?),
   rating: (json['rating'] as num).toDouble(),
   text: json['text'] as String?,
   createdAt: json['created_at'] == null
