@@ -22,4 +22,20 @@ class EbsPlugin {
       dbkKoPublicUri: dbkKoPublicUri,
     );
   }
+
+  Future<bool> isInstalledApp() async {
+    return await NativeHostApi().isInstalledApp();
+  }
+
+  Future<String> getAppName() async {
+    return await NativeHostApi().getAppName();
+  }
+
+  Future<String> getRequestInstallAppText() async {
+    return await NativeHostApi().getRequestInstallAppText();
+  }
+
+  Future<bool> requestInstallApp() async {
+    return await NativeHostApi().requestInstallApp();
+  }
 }

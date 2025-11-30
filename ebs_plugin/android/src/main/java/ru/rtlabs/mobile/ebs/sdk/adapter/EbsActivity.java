@@ -71,7 +71,7 @@ public class EbsActivity extends AppCompatActivity {
         .dboKoUri(intent.getStringExtra(INPUT_DBO_KO_URI))
         .dboKoPublicUri(intent.getStringExtra(INPUT_DBO_KO_PUBLIC_URI))
         .build();
-    EbsApi.requestVerification(this, request, REQUEST_CODE_VERIFICATION, VerificationRequestMode.AUTOMATIC);
+    EbsApi.requestVerification(this, request, REQUEST_CODE_VERIFICATION, VerificationRequestMode.CUSTOM);
   }
 
   @Override
