@@ -1,5 +1,6 @@
 package ru.rtlabs.mobile.ebs.sdk.adapter;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.content.pm.PackageManager;
@@ -17,10 +18,6 @@ public class EbsActivity extends AppCompatActivity {
   int REQUEST_CODE_PERMISSION = 121;
   // Используется в onActivityResult
   int REQUEST_CODE_VERIFICATION = 122;
-  // Используется для возврата результата в FlutterActivity
-  public static int RESULT_CODE_OK = 234;
-  // Используется для возврата результата в FlutterActivity
-  public static int RESULT_CODE_ERROR = 235;
 
   // Описание ошибки
   public static final String CAUSE_FIELD = "cause";
@@ -78,7 +75,7 @@ public class EbsActivity extends AppCompatActivity {
   protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
     if(requestCode == REQUEST_CODE_VERIFICATION) {
-      if (resultCode == RESULT_OK && data != null) {
+      if (resultCode == Activity.RESULT_OK && data != null) {
         VerificationResult result = EbsApi.getVerificationResult(data);
         if (result != null) {
           switch (result.getState()) {
@@ -114,7 +111,7 @@ public class EbsActivity extends AppCompatActivity {
     if(result.isValid()) {
       Intent data = new Intent();
       data.putExtra(SECRET_FIELD, result.getSecret());
-      setResult(RESULT_CODE_OK, data);
+      setResult(Activity.RESULT_OK, data);
       finish();
     } else {
       processError("Результат верификации не валиден");
@@ -124,7 +121,7 @@ public class EbsActivity extends AppCompatActivity {
   private void processError(@NonNull String cause) {
     Intent data = new Intent();
     data.putExtra(CAUSE_FIELD, cause);
-    setResult(RESULT_CODE_ERROR, data);
+    setResult(Activity.RESULT_CANCELED, data);
     finish();
   }
 }

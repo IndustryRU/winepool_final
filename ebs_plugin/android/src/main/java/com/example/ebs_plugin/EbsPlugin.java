@@ -21,6 +21,7 @@ import ru.rtlabs.ebs.sdk.adapter.EbsApi;
 public class EbsPlugin implements FlutterPlugin, ActivityAware, NativeApi.NativeHostApi, PluginRegistry.ActivityResultListener {
   private Activity activity;
   private MethodChannel channel;
+  private ActivityPluginBinding binding;
   private static final String CHANNEL_NAME = "ebs_plugin";
   private NativeApi.Result<NativeApi.EbsResultData> result;
   private static final int REQUEST_CODE = 123; // Любой уникальный код
@@ -34,17 +35,20 @@ public class EbsPlugin implements FlutterPlugin, ActivityAware, NativeApi.Native
   @Override
   public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
     channel.setMethodCallHandler(null);
+    this.binding = null;
   }
 
   @Override
   public void onAttachedToActivity(@NonNull ActivityPluginBinding binding) {
     activity = binding.getActivity();
+    this.binding = binding;
     binding.addActivityResultListener(this);
   }
 
   @Override
   public void onDetachedFromActivity() {
     activity = null;
+    binding = null;
   }
 
   @Override
@@ -117,14 +121,14 @@ public class EbsPlugin implements FlutterPlugin, ActivityAware, NativeApi.Native
     intent.putExtra(EbsActivity.INPUT_DBO_KO_URI, dboKoUri);
     intent.putExtra(EbsActivity.INPUT_DBO_KO_PUBLIC_URI, dbkKoPublicUri);
 
-    activity.startActivityForResult(intent, REQUEST_CODE);
+    binding.getActivity().startActivityForResult(intent, REQUEST_CODE);
     result = res; // Сохраняем результат для последующего использования в onActivityResult
   }
 
   @Override
   public boolean onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
     if (requestCode == REQUEST_CODE && result != null) {
-      if (resultCode == EbsActivity.RESULT_CODE_OK && data != null) {
+      if (resultCode == Activity.RESULT_OK && data != null) {
         String secret = data.getStringExtra(EbsActivity.SECRET_FIELD);
         NativeApi.EbsResultData resData = new NativeApi.EbsResultData.Builder()
             .setIsError(false)
@@ -132,7 +136,7 @@ public class EbsPlugin implements FlutterPlugin, ActivityAware, NativeApi.Native
             .setErrorString(null)
             .build();
         result.success(resData);
-      } else if (resultCode == EbsActivity.RESULT_CODE_ERROR && data != null) {
+      } else if (resultCode == Activity.RESULT_CANCELED && data != null) {
         String errorString = data.getStringExtra(EbsActivity.CAUSE_FIELD);
         NativeApi.EbsResultData resData = new NativeApi.EbsResultData.Builder()
             .setIsError(true)
