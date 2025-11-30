@@ -17,18 +17,22 @@ class CartController extends AsyncNotifier<List<CartItem>> {
   // Все методы теперь должны быть async и вызывать репозиторий
 
  Future<void> addItem(Offer offer) async {
-    final currentState = await future;
-    final existingItemIndex = currentState.indexWhere((item) => item.offer?.id == offer.id);
+     if (offer.id == null) {
+       return; // Не добавляем товар, если id отсутствует
+     }
+     
+     final currentState = await future;
+     final existingItemIndex = currentState.indexWhere((item) => item.offer?.id == offer.id);
 
-    if (existingItemIndex != -1) {
-      await incrementItem(currentState[existingItemIndex].id);
-    } else {
-      final newItem = CartItem(id: offer.id, offer: offer, quantity: 1);
-      final newState = [...currentState, newItem];
-      state = AsyncValue.data(newState);
-      await _repository.addToCart(productId: offer.id, quantity: 1); // Сохраняем
-    }
-  }
+     if (existingItemIndex != -1) {
+       await incrementItem(currentState[existingItemIndex].id);
+     } else {
+       final newItem = CartItem(id: offer.id, offer: offer, quantity: 1);
+       final newState = [...currentState, newItem];
+       state = AsyncValue.data(newState);
+       await _repository.addToCart(productId: offer.id, quantity: 1); // Сохраняем
+     }
+   }
 
   Future<void> incrementItem(String cartItemId) async {
     final currentState = await future;

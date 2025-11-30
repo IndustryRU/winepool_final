@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:winepool_final/features/offers/application/all_offers_controller.dart';
 //import 'package:winepool_final/features/offers/domain/offer.dart';
+import 'package:winepool_final/features/reviews/application/reviews_controller.dart';
+import 'package:winepool_final/features/reviews/domain/review.dart';
 import 'package:winepool_final/features/wines/domain/wine.dart';
+import 'package:winepool_final/features/reviews/presentation/add_review_screen.dart';
 
 class WineDetailsScreen extends ConsumerWidget {
   final Wine wine;
@@ -69,6 +72,111 @@ class WineDetailsScreen extends ConsumerWidget {
                 ),
               ],
               
+              // Отзывы и рейтинг
+              const SizedBox(height: 24),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Отзывы и рейтинг',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                  ),
+                  if (wine.averageRating != null)
+                    Row(
+                      children: [
+                        const Icon(Icons.star, color: Colors.amber, size: 20),
+                        const SizedBox(width: 4),
+                        Text(
+                          '${wine.averageRating?.toStringAsFixed(1) ?? '0.0'}',
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        Text(
+                          '(${wine.reviewsCount ?? 0})',
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                color: Colors.grey,
+                              ),
+                        ),
+                      ],
+                    ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              
+              // Загрузка и отображение отзывов
+              Consumer(
+                builder: (context, ref, child) {
+                  final reviewsState = ref.watch(reviewsControllerProvider(wine.id ?? ''));
+                  
+                  return reviewsState.when(
+                    data: (reviews) {
+                      if (reviews.isEmpty) {
+                        return const Center(
+                          child: Text('Пока нет отзывов об этом вине'),
+                        );
+                      }
+                      
+                      return ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: reviews.length,
+                        itemBuilder: (context, index) {
+                          final review = reviews[index];
+                          return Card(
+                            child: Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      // Звезды рейтинга
+                                      Row(
+                                        children: List.generate(5, (starIndex) {
+                                          return Icon(
+                                            starIndex < review.rating.floor()
+                                                ? Icons.star
+                                                : starIndex < review.rating
+                                                    ? Icons.star_half
+                                                    : Icons.star_border,
+                                            color: Colors.amber,
+                                            size: 16,
+                                          );
+                                        }),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      if (review.createdAt != null)
+                                        Text(
+                                          '${review.createdAt!.day}.${review.createdAt!.month}.${review.createdAt!.year}',
+                                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                                color: Colors.grey,
+                                              ),
+                                        ),
+                                    ],
+                                  ),
+                                  if (review.text != null && review.text!.isNotEmpty) ...[
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      review.text!,
+                                      style: Theme.of(context).textTheme.bodyMedium,
+                                    ),
+                                  ],
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                    loading: () => const Center(child: CircularProgressIndicator()),
+                    error: (error, stack) => Center(
+                      child: Text('Ошибка загрузки отзывов: $error'),
+                    ),
+                  );
+                },
+              ),
+              
               const SizedBox(height: 24),
               Text(
                 'Предложения',
@@ -114,6 +222,21 @@ class WineDetailsScreen extends ConsumerWidget {
             ],
           ),
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Нужно получить ID текущего пользователя для добавления отзыва
+          // Пока используем заглушку
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => AddReviewScreen(
+                wineId: wine.id ?? '',
+                userId: 'current_user_id', // Заглушка - нужно получить реальный ID пользователя
+              ),
+            ),
+          );
+        },
+        child: const Icon(Icons.add_comment),
       ),
     );
   }

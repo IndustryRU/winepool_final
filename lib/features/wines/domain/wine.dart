@@ -81,6 +81,8 @@ abstract class Wine with _$Wine {
     int? vintage,
     @JsonKey(name: 'alcohol_level') double? alcoholLevel,
     double? rating,
+    @JsonKey(name: 'average_rating') double? averageRating,
+    @JsonKey(name: 'reviews_count') int? reviewsCount,
     @JsonKey(name: 'serving_temperature') String? servingTemperature,
     @JsonKey(name: 'sweetness') int? sweetness,
     @JsonKey(name: 'acidity') int? acidity,

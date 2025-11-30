@@ -132,8 +132,9 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: '/offers/:id',
         builder: (context, state) {
           final offer = state.extra as Offer?;
+          final offerId = state.pathParameters['id']!;
           if (offer == null) return const Text('Ошибка: оффер не найден');
-          return OfferDetailsScreen(offer: offer);
+          return OfferDetailsScreen(offerId: offerId);
         },
       ),
       GoRoute(
