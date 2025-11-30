@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:winepool_final/features/cart/application/cart_controller.dart';
 import 'package:winepool_final/features/offers/domain/offer.dart';
 import 'package:winepool_final/features/offers/application/offer_details_controller.dart';
@@ -144,16 +145,6 @@ class OfferDetailsScreen extends ConsumerWidget {
                                         ),
                                       ],
                                     ),
-                                    if (review.createdAt != null)
-                                      Padding(
-                                        padding: const EdgeInsets.only(top: 4.0),
-                                        child: Text(
-                                          '${review.createdAt!.day}.${review.createdAt!.month}.${review.createdAt!.year}',
-                                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                                color: Colors.grey,
-                                              ),
-                                        ),
-                                      ),
                                     if (review.text != null && review.text!.isNotEmpty) ...[
                                       const SizedBox(height: 8),
                                       Text(
@@ -161,6 +152,17 @@ class OfferDetailsScreen extends ConsumerWidget {
                                         style: Theme.of(context).textTheme.bodyMedium,
                                       ),
                                     ],
+                                    // Дата отзыва в нижнем правом углу
+                                    if (review.createdAt != null)
+                                      Align(
+                                        alignment: Alignment.centerRight,
+                                        child: Text(
+                                          DateFormat('dd.MM.yyyy HH:mm').format(review.createdAt!),
+                                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                                color: Colors.grey[600],
+                                              ),
+                                        ),
+                                      ),
                                   ],
                                 ),
                               ),

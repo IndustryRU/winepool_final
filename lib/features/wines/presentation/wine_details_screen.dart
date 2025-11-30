@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 //import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:winepool_final/features/offers/application/all_offers_controller.dart';
 //import 'package:winepool_final/features/offers/domain/offer.dart';
 import 'package:winepool_final/features/reviews/application/reviews_controller.dart';
@@ -130,6 +131,7 @@ class WineDetailsScreen extends ConsumerWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
                                       // Звезды рейтинга
                                       Row(
@@ -145,14 +147,8 @@ class WineDetailsScreen extends ConsumerWidget {
                                           );
                                         }),
                                       ),
-                                      const SizedBox(width: 8),
-                                      if (review.createdAt != null)
-                                        Text(
-                                          '${review.createdAt!.day}.${review.createdAt!.month}.${review.createdAt!.year}',
-                                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                                color: Colors.grey,
-                                              ),
-                                        ),
+                                      // Пустой контейнер для выравнивания (дата будет внизу справа)
+                                      const SizedBox.shrink(),
                                     ],
                                   ),
                                   if (review.text != null && review.text!.isNotEmpty) ...[
@@ -162,6 +158,17 @@ class WineDetailsScreen extends ConsumerWidget {
                                       style: Theme.of(context).textTheme.bodyMedium,
                                     ),
                                   ],
+                                  // Дата отзыва в нижнем правом углу
+                                  if (review.createdAt != null)
+                                    Align(
+                                      alignment: Alignment.centerRight,
+                                      child: Text(
+                                        DateFormat('dd.MM.yyyy HH:mm').format(review.createdAt!),
+                                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                              color: Colors.grey[600],
+                                            ),
+                                      ),
+                                    ),
                                 ],
                               ),
                             ),

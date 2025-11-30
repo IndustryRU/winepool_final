@@ -19,7 +19,7 @@ abstract class Review with _$Review {
     required double rating,
     @JsonKey(name: 'text')
     String? text,
-    @JsonKey(name: 'created_at')
+    @JsonKey(name: 'created_at', includeToJson: false)
     DateTime? createdAt,
   }) = _Review;
   
