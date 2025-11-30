@@ -201,7 +201,7 @@ class OfferDetailsScreen extends ConsumerWidget {
                           ),
                         ),
                         child: const Text(
-                          'Добавить в корзину',
+                          'В корзину',
                           style: TextStyle(fontSize: 16),
                         ),
                       ),
