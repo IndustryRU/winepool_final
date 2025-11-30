@@ -89,7 +89,11 @@ public class EbsActivity extends AppCompatActivity {
               processError("Верификация отменена");
               break;
             case FAILURE:
-              processError("Ошибка верификации: " + result.getErrors()); // Используем доступный метод
+              String error = "Неизвестная ошибка";
+              if (result.getErrors() != null && result.getErrors().length > 0) {
+                error = String.join(", ", result.getErrors());
+              }
+              processError("Ошибка верификации: " + error);
               break;
             case REPEAT:
               processError("Ошибка верификации, повторите попытку");

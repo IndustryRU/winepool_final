@@ -32,14 +32,31 @@ class _EbsVerificationScreenState extends State<EbsVerificationScreen> {
 
   Future<void> _startVerification() async {
     final result = await EbsPlugin().requestVerification(
+      /*
       infoSystem: 'winepool_final',
       adapterUri: 'https://demo.rtlabs.ru/adapter/v1',
       sid: '74733471-8261-44d7-9602-02797ff22f27',
       dboKoUri: 'https://winepool.app/ebs-callback',
       dbkKoPublicUri: 'https://winepool.app/ebs-redirect',
+      */
+      infoSystem: 'WinePool',
+      adapterUri: 'https://test_adapter.ru/adapter/v1',
+      sid: '74733471-8261-44d7-9602-02797ff22f27',
+      dboKoUri: 'https://dbo.test.bank.ru/path',
+      dbkKoPublicUri: 'https://dbo.test.bank.ru/public-path',
+
     );
-    print('Verification result: $result');
-    // TODO: Обработать результат верификации
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            result.isError == true
+                ? 'Ошибка: ${result.errorString}'
+                : 'Успех! Secret: ${result.secret}',
+          ),
+        ),
+      );
+    }
   }
 
   void _installEbsApp() {
