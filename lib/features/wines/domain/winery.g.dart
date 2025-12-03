@@ -7,7 +7,7 @@ part of 'winery.dart';
 // **************************************************************************
 
 _Winery _$WineryFromJson(Map<String, dynamic> json) => _Winery(
-  id: json['id'] as String,
+  id: json['id'] as String?,
   name: json['name'] as String?,
   description: json['description'] as String?,
   logoUrl: json['logo_url'] as String?,

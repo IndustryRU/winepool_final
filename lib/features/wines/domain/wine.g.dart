@@ -9,9 +9,7 @@ part of 'wine.dart';
 _Wine _$WineFromJson(Map<String, dynamic> json) => _Wine(
   id: json['id'] as String?,
   wineryId: json['winery_id'] as String,
-  winery: json['wineries'] == null
-      ? null
-      : Winery.fromJson(json['wineries'] as Map<String, dynamic>),
+  winery: _wineryFromJson(json['wineries']),
   name: json['name'] as String,
   description: json['description'] as String?,
   grapeVariety: json['grape_variety'] as String?,

@@ -26,6 +26,8 @@ import 'package:winepool_final/features/orders/presentation/checkout_screen.dart
 import 'package:winepool_final/features/orders/presentation/my_orders_screen.dart';
 import 'package:winepool_final/features/profile/presentation/profile_screen.dart';
 import 'package:winepool_final/features/profile/presentation/ebs_verification_screen.dart';
+import 'package:winepool_final/features/catalog/presentation/catalog_screen.dart';
+import 'package:winepool_final/features/search/presentation/search_results_screen.dart';
 
 // Создаем ключ над провайдером
 final _shellNavigatorKey = GlobalKey<NavigatorState>();
@@ -52,6 +54,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/seller-home',
         builder: (_, __) => const SellerHomeScreen(),
+      ),
+      GoRoute(
+        path: '/catalog',
+        builder: (_, __) => const CatalogScreen(),
       ),
       ShellRoute(
         navigatorKey: _shellNavigatorKey,
@@ -174,6 +180,12 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: '/profile/ebs-verification',
         name: 'ebsVerification',
         builder: (context, state) => const EbsVerificationScreen(),
+      ),
+      GoRoute(
+        path: '/search',
+        builder: (context, state) {
+          return const SearchResultsScreen();
+        },
       ),
     ],
     redirect: (context, state) {

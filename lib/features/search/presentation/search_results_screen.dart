@@ -7,23 +7,70 @@ import '../../../features/wines/data/wines_repository.dart';
 
 final searchWinesProvider = FutureProvider.autoDispose.family<List<Wine>, String>(
   (ref, query) async {
+    if (query.isEmpty) {
+      return []; // Возвращаем пустой список, если запрос пустой
+    }
     final winesRepository = ref.watch(winesRepositoryProvider);
     return await winesRepository.searchWines(query);
   },
 );
 
-class SearchResultsScreen extends ConsumerWidget {
-  final String query;
-
-  const SearchResultsScreen({super.key, required this.query});
+class SearchResultsScreen extends ConsumerStatefulWidget {
+  const SearchResultsScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final searchResults = ref.watch(searchWinesProvider(query));
+  ConsumerState<ConsumerStatefulWidget> createState() => _SearchResultsScreenState();
+}
+
+class _SearchResultsScreenState extends ConsumerState<SearchResultsScreen> {
+  late final TextEditingController _searchController;
+  String _currentQuery = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Обновляем провайдер при изменении текста
+    final searchResults = ref.watch(searchWinesProvider(_currentQuery));
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Результаты поиска: "$query"'),
+        title: TextField(
+          controller: _searchController,
+          decoration: InputDecoration(
+            hintText: 'Поиск вина, винодельни или сорта...',
+            prefixIcon: const Icon(Icons.search),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(25),
+              borderSide: BorderSide.none,
+            ),
+            filled: true,
+            fillColor: Colors.grey[200],
+          ),
+          onChanged: (value) {
+            // Добавляем проверку длины запроса
+            if (value.length >= 1) {
+              setState(() {
+                _currentQuery = value;
+              });
+            } else if (value.isEmpty) {
+              setState(() {
+                _currentQuery = value;
+              });
+            }
+            // Если длина меньше 1, но запрос не пустой, не обновляем _currentQuery
+          },
+        ),
       ),
       body: searchResults.when(
         data: (wines) => wines.isEmpty

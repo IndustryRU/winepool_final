@@ -7,16 +7,16 @@ part 'winery.g.dart';
 @freezed
 abstract class Winery with _$Winery {
   const factory Winery({
-    required String id,
-    String? name,
-    String? description,
+    String? id,
+    @JsonKey(name: 'name') String? name,
+    @JsonKey(name: 'description') String? description,
     @JsonKey(name: 'logo_url') String? logoUrl,
     @JsonKey(name: 'banner_url') String? bannerUrl,
-    String? winemaker,
-    String? website,
+    @JsonKey(name: 'winemaker') String? winemaker,
+    @JsonKey(name: 'website') String? website,
     @JsonKey(name: 'location_text') String? locationText,
-    String? country,
-    String? region,
+    @JsonKey(name: 'country') String? country,
+    @JsonKey(name: 'region') String? region,
   }) = _Winery;
 
   factory Winery.fromJson(Map<String, dynamic> json) => _$WineryFromJson(json);

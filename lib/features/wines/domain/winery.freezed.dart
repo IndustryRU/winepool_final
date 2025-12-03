@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Winery {
 
- String get id; String? get name; String? get description;@JsonKey(name: 'logo_url') String? get logoUrl;@JsonKey(name: 'banner_url') String? get bannerUrl; String? get winemaker; String? get website;@JsonKey(name: 'location_text') String? get locationText; String? get country; String? get region;
+ String? get id;@JsonKey(name: 'name') String? get name;@JsonKey(name: 'description') String? get description;@JsonKey(name: 'logo_url') String? get logoUrl;@JsonKey(name: 'banner_url') String? get bannerUrl;@JsonKey(name: 'winemaker') String? get winemaker;@JsonKey(name: 'website') String? get website;@JsonKey(name: 'location_text') String? get locationText;@JsonKey(name: 'country') String? get country;@JsonKey(name: 'region') String? get region;
 /// Create a copy of Winery
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $WineryCopyWith<$Res>  {
   factory $WineryCopyWith(Winery value, $Res Function(Winery) _then) = _$WineryCopyWithImpl;
 @useResult
 $Res call({
- String id, String? name, String? description,@JsonKey(name: 'logo_url') String? logoUrl,@JsonKey(name: 'banner_url') String? bannerUrl, String? winemaker, String? website,@JsonKey(name: 'location_text') String? locationText, String? country, String? region
+ String? id,@JsonKey(name: 'name') String? name,@JsonKey(name: 'description') String? description,@JsonKey(name: 'logo_url') String? logoUrl,@JsonKey(name: 'banner_url') String? bannerUrl,@JsonKey(name: 'winemaker') String? winemaker,@JsonKey(name: 'website') String? website,@JsonKey(name: 'location_text') String? locationText,@JsonKey(name: 'country') String? country,@JsonKey(name: 'region') String? region
 });
 
 
@@ -65,10 +65,10 @@ class _$WineryCopyWithImpl<$Res>
 
 /// Create a copy of Winery
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = freezed,Object? description = freezed,Object? logoUrl = freezed,Object? bannerUrl = freezed,Object? winemaker = freezed,Object? website = freezed,Object? locationText = freezed,Object? country = freezed,Object? region = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? name = freezed,Object? description = freezed,Object? logoUrl = freezed,Object? bannerUrl = freezed,Object? winemaker = freezed,Object? website = freezed,Object? locationText = freezed,Object? country = freezed,Object? region = freezed,}) {
   return _then(_self.copyWith(
-id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,name: freezed == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String?,name: freezed == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String?,description: freezed == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
 as String?,logoUrl: freezed == logoUrl ? _self.logoUrl : logoUrl // ignore: cast_nullable_to_non_nullable
 as String?,bannerUrl: freezed == bannerUrl ? _self.bannerUrl : bannerUrl // ignore: cast_nullable_to_non_nullable
@@ -162,7 +162,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String? name,  String? description, @JsonKey(name: 'logo_url')  String? logoUrl, @JsonKey(name: 'banner_url')  String? bannerUrl,  String? winemaker,  String? website, @JsonKey(name: 'location_text')  String? locationText,  String? country,  String? region)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? id, @JsonKey(name: 'name')  String? name, @JsonKey(name: 'description')  String? description, @JsonKey(name: 'logo_url')  String? logoUrl, @JsonKey(name: 'banner_url')  String? bannerUrl, @JsonKey(name: 'winemaker')  String? winemaker, @JsonKey(name: 'website')  String? website, @JsonKey(name: 'location_text')  String? locationText, @JsonKey(name: 'country')  String? country, @JsonKey(name: 'region')  String? region)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Winery() when $default != null:
 return $default(_that.id,_that.name,_that.description,_that.logoUrl,_that.bannerUrl,_that.winemaker,_that.website,_that.locationText,_that.country,_that.region);case _:
@@ -183,7 +183,7 @@ return $default(_that.id,_that.name,_that.description,_that.logoUrl,_that.banner
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String? name,  String? description, @JsonKey(name: 'logo_url')  String? logoUrl, @JsonKey(name: 'banner_url')  String? bannerUrl,  String? winemaker,  String? website, @JsonKey(name: 'location_text')  String? locationText,  String? country,  String? region)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? id, @JsonKey(name: 'name')  String? name, @JsonKey(name: 'description')  String? description, @JsonKey(name: 'logo_url')  String? logoUrl, @JsonKey(name: 'banner_url')  String? bannerUrl, @JsonKey(name: 'winemaker')  String? winemaker, @JsonKey(name: 'website')  String? website, @JsonKey(name: 'location_text')  String? locationText, @JsonKey(name: 'country')  String? country, @JsonKey(name: 'region')  String? region)  $default,) {final _that = this;
 switch (_that) {
 case _Winery():
 return $default(_that.id,_that.name,_that.description,_that.logoUrl,_that.bannerUrl,_that.winemaker,_that.website,_that.locationText,_that.country,_that.region);case _:
@@ -203,7 +203,7 @@ return $default(_that.id,_that.name,_that.description,_that.logoUrl,_that.banner
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String? name,  String? description, @JsonKey(name: 'logo_url')  String? logoUrl, @JsonKey(name: 'banner_url')  String? bannerUrl,  String? winemaker,  String? website, @JsonKey(name: 'location_text')  String? locationText,  String? country,  String? region)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? id, @JsonKey(name: 'name')  String? name, @JsonKey(name: 'description')  String? description, @JsonKey(name: 'logo_url')  String? logoUrl, @JsonKey(name: 'banner_url')  String? bannerUrl, @JsonKey(name: 'winemaker')  String? winemaker, @JsonKey(name: 'website')  String? website, @JsonKey(name: 'location_text')  String? locationText, @JsonKey(name: 'country')  String? country, @JsonKey(name: 'region')  String? region)?  $default,) {final _that = this;
 switch (_that) {
 case _Winery() when $default != null:
 return $default(_that.id,_that.name,_that.description,_that.logoUrl,_that.bannerUrl,_that.winemaker,_that.website,_that.locationText,_that.country,_that.region);case _:
@@ -218,19 +218,19 @@ return $default(_that.id,_that.name,_that.description,_that.logoUrl,_that.banner
 @JsonSerializable()
 
 class _Winery implements Winery {
-  const _Winery({required this.id, this.name, this.description, @JsonKey(name: 'logo_url') this.logoUrl, @JsonKey(name: 'banner_url') this.bannerUrl, this.winemaker, this.website, @JsonKey(name: 'location_text') this.locationText, this.country, this.region});
+  const _Winery({this.id, @JsonKey(name: 'name') this.name, @JsonKey(name: 'description') this.description, @JsonKey(name: 'logo_url') this.logoUrl, @JsonKey(name: 'banner_url') this.bannerUrl, @JsonKey(name: 'winemaker') this.winemaker, @JsonKey(name: 'website') this.website, @JsonKey(name: 'location_text') this.locationText, @JsonKey(name: 'country') this.country, @JsonKey(name: 'region') this.region});
   factory _Winery.fromJson(Map<String, dynamic> json) => _$WineryFromJson(json);
 
-@override final  String id;
-@override final  String? name;
-@override final  String? description;
+@override final  String? id;
+@override@JsonKey(name: 'name') final  String? name;
+@override@JsonKey(name: 'description') final  String? description;
 @override@JsonKey(name: 'logo_url') final  String? logoUrl;
 @override@JsonKey(name: 'banner_url') final  String? bannerUrl;
-@override final  String? winemaker;
-@override final  String? website;
+@override@JsonKey(name: 'winemaker') final  String? winemaker;
+@override@JsonKey(name: 'website') final  String? website;
 @override@JsonKey(name: 'location_text') final  String? locationText;
-@override final  String? country;
-@override final  String? region;
+@override@JsonKey(name: 'country') final  String? country;
+@override@JsonKey(name: 'region') final  String? region;
 
 /// Create a copy of Winery
 /// with the given fields replaced by the non-null parameter values.
@@ -265,7 +265,7 @@ abstract mixin class _$WineryCopyWith<$Res> implements $WineryCopyWith<$Res> {
   factory _$WineryCopyWith(_Winery value, $Res Function(_Winery) _then) = __$WineryCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String? name, String? description,@JsonKey(name: 'logo_url') String? logoUrl,@JsonKey(name: 'banner_url') String? bannerUrl, String? winemaker, String? website,@JsonKey(name: 'location_text') String? locationText, String? country, String? region
+ String? id,@JsonKey(name: 'name') String? name,@JsonKey(name: 'description') String? description,@JsonKey(name: 'logo_url') String? logoUrl,@JsonKey(name: 'banner_url') String? bannerUrl,@JsonKey(name: 'winemaker') String? winemaker,@JsonKey(name: 'website') String? website,@JsonKey(name: 'location_text') String? locationText,@JsonKey(name: 'country') String? country,@JsonKey(name: 'region') String? region
 });
 
 
@@ -282,10 +282,10 @@ class __$WineryCopyWithImpl<$Res>
 
 /// Create a copy of Winery
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = freezed,Object? description = freezed,Object? logoUrl = freezed,Object? bannerUrl = freezed,Object? winemaker = freezed,Object? website = freezed,Object? locationText = freezed,Object? country = freezed,Object? region = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? name = freezed,Object? description = freezed,Object? logoUrl = freezed,Object? bannerUrl = freezed,Object? winemaker = freezed,Object? website = freezed,Object? locationText = freezed,Object? country = freezed,Object? region = freezed,}) {
   return _then(_Winery(
-id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,name: freezed == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String?,name: freezed == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String?,description: freezed == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
 as String?,logoUrl: freezed == logoUrl ? _self.logoUrl : logoUrl // ignore: cast_nullable_to_non_nullable
 as String?,bannerUrl: freezed == bannerUrl ? _self.bannerUrl : bannerUrl // ignore: cast_nullable_to_non_nullable

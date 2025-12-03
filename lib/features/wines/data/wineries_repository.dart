@@ -63,6 +63,9 @@ class WineriesRepository {
   }
 
   Future<Winery> updateWinery(Winery winery) async {
+    if (winery.id == null) {
+      throw Exception('Cannot update winery without ID');
+    }
     print('Начало обновления винодельни: ${winery.name}');
     final response = await _supabaseClient
         .from('wineries')
@@ -77,7 +80,7 @@ class WineriesRepository {
           'banner_url': winery.bannerUrl,
           'location_text': winery.locationText,
         })
-        .eq('id', winery.id)
+        .eq('id', winery.id!)
         .select('id, name, country, region, winemaker, website, description, logo_url, banner_url, location_text, created_at')
         .single();
 
@@ -93,5 +96,12 @@ class WineriesRepository {
         .from('wineries')
         .delete()
         .eq('id', wineryId);
+  }
+
+  Future<void> deleteWineryFromWineryObject(Winery winery) async {
+    if (winery.id == null) {
+      throw Exception('Cannot delete winery without ID');
+    }
+    await deleteWineryFromWineryObject(winery);
   }
 }

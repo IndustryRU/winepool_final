@@ -80,7 +80,26 @@ class WineriesListScreen extends ConsumerWidget {
             ),
             TextButton(
               onPressed: () async {
-                await ref.read(wineriesControllerProvider.notifier).deleteWinery(winery.id);
+                if (winery.id == null) {
+                  if (dialogContext.mounted) {
+                    // Показываем ошибку, если у винодельни нет ID
+                    showDialog(
+                      context: dialogContext,
+                      builder: (context) => AlertDialog(
+                        title: const Text('Ошибка'),
+                        content: const Text('Невозможно удалить винодельню без ID'),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.of(context).pop(),
+                            child: const Text('OK'),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+                  return;
+                }
+                await ref.read(wineriesControllerProvider.notifier).deleteWinery(winery.id!);
                 // Принудительно инвалидируем провайдер из UI
                 ref.invalidate(wineriesControllerProvider);
 

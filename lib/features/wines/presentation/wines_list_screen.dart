@@ -54,12 +54,31 @@ class WinesListScreen extends ConsumerWidget {
                               ),
                               TextButton(
                                 onPressed: () async {
+                                  if (wine.id == null) {
+                                    if (dialogContext.mounted) {
+                                      // Показываем ошибку, если у вина нет ID
+                                      showDialog(
+                                        context: dialogContext,
+                                        builder: (context) => AlertDialog(
+                                          title: const Text('Ошибка'),
+                                          content: const Text('Невозможно удалить вино без ID'),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () => Navigator.of(context).pop(),
+                                              child: const Text('OK'),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    }
+                                    return;
+                                  }
                                   // Дожидаемся завершения операции
                                   await ref.read(wineMutationProvider.notifier).deleteWine(wine.id!, wineryId);
                                   
                                   // Инвалидируем список из UI
                                   ref.invalidate(winesByWineryProvider(wineryId));
-
+  
                                   if (dialogContext.mounted) {
                                     Navigator.of(dialogContext).pop();
                                   }

@@ -56,6 +56,11 @@ class BuyerHomeScreen extends ConsumerWidget {
             
             const SizedBox(height: 16),
             
+            // Кнопка перехода в каталог
+            _buildCatalogButton(context),
+            
+            const SizedBox(height: 16),
+            
             // Подборка "Популярные вина"
             _buildSectionHeader('Популярные вина'),
             _buildPopularWineList(ref),
@@ -106,12 +111,27 @@ class BuyerHomeScreen extends ConsumerWidget {
           filled: true,
           fillColor: Colors.grey[200],
         ),
-        onSubmitted: (query) {
-          if (query.isNotEmpty) {
-            context.push('/search-results', extra: query);
-          }
-        },
         onTap: () => context.push('/search'),
+      ),
+    );
+  }
+
+  // Кнопка перехода в каталог
+  Widget _buildCatalogButton(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: ElevatedButton(
+        onPressed: () => context.go('/catalog'),
+        style: ElevatedButton.styleFrom(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+        ),
+        child: const Text(
+          'Перейти в каталог',
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
       ),
     );
   }
@@ -254,7 +274,7 @@ class BuyerHomeScreen extends ConsumerWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                     Text(
-                      wine.wineryId, // Здесь должно быть название винодельни, а не ID
+                      wine.winery?.name ?? 'Нет данных', // Используем название винодельни из связанной таблицы
                       style: TextStyle(fontSize: 12, color: Colors.grey),
                       textAlign: TextAlign.center,
                     ),
@@ -334,7 +354,7 @@ class BuyerHomeScreen extends ConsumerWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                     Text(
-                      wine.wineryId, // Здесь должно быть название винодельни, а не ID
+                      wine.winery?.name ?? 'Нет данных', // Используем название винодельни из связанной таблицы
                       style: TextStyle(fontSize: 12, color: Colors.grey),
                       textAlign: TextAlign.center,
                     ),
