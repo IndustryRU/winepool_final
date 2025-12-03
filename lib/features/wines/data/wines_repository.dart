@@ -61,4 +61,73 @@ class WinesRepository {
   Future<void> deleteWine(String wineId) async {
     await _supabaseClient.from('wines').delete().match({'id': wineId});
   }
+
+  Future<List<Wine>> fetchPopularWines() async {
+    final response = await _supabaseClient
+        .from('wines')
+        .select()
+        .order('average_rating', ascending: false)
+        .limit(10);
+    return response.map((json) => Wine.fromJson(json)).toList();
+  }
+
+  Future<List<Wine>> fetchNewWines() async {
+    final response = await _supabaseClient
+        .from('wines')
+        .select('id, name, winery_id, grape_variety, description, image_url, created_at')
+        .order('created_at', ascending: false)
+        .limit(10);
+    return response.map((json) => Wine.fromJson(json)).toList();
+  }
+
+  Future<List<Wine>> searchWines(String query) async {
+    final response = await _supabaseClient
+        .from('wines')
+        .select()
+        .textSearch('name', query);
+    return response.map((json) => Wine.fromJson(json)).toList();
+  }
+
+  Future<List<Wine>> fetchWines(Map<String, dynamic> filters) async {
+    var query = _supabaseClient.from('wines').select();
+
+    // Применяем фильтры
+    filters.forEach((key, value) {
+      if (value != null) {
+        switch (key) {
+          case 'color':
+            query = query.eq('color', value);
+            break;
+          case 'type':
+            query = query.eq('type', value);
+            break;
+          case 'sugar':
+            query = query.eq('sugar', value);
+            break;
+          case 'min_price':
+            query = query.gte('price', value);
+            break;
+          case 'max_price':
+            query = query.lte('price', value);
+            break;
+          case 'vintage':
+            query = query.eq('vintage', value);
+            break;
+          case 'min_rating':
+            query = query.gte('average_rating', value);
+            break;
+          case 'max_rating':
+            query = query.lte('average_rating', value);
+            break;
+          case 'winery_id':
+            query = query.eq('winery_id', value);
+            break;
+          // Можно добавить другие фильтры по мере необходимости
+        }
+      }
+    });
+
+    final response = await query;
+    return response.map((json) => Wine.fromJson(json)).toList();
+  }
 }

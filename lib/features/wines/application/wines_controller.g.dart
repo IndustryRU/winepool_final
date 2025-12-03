@@ -159,6 +159,156 @@ final class AllWinesProvider
 
 String _$allWinesHash() => r'9b2e4463fc739dd8a5460234ec00f04cc03e6e63';
 
+@ProviderFor(popularWines)
+const popularWinesProvider = PopularWinesProvider._();
+
+final class PopularWinesProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<Wine>>,
+          List<Wine>,
+          FutureOr<List<Wine>>
+        >
+    with $FutureModifier<List<Wine>>, $FutureProvider<List<Wine>> {
+  const PopularWinesProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'popularWinesProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$popularWinesHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<List<Wine>> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<Wine>> create(Ref ref) {
+    return popularWines(ref);
+  }
+}
+
+String _$popularWinesHash() => r'8eaddc2ed89cbe4825d77b28f97996e88cfe78a5';
+
+@ProviderFor(newWines)
+const newWinesProvider = NewWinesProvider._();
+
+final class NewWinesProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<Wine>>,
+          List<Wine>,
+          FutureOr<List<Wine>>
+        >
+    with $FutureModifier<List<Wine>>, $FutureProvider<List<Wine>> {
+  const NewWinesProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'newWinesProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$newWinesHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<List<Wine>> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<Wine>> create(Ref ref) {
+    return newWines(ref);
+  }
+}
+
+String _$newWinesHash() => r'813127258e35dff47ed5404da62adfb601924740';
+
+@ProviderFor(winesWithFilters)
+const winesWithFiltersProvider = WinesWithFiltersFamily._();
+
+final class WinesWithFiltersProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<Wine>>,
+          List<Wine>,
+          FutureOr<List<Wine>>
+        >
+    with $FutureModifier<List<Wine>>, $FutureProvider<List<Wine>> {
+  const WinesWithFiltersProvider._({
+    required WinesWithFiltersFamily super.from,
+    required Map<String, dynamic> super.argument,
+  }) : super(
+         retry: null,
+         name: r'winesWithFiltersProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$winesWithFiltersHash();
+
+  @override
+  String toString() {
+    return r'winesWithFiltersProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<List<Wine>> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<Wine>> create(Ref ref) {
+    final argument = this.argument as Map<String, dynamic>;
+    return winesWithFilters(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is WinesWithFiltersProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$winesWithFiltersHash() => r'ab89d9e0e65eab9d6efcecfbd1e53de7a9ece908';
+
+final class WinesWithFiltersFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<List<Wine>>, Map<String, dynamic>> {
+  const WinesWithFiltersFamily._()
+    : super(
+        retry: null,
+        name: r'winesWithFiltersProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  WinesWithFiltersProvider call(Map<String, dynamic> filters) =>
+      WinesWithFiltersProvider._(argument: filters, from: this);
+
+  @override
+  String toString() => r'winesWithFiltersProvider';
+}
+
 @ProviderFor(WineMutation)
 const wineMutationProvider = WineMutationProvider._();
 

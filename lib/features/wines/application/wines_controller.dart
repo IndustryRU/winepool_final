@@ -28,6 +28,24 @@ Future<List<Wine>> allWines(Ref ref) {
   return winesRepository.fetchAllWinesNoFilter();
 }
 
+@riverpod
+Future<List<Wine>> popularWines(Ref ref) async {
+  final winesRepository = ref.watch(winesRepositoryProvider);
+  return winesRepository.fetchPopularWines();
+}
+
+@riverpod
+Future<List<Wine>> newWines(Ref ref) async {
+  final winesRepository = ref.watch(winesRepositoryProvider);
+  return winesRepository.fetchNewWines();
+}
+
+@riverpod
+Future<List<Wine>> winesWithFilters(Ref ref, Map<String, dynamic> filters) async {
+  final winesRepository = ref.watch(winesRepositoryProvider);
+  return winesRepository.fetchWines(filters);
+}
+
 @Riverpod(keepAlive: true)
 class WineMutation extends _$WineMutation {
   @override
