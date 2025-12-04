@@ -51,7 +51,7 @@ class WineTile extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    wine.wineryId, // Здесь должно быть название винодельни, а не ID
+                    wine.winery?.name ?? wine.wineryId, // Здесь должно быть название винодельни, а не ID
                     style: TextStyle(
                       fontSize: 14,
                       color: Colors.grey[600],
