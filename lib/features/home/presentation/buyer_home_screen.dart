@@ -51,13 +51,13 @@ class BuyerHomeScreen extends ConsumerWidget {
             
             const SizedBox(height: 16),
             
-            // Поле поиска
-            _buildSearchField(context),
+            // Слайдер категорий
+            _buildCategorySlider(context),
             
             const SizedBox(height: 16),
             
-            // Кнопка перехода в каталог
-            _buildCatalogButton(context),
+            // Поле поиска
+            _buildSearchField(context),
             
             const SizedBox(height: 16),
             
@@ -116,22 +116,59 @@ class BuyerHomeScreen extends ConsumerWidget {
     );
   }
 
-  // Кнопка перехода в каталог
-  Widget _buildCatalogButton(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: ElevatedButton(
-        onPressed: () => context.go('/catalog'),
-        style: ElevatedButton.styleFrom(
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-        ),
-        child: const Text(
-          'Перейти в каталог',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-        ),
+  // Слайдер категорий
+  Widget _buildCategorySlider(BuildContext context) {
+    final categories = [
+      {'name': 'Каталог', 'icon': Icons.category},
+      {'name': 'Акции', 'icon': Icons.local_offer},
+      {'name': 'Подборки', 'icon': Icons.collections},
+      {'name': 'Бренды', 'icon': Icons.business},
+      {'name': 'Помощь', 'icon': Icons.help},
+    ];
+
+    return SizedBox(
+      height: 80,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: categories.length,
+        itemBuilder: (context, index) {
+          final category = categories[index];
+          return GestureDetector(
+            onTap: () {
+              if (category['name'] == 'Каталог') {
+                context.go('/catalog');
+              }
+            },
+            child: Container(
+              width: 100,
+              margin: const EdgeInsets.only(left: 16),
+              decoration: BoxDecoration(
+                color: Colors.grey[200],
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    category['icon'] as IconData,
+                    size: 32,
+                    color: Colors.grey[700],
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    category['name'] as String,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.grey[700],
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
       ),
     );
   }
