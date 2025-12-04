@@ -18,9 +18,15 @@ class CheckoutScreen extends HookConsumerWidget {
     
     final cartState = ref.watch(cartControllerProvider);
 
-    return Scaffold(
-      appBar: AppBar(title: const Text('Оформление заказа')),
-      body: cartState.when(
+    return WillPopScope(
+      onWillPop: () async {
+        // Возвращаем на предыдущий экран (корзина или главный экран)
+        context.go('/cart');
+        return false;
+      },
+      child: Scaffold(
+        appBar: AppBar(title: const Text('Оформление заказа')),
+        body: cartState.when(
         data: (cartItems) {
           final total = cartItems.fold<double>(
             0,
@@ -94,6 +100,7 @@ class CheckoutScreen extends HookConsumerWidget {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stack) => Center(child: Text('Ошибка: $error')),
       ),
-    );
- }
+    ),
+  );
+}
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:winepool_final/features/wines/domain/wine.dart';
 import 'package:winepool_final/features/wines/presentation/wine_tile.dart';
@@ -21,45 +22,52 @@ class CatalogScreen extends ConsumerWidget {
     final filters = ref.watch(catalogFiltersProvider);
     final winesAsync = ref.watch(winesWithFiltersProvider(filters));
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Каталог вин'),
-      ),
-      body: Column(
-        children: [
-          // Панель фильтров
-          FilterPanel(
-            filters: filters,
-            onFiltersChanged: (newFilters) {
-              ref.read(catalogFiltersProvider.notifier).updateFilters(newFilters);
-            },
-          ),
-          const SizedBox(height: 16),
-          // Список вин
-          Expanded(
-            child: winesAsync.when(
-              data: (wines) => wines.isEmpty
-                  ? const Center(
-                      child: Text('Ничего не найдено'),
-                    )
-                  : ListView.builder(
-                      itemCount: wines.length,
-                      itemBuilder: (context, index) {
-                        return WineTile(wine: wines[index]);
-                      },
+    return WillPopScope(
+      onWillPop: () async {
+        // Используем GoRouter для навигации назад
+        context.go('/buyer-home'); // Предполагаем, что каталог открывается из buyer-home
+        return false;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Каталог вин'),
+        ),
+        body: Column(
+          children: [
+            // Панель фильтров
+            FilterPanel(
+              filters: filters,
+              onFiltersChanged: (newFilters) {
+                ref.read(catalogFiltersProvider.notifier).updateFilters(newFilters);
+              },
+            ),
+            const SizedBox(height: 16),
+            // Список вин
+            Expanded(
+              child: winesAsync.when(
+                data: (wines) => wines.isEmpty
+                    ? const Center(
+                        child: Text('Ничего не найдено'),
+                      )
+                    : ListView.builder(
+                        itemCount: wines.length,
+                        itemBuilder: (context, index) {
+                          return WineTile(wine: wines[index]);
+                        },
+                      ),
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (error, stack) => Center(
+                  child: SelectableText.rich(
+                    TextSpan(
+                      text: 'Ошибка: ${error.toString()}',
+                      style: const TextStyle(color: Colors.red),
                     ),
-              loading: () => const Center(child: CircularProgressIndicator()),
-              error: (error, stack) => Center(
-                child: SelectableText.rich(
-                  TextSpan(
-                    text: 'Ошибка: ${error.toString()}',
-                    style: const TextStyle(color: Colors.red),
                   ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -111,9 +119,13 @@ class _FilterPanelState extends State<FilterPanel> {
           
           // Кнопка применения фильтров
           const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: _applyFilters,
-            child: const Text('Применить фильтры'),
+          Consumer(
+            builder: (context, ref, child) {
+              return ElevatedButton(
+                onPressed: () => _applyFilters(ref),
+                child: const Text('Применить фильтры'),
+              );
+            },
           ),
         ],
       ),
@@ -258,8 +270,10 @@ class _FilterPanelState extends State<FilterPanel> {
     );
   }
 
-  void _applyFilters() {
+  void _applyFilters(WidgetRef ref) {
     widget.onFiltersChanged(_currentFilters);
+    // Инвалидируем провайдер с фильтрами, чтобы обновить список вин
+    ref.invalidate(winesWithFiltersProvider(_currentFilters));
   }
 
   String _colorToString(WineColor color) {

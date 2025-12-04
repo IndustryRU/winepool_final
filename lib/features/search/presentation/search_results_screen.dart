@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:winepool_final/features/wines/domain/wine.dart';
 import 'package:winepool_final/features/wines/presentation/wine_tile.dart';
@@ -43,7 +44,13 @@ class _SearchResultsScreenState extends ConsumerState<SearchResultsScreen> {
     // Обновляем провайдер при изменении текста
     final searchResults = ref.watch(searchWinesProvider(_currentQuery));
 
-    return Scaffold(
+    return WillPopScope(
+      onWillPop: () async {
+        // Возвращаем на предыдущий экран (обычно это главный экран)
+        context.go('/buyer-home');
+        return false;
+      },
+      child: Scaffold(
       appBar: AppBar(
         title: TextField(
           controller: _searchController,
@@ -93,6 +100,7 @@ class _SearchResultsScreenState extends ConsumerState<SearchResultsScreen> {
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 }

@@ -12,11 +12,17 @@ class ProfileScreen extends ConsumerWidget {
      final authState = ref.watch(authControllerProvider);
      final supabaseClient = ref.watch(supabaseClientProvider);
 
-     return Scaffold(
-       appBar: AppBar(
-         title: const Text('Профиль'),
-       ),
-       body: authState.when(
+     return WillPopScope(
+       onWillPop: () async {
+         // Возвращаем на предыдущий экран (обычно главный экран)
+         context.go('/buyer-home');
+         return false;
+       },
+       child: Scaffold(
+         appBar: AppBar(
+           title: const Text('Профиль'),
+         ),
+         body: authState.when(
          data: (profile) {
            if (profile == null) {
              return const Center(child: Text('Пользователь не авторизован'));
@@ -97,6 +103,7 @@ class ProfileScreen extends ConsumerWidget {
            child: Text('Ошибка: $error'),
          ),
        ),
-     );
-   }
+     ),
+   );
+ }
 }

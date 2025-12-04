@@ -12,55 +12,63 @@ class WineriesListScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final wineriesAsync = ref.watch(wineriesControllerProvider);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Винодельни'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () {
-              ref.read(authControllerProvider.notifier).signOut();
-            },
-            tooltip: 'Выйти',
+    return WillPopScope(
+      onWillPop: () async {
+        // Возвращаем на предыдущий экран (предположительно buyer-home или seller-home)
+        // Определяем, на каком экране находится пользователь, и возвращаем соответствующе
+        context.go('/seller-home'); // или '/buyer-home' в зависимости от роли
+        return false;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Винодельни'),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.logout),
+              onPressed: () {
+                ref.read(authControllerProvider.notifier).signOut();
+              },
+              tooltip: 'Выйти',
+            ),
+          ],
+        ),
+        body: wineriesAsync.when(
+          data: (wineries) => RefreshIndicator(
+            onRefresh: () => ref.refresh(wineriesControllerProvider.future),
+            child: ListView.builder(
+              itemCount: wineries.length,
+              itemBuilder: (context, index) {
+                final winery = wineries[index];
+                return _WineryItem(
+                  winery: winery,
+                  onEdit: () {
+                    context.push('/wineries/${winery.id}/edit', extra: winery);
+                  },
+                  onDelete: () => _deleteWinery(ref, winery),
+                  onTap: () {
+                    // Используем GoRouter для навигации с передачей объекта winery
+                    context.push('/wineries/${winery.id}', extra: winery);
+                    // Обновляем данные после возвращения с экрана деталей
+                    ref.invalidate(wineriesControllerProvider);
+                  },
+                );
+              },
+            ),
           ),
-        ],
-      ),
-      body: wineriesAsync.when(
-        data: (wineries) => RefreshIndicator(
-          onRefresh: () => ref.refresh(wineriesControllerProvider.future),
-          child: ListView.builder(
-            itemCount: wineries.length,
-            itemBuilder: (context, index) {
-              final winery = wineries[index];
-              return _WineryItem(
-                winery: winery,
-                onEdit: () {
-                  context.push('/wineries/${winery.id}/edit', extra: winery);
-                },
-                onDelete: () => _deleteWinery(ref, winery),
-                onTap: () {
-                  // Используем GoRouter для навигации с передачей объекта winery
-                  context.push('/wineries/${winery.id}', extra: winery);
-                  // Обновляем данные после возвращения с экрана деталей
-                  ref.invalidate(wineriesControllerProvider);
-                },
-              );
-            },
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (error, stack) => SelectableText.rich(
+            TextSpan(
+              text: 'Ошибка: $error',
+              style: const TextStyle(color: Colors.red),
+            ),
           ),
         ),
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => SelectableText.rich(
-          TextSpan(
-            text: 'Ошибка: $error',
-            style: const TextStyle(color: Colors.red),
-          ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            context.push('/wineries/add');
+          },
+          child: const Icon(Icons.add),
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          context.push('/wineries/add');
-        },
-        child: const Icon(Icons.add),
       ),
     );
   }

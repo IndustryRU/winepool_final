@@ -12,7 +12,13 @@ class WinesListScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final winesAsync = ref.watch(winesByWineryProvider(wineryId));
 
-    return Scaffold(
+    return WillPopScope(
+      onWillPop: () async {
+        // Возвращаем на предыдущий экран (список виноделен)
+        context.go('/wineries');
+        return false;
+      },
+      child: Scaffold(
       appBar: AppBar(
         title: const Text('Вина винодельни'),
       ),
@@ -105,6 +111,7 @@ class WinesListScreen extends ConsumerWidget {
         },
         child: const Icon(Icons.add),
       ),
-    );
-  }
+    ),
+  );
+}
 }
