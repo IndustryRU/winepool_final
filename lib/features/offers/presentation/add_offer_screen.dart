@@ -64,12 +64,14 @@ class AddOfferScreen extends HookConsumerWidget {
                        itemBuilder: (context, index) {
                          final wine = wines[index];
                          final wineryId = wine.wineryId;
-                         final wineryAsync = ref.watch(fetchWineryByIdProvider(wineryId));
+                         final wineryAsync = wineryId != null
+                             ? ref.watch(fetchWineryByIdProvider(wineryId))
+                             : const AsyncValue.data(null);
                          return Card(
                            child: ListTile(
                              title: Text(wine.name),
                              subtitle: wineryAsync.when(
-                               data: (winery) => Text(winery.name ?? ''),
+                               data: (winery) => Text(winery?.name ?? ''),
                                loading: () => const Text('Загрузка...'),
                                error: (error, stack) => Text('Ошибка: $error'),
                              ),
@@ -85,7 +87,9 @@ class AddOfferScreen extends HookConsumerWidget {
                      // Если вино выбрано, показываем информацию о вине и поля для ввода
                      final wine = selectedWine.value!;
                      final wineryId = wine.wineryId;
-                     final wineryAsync = ref.watch(fetchWineryByIdProvider(wineryId));
+                     final wineryAsync = wineryId != null
+                         ? ref.watch(fetchWineryByIdProvider(wineryId))
+                         : const AsyncValue.data(null);
                      return wineryAsync.when(
                        data: (winery) => Column(
                          crossAxisAlignment: CrossAxisAlignment.start,
@@ -123,7 +127,7 @@ class AddOfferScreen extends HookConsumerWidget {
                                    ),
                                    const SizedBox(height: 8),
                                    Text(
-                                     winery.name ?? '',
+                                     winery?.name ?? 'Без винодельни',
                                      style: Theme.of(context).textTheme.titleMedium,
                                    ),
                                    const SizedBox(height: 8),

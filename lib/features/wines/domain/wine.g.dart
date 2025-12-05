@@ -8,7 +8,7 @@ part of 'wine.dart';
 
 _Wine _$WineFromJson(Map<String, dynamic> json) => _Wine(
   id: json['id'] as String?,
-  wineryId: json['winery_id'] as String,
+  wineryId: json['winery_id'] as String?,
   winery: _wineryFromJson(json['wineries']),
   name: json['name'] as String,
   description: json['description'] as String?,
@@ -38,7 +38,7 @@ _Wine _$WineFromJson(Map<String, dynamic> json) => _Wine(
 
 Map<String, dynamic> _$WineToJson(_Wine instance) => <String, dynamic>{
   'id': ?instance.id,
-  'winery_id': instance.wineryId,
+  'winery_id': ?instance.wineryId,
   'name': instance.name,
   'description': instance.description,
   'grape_variety': instance.grapeVariety,

@@ -151,4 +151,12 @@ class WinesRepository {
     print('--- END FETCH WINES WITH FILTERS RESPONSE ---');
     return response.map((json) => Wine.fromJson(json)).toList();
   }
+
+  Future<Map<String, dynamic>> searchAll(String query) async {
+    final response = await _supabaseClient.rpc('search_all', params: {'search_query': query});
+    print('--- SEARCH ALL RESPONSE ---');
+    print(response);
+    print('--- END SEARCH ALL RESPONSE ---');
+    return response as Map<String, dynamic>;
+  }
 }

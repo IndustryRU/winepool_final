@@ -74,7 +74,7 @@ abstract class Wine with _$Wine {
   @JsonSerializable(fieldRename: FieldRename.snake)
   const factory Wine({
     @JsonKey(includeIfNull: false) String? id,
-    @JsonKey(name: 'winery_id') required String wineryId,
+    @JsonKey(name: 'winery_id', includeIfNull: false) String? wineryId,
     @JsonKey(
       name: 'wineries',
       includeToJson: false,

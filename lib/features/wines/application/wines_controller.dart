@@ -17,9 +17,11 @@ Future<List<Wine>> winesController(Ref ref) async {
 }
 
 @riverpod
-Future<List<Wine>> winesByWinery(Ref ref, String wineryId) async {
+Future<List<Wine>> winesByWinery(Ref ref, String? wineryId) async {
   final winesRepository = ref.watch(winesRepositoryProvider);
-  return winesRepository.fetchWinesByWinery(wineryId);
+  return wineryId != null
+      ? winesRepository.fetchWinesByWinery(wineryId)
+      : [];
 }
 
 @riverpod
@@ -58,7 +60,9 @@ class WineMutation extends _$WineMutation {
     state = await AsyncValue.guard(() async {
       await ref.read(winesRepositoryProvider).addWine(wine);
       // Инвалидируем список вин для конкретной винодельни
-      ref.invalidate(winesByWineryProvider(wine.wineryId));
+      if (wine.wineryId != null) {
+        ref.invalidate(winesByWineryProvider(wine.wineryId!));
+      }
       ref.invalidate(offersControllerProvider);
     });
   }
@@ -67,16 +71,21 @@ class WineMutation extends _$WineMutation {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
       await ref.read(winesRepositoryProvider).updateWine(wine);
-      ref.invalidate(winesByWineryProvider(wine.wineryId));
+      if (wine.wineryId != null) {
+        ref.invalidate(winesByWineryProvider(wine.wineryId!));
+      }
       ref.invalidate(offersControllerProvider);
     });
   }
 
-  Future<void> deleteWine(String wineId, String wineryId) async {
+  Future<void> deleteWine(String wineId, String? wineryId) async {
     state = const AsyncLoading();
     // Просто выполняем операцию, без инвалидации
     state = await AsyncValue.guard(() async {
       await ref.read(winesRepositoryProvider).deleteWine(wineId);
+      if (wineryId != null) {
+        ref.invalidate(winesByWineryProvider(wineryId));
+      }
     });
   }
 }
