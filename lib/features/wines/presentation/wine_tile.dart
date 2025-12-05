@@ -58,7 +58,7 @@ class WineTile extends StatelessWidget {
                       color: Colors.grey[600],
                     ),
                   ),
-                  WineCharacteristicIconsRow(wine: wine, iconSize: 16.0),
+                  WineCharacteristicIconsColumn(wine: wine, iconSize: 16.0),
                   Text(
                     '${wine.averageRating != null ? '${wine.averageRating} ★' : ''}',
                     style: const TextStyle(

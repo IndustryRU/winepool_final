@@ -121,30 +121,36 @@ class WineAlcoholIcon extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-      decoration: BoxDecoration(
-        color: Colors.brown.withOpacity(0.2),
-        borderRadius: BorderRadius.circular(size / 2),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            Icons.local_drink,
-            size: size * 0.6,
-            color: Colors.brown,
-          ),
-          const SizedBox(width: 2),
-          Text(
-            '${alcoholLevel!.toStringAsFixed(1)}%',
-            style: TextStyle(
-              fontSize: size * 0.52, // Увеличено на 30%
-              fontWeight: FontWeight.w500,
+    return SizedBox(
+      width: size * 3, // Фиксированная ширина для WineAlcoholIcon (увеличенная в 2 раза)
+      height: size,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+        decoration: BoxDecoration(
+          color: Colors.brown.withOpacity(0.2),
+          borderRadius: BorderRadius.circular(size / 2),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.local_drink,
+              size: size * 0.6,
               color: Colors.brown,
             ),
-          ),
-        ],
+            const SizedBox(width: 2),
+            FittedBox(
+              child: Text(
+                '${alcoholLevel!.toStringAsFixed(1)}%',
+                style: TextStyle(
+                  fontSize: size * 0.6, // Увеличено на 30%
+                  fontWeight: FontWeight.w500,
+                  color: Colors.brown,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -171,45 +177,53 @@ class WineCountryIcon extends StatelessWidget {
     final countryCode = country!.toUpperCase();
     if (_isValidCountryCode(countryCode)) {
       try {
-        return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-          decoration: BoxDecoration(
-            color: Colors.blue.withOpacity(0.2),
-            borderRadius: BorderRadius.circular(size / 2),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SizedBox(
-                width: size,
-                height: size,
-                child: CountryFlag.fromCountryCode(countryCode),
-              ),
-              const SizedBox(width: 4),
-              Text(
-                countryCode,
-                style: TextStyle(
-                  fontSize: size * 0.6,
-                  fontWeight: FontWeight.w500,
+        return SizedBox(
+          width: size * 3, // Фиксированная ширина для WineCountryIcon (увеличенная в 2 раза)
+          height: size,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+            decoration: BoxDecoration(
+              color: Colors.blue.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(size / 2),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(
+                  width: size,
+                  height: size,
+                  child: CountryFlag.fromCountryCode(countryCode),
                 ),
-              ),
-            ],
+                const SizedBox(width: 4),
+                Text(
+                  countryCode,
+                  style: TextStyle(
+                    fontSize: size * 0.6,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
           ),
         );
       } catch (e) {
         // Если не удалось отобразить флаг по коду, отображаем текст
-        return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-          decoration: BoxDecoration(
-            color: Colors.blue.withOpacity(0.2),
-            borderRadius: BorderRadius.circular(size / 2),
-          ),
-          child: Text(
-            countryCode,
-            style: TextStyle(
-              fontSize: size * 0.52,
-              fontWeight: FontWeight.w500,
-              color: Colors.blue,
+        return SizedBox(
+          width: size * 3, // Фиксированная ширина для WineCountryIcon (увеличенная в 2 раза)
+          height: size,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+            decoration: BoxDecoration(
+              color: Colors.blue.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(size / 2),
+            ),
+            child: Text(
+              countryCode,
+              style: TextStyle(
+                fontSize: size * 0.6,
+                fontWeight: FontWeight.w500,
+                color: Colors.blue,
+              ),
             ),
           ),
         );
@@ -218,28 +232,36 @@ class WineCountryIcon extends StatelessWidget {
       // Если это не валидный код страны, пытаемся найти по названию
       final countryEnum = Country.fromString(country);
       if (countryEnum != null) {
-        return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-          decoration: BoxDecoration(
-            color: Colors.blue.withOpacity(0.2),
-            borderRadius: BorderRadius.circular(size / 2),
+        return SizedBox(
+          width: size * 3, // Фиксированная ширина для WineCountryIcon (увеличенная в 2 раза)
+          height: size,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+            decoration: BoxDecoration(
+              color: Colors.blue.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(size / 2),
+            ),
+            child: countryEnum.buildFlagWithCode(size: size),
           ),
-          child: countryEnum.buildFlagWithCode(size: size),
         );
       } else {
         // Если страна не найдена в enum, просто отображаем текст
-        return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-          decoration: BoxDecoration(
-            color: Colors.blue.withOpacity(0.2),
-            borderRadius: BorderRadius.circular(size / 2),
-          ),
-          child: Text(
-            country!,
-            style: TextStyle(
-              fontSize: size * 0.52,
-              fontWeight: FontWeight.w500,
-              color: Colors.blue,
+        return SizedBox(
+          width: size * 3, // Фиксированная ширина для WineCountryIcon (увеличенная в 2 раза)
+          height: size,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+            decoration: BoxDecoration(
+              color: Colors.blue.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(size / 2),
+            ),
+            child: Text(
+              country!,
+              style: TextStyle(
+                fontSize: size * 0.6,
+                fontWeight: FontWeight.w500,
+                color: Colors.blue,
+              ),
             ),
           ),
         );
@@ -270,13 +292,13 @@ class WineGrapeIcon extends StatelessWidget {
     }
 
     return Container(
+      height: size,
       padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
       decoration: BoxDecoration(
         color: Colors.green.withOpacity(0.2),
         borderRadius: BorderRadius.circular(size / 2),
       ),
       child: Row(
-        mainAxisSize: MainAxisSize.min,
         children: [
           Icon(
             Icons.grain,
@@ -284,14 +306,16 @@ class WineGrapeIcon extends StatelessWidget {
             color: Colors.green,
           ),
           const SizedBox(width: 2),
-          Flexible(
+          Expanded(
             child: Text(
               grapeVariety!,
               style: TextStyle(
-                fontSize: size * 0.52, // Увеличено на 30%
+                fontSize: size * 0.6, // Увеличено на 30%
                 fontWeight: FontWeight.w500,
                 color: Colors.green,
+                height: 1.5, // Добавлен отступ между строками
               ),
+              overflow: TextOverflow.ellipsis,
             ),
           ),
         ],
@@ -340,16 +364,17 @@ class WineCharacteristicIconsColumn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.end,
+    return Wrap(
+      spacing: 8.0,
+      runSpacing: 4.0,
+      alignment: WrapAlignment.center,
       children: [
         if (wine.color != null) WineColorIcon(color: wine.color, size: iconSize),
         if (wine.sugar != null) WineSugarIcon(sugar: wine.sugar, size: iconSize),
         if (wine.alcoholLevel != null) WineAlcoholIcon(alcoholLevel: wine.alcoholLevel, size: iconSize),
         if (wine.winery?.countryCode != null) WineCountryIcon(country: wine.winery?.countryCode, size: iconSize),
         if (wine.grapeVariety != null && wine.grapeVariety!.isNotEmpty) WineGrapeIcon(grapeVariety: wine.grapeVariety, size: iconSize),
-      ].where((widget) => !(widget is SizedBox)).toList(),
+      ],
     );
   }
 }
