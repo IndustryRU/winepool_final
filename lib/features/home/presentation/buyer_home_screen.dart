@@ -88,11 +88,15 @@ class BuyerHomeScreen extends ConsumerWidget {
         color: Colors.grey[300],
         borderRadius: BorderRadius.circular(8),
       ),
-      child: Center(
-        child: Text(
-          'Слайдер с баннерами',
-          style: TextStyle(fontSize: 18, color: Colors.grey[600]),
-        ),
+      child: Stack(
+        children: [
+          Positioned.fill(
+            child: Image.asset(
+              'assets/images/massandra_banner.png',
+              fit: BoxFit.contain,
+            ),
+          ),
+        ],
       ),
     );
   }
