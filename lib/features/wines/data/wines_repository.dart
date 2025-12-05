@@ -16,7 +16,7 @@ class WinesRepository {
     print('--- FETCHING ALL WINES FROM SUPABASE ---');
     final response = await _supabaseClient
         .from('wines')
-        .select('*, wineries:winery_id(*)')
+        .select('*, wineries:winery_id(id, name, description, logo_url, banner_url, winemaker, website, location_text, country_code, region)')
         .order('created_at', ascending: false);
     print('--- SUPABASE RESPONSE ---');
     print(response);
@@ -28,14 +28,14 @@ class WinesRepository {
   Future<List<Wine>> fetchAllWinesNoFilter() async {
     final response = await _supabaseClient
         .from('wines')
-        .select('*, wineries:winery_id(*)');
+        .select('*, wineries:winery_id(id, name, description, logo_url, banner_url, winemaker, website, location_text, country_code, region)');
     return response.map((json) => Wine.fromJson(json)).toList();
   }
 
   Future<Wine> fetchWine(String wineId) async {
     final response = await _supabaseClient
         .from('wines')
-        .select('*, wineries:winery_id(*)')
+        .select('*, wineries:winery_id(id, name, description, logo_url, banner_url, winemaker, website, location_text, country_code, region)')
         .eq('id', wineId)
         .single();
     print('--- FETCH WINE RESPONSE ---');
@@ -48,7 +48,7 @@ class WinesRepository {
   Future<List<Wine>> fetchWinesByWinery(String wineryId) async {
     final response = await _supabaseClient
         .from('wines')
-        .select('*, wineries:winery_id(*)')
+        .select('*, wineries:winery_id(id, name, description, logo_url, banner_url, winemaker, website, location_text, country_code, region)')
         .eq('winery_id', wineryId);
     print('--- FETCH WINES BY WINERY RESPONSE ---');
     print(response);
@@ -74,7 +74,7 @@ class WinesRepository {
   Future<List<Wine>> fetchPopularWines() async {
     final response = await _supabaseClient
         .from('wines')
-        .select('*, wineries:winery_id(*)')
+        .select('*, wineries:winery_id(id, name, description, logo_url, banner_url, winemaker, website, location_text, country_code, region)')
         .order('average_rating', ascending: false)
         .limit(10);
     print('--- FETCH POPULAR WINES RESPONSE ---');
@@ -86,7 +86,7 @@ class WinesRepository {
   Future<List<Wine>> fetchNewWines() async {
     final response = await _supabaseClient
         .from('wines')
-        .select('*, wineries:winery_id(*)')
+        .select('*, wineries:winery_id(id, name, description, logo_url, banner_url, winemaker, website, location_text, country_code, region)')
         .order('created_at', ascending: false)
         .limit(10);
     print('--- FETCH NEW WINES RESPONSE ---');
@@ -98,7 +98,7 @@ class WinesRepository {
   Future<List<Wine>> searchWines(String query) async {
     final response = await _supabaseClient
         .from('wines')
-        .select('*, wineries:winery_id(*)')
+        .select('*, wineries:winery_id(id, name, description, logo_url, banner_url, winemaker, website, location_text, country_code, region)')
         .ilike('name', '%$query%');
     print('--- SEARCH WINES RESPONSE ---');
     print(response);
@@ -107,7 +107,7 @@ class WinesRepository {
   }
 
   Future<List<Wine>> fetchWines(Map<String, dynamic> filters) async {
-    var query = _supabaseClient.from('wines').select('*, wineries:winery_id(*)');
+    var query = _supabaseClient.from('wines').select('*, wineries:winery_id(id, name, description, logo_url, banner_url, winemaker, website, location_text, country_code, region)');
 
     // Применяем фильтры
     filters.forEach((key, value) {

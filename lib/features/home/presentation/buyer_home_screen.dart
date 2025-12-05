@@ -321,7 +321,7 @@ class BuyerHomeScreen extends ConsumerWidget {
                       style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11),
                     ),
                     const SizedBox(height: 2),
-                    WineCharacteristicIconsRow(
+                    WineCharacteristicIconsColumn(
                       wine: wine,
                       iconSize: 14.0,
                     ),
@@ -406,9 +406,14 @@ class BuyerHomeScreen extends ConsumerWidget {
                       style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11),
                     ),
                     const SizedBox(height: 2),
-                    WineCharacteristicIconsRow(
-                      wine: wine,
-                      iconSize: 14.0,
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        WineCharacteristicIconsRow(
+                          wine: wine,
+                          iconSize: 14.0,
+                        ),
+                      ],
                     ),
                   ],
                 ),

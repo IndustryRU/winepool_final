@@ -104,12 +104,12 @@ class WineryDetailsScreen extends ConsumerWidget {
                         wineryData.winemaker ?? '',
                       ),
                     ],
-                    if (wineryData.country != null || wineryData.region != null) ...[
+                    if (wineryData.countryCode != null || wineryData.region != null) ...[
                       _buildDetailCard(
                         context,
                         Icons.location_on,
                         'Регион',
-                        '${wineryData.country ?? ''}${wineryData.country != null && wineryData.region != null ? ', ' : ''}${wineryData.region ?? ''}',
+                        '${wineryData.countryCode ?? ''}${wineryData.countryCode != null && wineryData.region != null ? ', ' : ''}${wineryData.region ?? ''}',
                       ),
                     ],
                     if (wineryData.locationText != null) ...[

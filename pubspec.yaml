@@ -57,9 +57,15 @@ dependencies:
   flutter_hooks: ^0.21.3+1
   hooks_riverpod: ^3.0.3
 
+  # URL Launcher
+  url_launcher: ^6.3.1
+
   # Наш плагин
   ebs_plugin:
     path: ./ebs_plugin
+  
+  # Country flags
+  country_flags: ^4.1.0
 
 dev_dependencies:
   flutter_test:

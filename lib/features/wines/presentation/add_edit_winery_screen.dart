@@ -23,7 +23,7 @@ class AddEditWineryScreen extends HookConsumerWidget {
     final nameController = useTextEditingController(text: winery?.name);
     final descriptionController = useTextEditingController(text: winery?.description);
     final winemakerController = useTextEditingController(text: winery?.winemaker);
-    final countryController = useTextEditingController(text: winery?.country);
+    final countryController = useTextEditingController(text: winery?.countryCode);
     final regionController = useTextEditingController(text: winery?.region);
     final locationTextController = useTextEditingController(text: winery?.locationText);
     final websiteController = useTextEditingController(text: winery?.website);
@@ -158,7 +158,7 @@ class AddEditWineryScreen extends HookConsumerWidget {
                         name: nameController.text,
                         description: descriptionController.text,
                         winemaker: winemakerController.text,
-                        country: countryController.text,
+                        countryCode: countryController.text,
                         region: regionController.text,
                         website: websiteController.text,
                         locationText: locationTextController.text,

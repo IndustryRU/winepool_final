@@ -15,7 +15,7 @@ _Winery _$WineryFromJson(Map<String, dynamic> json) => _Winery(
   winemaker: json['winemaker'] as String?,
   website: json['website'] as String?,
   locationText: json['location_text'] as String?,
-  country: json['country'] as String?,
+  countryCode: json['country_code'] as String?,
   region: json['region'] as String?,
 );
 
@@ -28,6 +28,6 @@ Map<String, dynamic> _$WineryToJson(_Winery instance) => <String, dynamic>{
   'winemaker': instance.winemaker,
   'website': instance.website,
   'location_text': instance.locationText,
-  'country': instance.country,
+  'country_code': instance.countryCode,
   'region': instance.region,
 };

@@ -15,7 +15,7 @@ abstract class Winery with _$Winery {
     @JsonKey(name: 'winemaker') String? winemaker,
     @JsonKey(name: 'website') String? website,
     @JsonKey(name: 'location_text') String? locationText,
-    @JsonKey(name: 'country') String? country,
+    @JsonKey(name: 'country_code') String? countryCode,
     @JsonKey(name: 'region') String? region,
   }) = _Winery;
 

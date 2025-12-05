@@ -15,7 +15,7 @@ class WineriesRepository {
   Future<List<Winery>> fetchAllWineries() async {
     final response = await _supabaseClient
         .from('wineries')
-        .select('id, name, country, region, winemaker, website, description, logo_url, banner_url, location_text, created_at')
+        .select('id, name, country_code, region, winemaker, website, description, logo_url, banner_url, location_text, created_at')
         .order('created_at', ascending: false);
 
     return response.map((json) => Winery.fromJson(json)).toList();
@@ -45,7 +45,7 @@ class WineriesRepository {
         .from('wineries')
         .insert({
           'name': winery.name,
-          'country': winery.country,
+          'country_code': winery.countryCode,
           'region': winery.region,
           'winemaker': winery.winemaker,
           'website': winery.website,
@@ -54,7 +54,7 @@ class WineriesRepository {
           'banner_url': winery.bannerUrl,
           'location_text': winery.locationText,
         })
-        .select('id, name, country, region, winemaker, website, description, logo_url, banner_url, location_text, created_at')
+        .select('id, name, country_code, region, winemaker, website, description, logo_url, banner_url, location_text, created_at')
         .single();
 
     print('Завершено добавление винодельни: ${winery.name}');
@@ -71,7 +71,7 @@ class WineriesRepository {
         .from('wineries')
         .update({
           'name': winery.name,
-          'country': winery.country,
+          'country_code': winery.countryCode,
           'region': winery.region,
           'winemaker': winery.winemaker,
           'website': winery.website,
@@ -81,7 +81,7 @@ class WineriesRepository {
           'location_text': winery.locationText,
         })
         .eq('id', winery.id!)
-        .select('id, name, country, region, winemaker, website, description, logo_url, banner_url, location_text, created_at')
+        .select('id, name, country_code, region, winemaker, website, description, logo_url, banner_url, location_text, created_at')
         .single();
 
     return Winery.fromJson(response);
