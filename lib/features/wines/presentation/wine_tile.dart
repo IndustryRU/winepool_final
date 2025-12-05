@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:winepool_final/features/wines/domain/wine.dart';
+import 'package:winepool_final/features/wines/presentation/widgets/wine_characteristic_icons.dart';
 
 class WineTile extends StatelessWidget {
   final Wine wine;
@@ -57,6 +58,7 @@ class WineTile extends StatelessWidget {
                       color: Colors.grey[600],
                     ),
                   ),
+                  WineCharacteristicIconsRow(wine: wine, iconSize: 16.0),
                   Text(
                     '${wine.averageRating != null ? '${wine.averageRating} ★' : ''}',
                     style: const TextStyle(

@@ -9,6 +9,7 @@ import 'package:winepool_final/features/reviews/application/reviews_controller.d
 import 'package:winepool_final/features/reviews/domain/review.dart';
 import 'package:winepool_final/features/reviews/presentation/add_review_screen.dart';
 import 'package:winepool_final/core/providers/supabase_provider.dart';
+import 'package:winepool_final/features/wines/presentation/widgets/wine_characteristic_icons.dart';
 
 class OfferDetailsScreen extends ConsumerWidget {
   final String offerId;
@@ -69,13 +70,34 @@ class OfferDetailsScreen extends ConsumerWidget {
                 
                 // Характеристики вина
                 _buildSectionTitle('Характеристики вина'),
-                
-                _buildInfoRow('Цвет:', wine.color?.nameRu ?? 'Не указан'),
-                _buildInfoRow('Тип:', wine.type?.nameRu ?? 'Не указан'),
-                _buildInfoRow('Сахар:', wine.sugar?.nameRu ?? 'Не указан'),
-                _buildInfoRow('Сорт винограда:', wine.grapeVariety ?? 'Не указан'),
+
+                // Отображение пиктограмм с текстовыми описаниями
+                _buildInfoRowWithIcon(
+                  WineColorIcon(color: wine.color, size: 24.0),
+                  'Цвет:',
+                  wine.color?.nameRu ?? 'Не указан',
+                ),
+                _buildInfoRowWithIcon(
+                  WineSugarIcon(sugar: wine.sugar, size: 24.0),
+                  'Сахар:',
+                  wine.sugar?.nameRu ?? 'Не указан',
+                ),
+                _buildInfoRowWithIcon(
+                  WineAlcoholIcon(alcoholLevel: wine.alcoholLevel, size: 24.0),
+                  'Алкоголь:',
+                  '${wine.alcoholLevel?.toStringAsFixed(1) ?? "Не указан"}%',
+                ),
+                _buildInfoRowWithIcon(
+                  WineCountryIcon(country: wine.winery?.country, size: 24.0),
+                  'Страна:',
+                  wine.winery?.country ?? 'Не указана',
+                ),
+                _buildInfoRowWithIcon(
+                  WineGrapeIcon(grapeVariety: wine.grapeVariety, size: 24.0),
+                  'Сорт винограда:',
+                  wine.grapeVariety ?? 'Не указан',
+                ),
                 _buildInfoRow('Год:', offer.vintage?.toString() ?? 'Не указан'),
-                _buildInfoRow('Алкоголь:', '${wine.alcoholLevel?.toStringAsFixed(1) ?? "Не указан"}%'),
                 // Отзывы и рейтинг
                 _buildInfoRow('Рейтинг:', wine.averageRating?.toStringAsFixed(1) ?? '0.0'),
                 _buildInfoRow('Отзывы:', (wine.reviewsCount ?? 0).toString()),
@@ -252,7 +274,7 @@ class OfferDetailsScreen extends ConsumerWidget {
         ),
       ),
     );
-  }
+ }
 
   Widget _buildSectionTitle(String title) {
     return Padding(
@@ -265,9 +287,9 @@ class OfferDetailsScreen extends ConsumerWidget {
         ),
       ),
     );
-  }
+ }
 
- Widget _buildInfoRow(String label, String value) {
+  Widget _buildInfoRow(String label, String value) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0),
       child: Row(
@@ -280,6 +302,42 @@ class OfferDetailsScreen extends ConsumerWidget {
               style: const TextStyle(
                 fontWeight: FontWeight.w500,
               ),
+            ),
+          ),
+          Expanded(
+            child: Text(
+              value,
+              style: const TextStyle(
+                color: Colors.grey,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+ }
+
+  Widget _buildInfoRowWithIcon(Widget icon, String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 120,
+            child: Row(
+              children: [
+                icon,
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    label,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
           Expanded(

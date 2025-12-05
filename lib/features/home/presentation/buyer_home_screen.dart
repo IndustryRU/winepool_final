@@ -4,6 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:winepool_final/features/auth/application/auth_controller.dart';
 import 'package:winepool_final/features/wines/application/wines_controller.dart';
 import 'package:winepool_final/features/wines/domain/wine.dart';
+import 'package:winepool_final/features/wines/presentation/widgets/wine_characteristic_icons.dart';
 
 class BuyerHomeScreen extends ConsumerWidget {
   const BuyerHomeScreen({super.key});
@@ -255,7 +256,7 @@ class BuyerHomeScreen extends ConsumerWidget {
   Widget _buildPopularWineList(WidgetRef ref) {
     final popularWinesAsync = ref.watch(popularWinesProvider);
     return SizedBox(
-      height: 200,
+      height: 220,
       child: popularWinesAsync.when(
         data: (wines) {
           if (wines.isEmpty) {
@@ -267,8 +268,8 @@ class BuyerHomeScreen extends ConsumerWidget {
             itemBuilder: (context, index) {
               final wine = wines[index];
               return Container(
-                width: 150,
-                margin: const EdgeInsets.only(left: 16),
+                width: 140,
+                margin: const EdgeInsets.only(left: 12),
                 decoration: BoxDecoration(
                   color: Colors.grey[200],
                   borderRadius: BorderRadius.circular(8),
@@ -278,8 +279,8 @@ class BuyerHomeScreen extends ConsumerWidget {
                   children: [
                     if (wine.imageUrl != null && wine.imageUrl!.isNotEmpty)
                       Container(
-                        width: 80,
-                        height: 80,
+                        width: 70,
+                        height: 70,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           image: DecorationImage(
@@ -290,34 +291,39 @@ class BuyerHomeScreen extends ConsumerWidget {
                       )
                     else
                       Container(
-                        width: 80,
-                        height: 80,
+                        width: 70,
+                        height: 70,
                         decoration: BoxDecoration(
                           color: Colors.grey[400],
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(
                           Icons.wine_bar,
-                          size: 40,
+                          size: 35,
                           color: Colors.grey,
                         ),
                       ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 6),
                     Text(
                       wine.name,
-                      style: TextStyle(fontWeight: FontWeight.w500),
+                      style: TextStyle(fontWeight: FontWeight.w500, fontSize: 12),
                       textAlign: TextAlign.center,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
                     Text(
                       wine.winery?.name ?? 'Нет данных', // Используем название винодельни из связанной таблицы
-                      style: TextStyle(fontSize: 12, color: Colors.grey),
+                      style: TextStyle(fontSize: 10, color: Colors.grey),
                       textAlign: TextAlign.center,
                     ),
                     Text(
                       '${wine.averageRating ?? 0.0} ★', // Показываем рейтинг вместо цены
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11),
+                    ),
+                    const SizedBox(height: 2),
+                    WineCharacteristicIconsRow(
+                      wine: wine,
+                      iconSize: 14.0,
                     ),
                   ],
                 ),
@@ -335,7 +341,7 @@ class BuyerHomeScreen extends ConsumerWidget {
   Widget _buildNewWineList(WidgetRef ref) {
     final newWinesAsync = ref.watch(newWinesProvider);
     return SizedBox(
-      height: 200,
+      height: 220,
       child: newWinesAsync.when(
         data: (wines) {
           if (wines.isEmpty) {
@@ -347,8 +353,8 @@ class BuyerHomeScreen extends ConsumerWidget {
             itemBuilder: (context, index) {
               final wine = wines[index];
               return Container(
-                width: 150,
-                margin: const EdgeInsets.only(left: 16),
+                width: 140,
+                margin: const EdgeInsets.only(left: 12),
                 decoration: BoxDecoration(
                   color: Colors.grey[200],
                   borderRadius: BorderRadius.circular(8),
@@ -358,8 +364,8 @@ class BuyerHomeScreen extends ConsumerWidget {
                   children: [
                     if (wine.imageUrl != null && wine.imageUrl!.isNotEmpty)
                       Container(
-                        width: 80,
-                        height: 80,
+                        width: 70,
+                        height: 70,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           image: DecorationImage(
@@ -370,34 +376,39 @@ class BuyerHomeScreen extends ConsumerWidget {
                       )
                     else
                       Container(
-                        width: 80,
-                        height: 80,
+                        width: 70,
+                        height: 70,
                         decoration: BoxDecoration(
                           color: Colors.grey[400],
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(
                           Icons.wine_bar,
-                          size: 40,
+                          size: 35,
                           color: Colors.grey,
                         ),
                       ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 6),
                     Text(
                       wine.name,
-                      style: TextStyle(fontWeight: FontWeight.w500),
+                      style: TextStyle(fontWeight: FontWeight.w500, fontSize: 12),
                       textAlign: TextAlign.center,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
                     Text(
                       wine.winery?.name ?? 'Нет данных', // Используем название винодельни из связанной таблицы
-                      style: TextStyle(fontSize: 12, color: Colors.grey),
+                      style: TextStyle(fontSize: 10, color: Colors.grey),
                       textAlign: TextAlign.center,
                     ),
                     Text(
                       '${wine.averageRating ?? 0.0} ★', // Показываем рейтинг вместо цены
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11),
+                    ),
+                    const SizedBox(height: 2),
+                    WineCharacteristicIconsRow(
+                      wine: wine,
+                      iconSize: 14.0,
                     ),
                   ],
                 ),
