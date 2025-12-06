@@ -17,14 +17,31 @@ abstract class Winery with _$Winery {
     @JsonKey(name: 'location_text') String? locationText,
     @JsonKey(name: 'region') String? region,
     @JsonKey(name: 'country_code') String? countryCode,
-    @JsonKey(name: 'countries') List<Country>? countries,
+    @JsonKey(name: 'country', fromJson: _countryFromJson) Country? country,
   }) = _Winery;
 
   factory Winery.fromJson(Map<String, dynamic> json) => _$WineryFromJson(json);
 }
 
+Country? _countryFromJson(dynamic json) {
+  if (json == null) return null;
+
+  if (json is Map<String, dynamic>) {
+    return Country.fromJson(json);
+  }
+  
+  if (json is List<dynamic> && json.isNotEmpty) {
+    final firstElement = json.first;
+    if (firstElement is Map<String, dynamic>) {
+      return Country.fromJson(firstElement);
+    }
+  }
+
+  return null;
+}
+
 // Расширение для удобного доступа к информации о стране
 extension WineryCountryExtension on Winery {
-  String? get countryName => countries?.isNotEmpty == true ? countries!.first.name : null;
-  String? get country => countries?.isNotEmpty == true ? countries!.first.code : null;
+  String? get countryName => country?.name ?? countryCode;
+  String? get countryCodeFromCountry => country?.code ?? countryCode;
 }

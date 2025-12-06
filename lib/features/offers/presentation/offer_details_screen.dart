@@ -89,7 +89,7 @@ class OfferDetailsScreen extends ConsumerWidget {
                   '${wine.alcoholLevel?.toStringAsFixed(1) ?? "Не указан"}%',
                 ),
                 _buildInfoRowWithIcon(
-                  WineCountryIcon(countryCode: wine.winery?.country, countryName: wine.winery?.countryName, size: 24.0),
+                  WineCountryIcon(country: wine.winery?.country, size: 24.0),
                   'Страна:',
                   wine.winery?.countryName ?? 'Не указана',
                 ),

@@ -1,8 +1,10 @@
 import 'package:country_flags/country_flags.dart';
 import 'package:flutter/material.dart';
+import 'dart:developer';
 import 'package:winepool_final/features/wines/domain/wine.dart';
 import 'package:winepool_final/features/wines/domain/wine_characteristics.dart';
 import 'package:winepool_final/features/wines/domain/winery.dart';
+import 'package:winepool_final/features/wines/domain/country.dart';
 
 /// Виджет для отображения пиктограммы цвета вина
 class WineColorIcon extends StatefulWidget {
@@ -31,7 +33,7 @@ class _WineColorIconState extends State<WineColorIcon>
   void initState() {
     super.initState();
     _animationController = AnimationController(
-      duration: const Duration(milliseconds: 500), // Увеличил duration
+      duration: const Duration(milliseconds: 1000), // Увеличил duration
       vsync: this,
     );
     _scaleAnimation = Tween<double>(
@@ -118,7 +120,7 @@ class _WineColorIconState extends State<WineColorIcon>
 
     Overlay.of(context).insert(_overlayEntry!);
     _animationController.forward().then((_) {
-      Future.delayed(const Duration(milliseconds: 1000)).then((_) {
+      Future.delayed(const Duration(milliseconds: 2000)).then((_) {
         if (_overlayEntry != null) {
           _overlayEntry!.remove();
           _overlayEntry = null;
@@ -192,7 +194,7 @@ class _WineSugarIconState extends State<WineSugarIcon>
   void initState() {
     super.initState();
     _animationController = AnimationController(
-      duration: const Duration(milliseconds: 500), // Увеличил duration
+      duration: const Duration(milliseconds: 1000), // Увеличил duration
       vsync: this,
     );
     _scaleAnimation = Tween<double>(
@@ -281,7 +283,7 @@ class _WineSugarIconState extends State<WineSugarIcon>
 
     Overlay.of(context).insert(_overlayEntry!);
     _animationController.forward().then((_) {
-      Future.delayed(const Duration(milliseconds: 1000)).then((_) {
+      Future.delayed(const Duration(milliseconds: 2000)).then((_) {
         if (_overlayEntry != null) {
           _overlayEntry!.remove();
           _overlayEntry = null;
@@ -365,7 +367,7 @@ class _WineAlcoholIconState extends State<WineAlcoholIcon>
   void initState() {
     super.initState();
     _animationController = AnimationController(
-      duration: const Duration(milliseconds: 500), // Увеличил duration
+      duration: const Duration(milliseconds: 1000), // Увеличил duration
       vsync: this,
     );
     _scaleAnimation = Tween<double>(
@@ -442,7 +444,7 @@ class _WineAlcoholIconState extends State<WineAlcoholIcon>
 
     Overlay.of(context).insert(_overlayEntry!);
     _animationController.forward().then((_) {
-      Future.delayed(const Duration(milliseconds: 1000)).then((_) {
+      Future.delayed(const Duration(milliseconds: 2000)).then((_) {
         if (_overlayEntry != null) {
           _overlayEntry!.remove();
           _overlayEntry = null;
@@ -498,14 +500,12 @@ class _WineAlcoholIconState extends State<WineAlcoholIcon>
 
 /// Виджет для отображения пиктограммы страны производства
 class WineCountryIcon extends StatefulWidget {
-  final String? countryCode;
-  final String? countryName;
+  final Country? country;
   final double size;
 
   const WineCountryIcon({
     super.key,
-    this.countryCode,
-    this.countryName,
+    this.country,
     this.size = 20.0,
   });
 
@@ -524,9 +524,11 @@ class _WineCountryIconState extends State<WineCountryIcon>
   @override
   void initState() {
     super.initState();
-    print(widget.countryName);
+    if (widget.country?.name != null) {
+      log(widget.country!.name);
+    }
     _animationController = AnimationController(
-      duration: const Duration(milliseconds: 500), // Увеличил duration
+      duration: const Duration(milliseconds: 1000), // Увеличил duration
       vsync: this,
     );
     _scaleAnimation = Tween<double>(
@@ -567,10 +569,12 @@ class _WineCountryIconState extends State<WineCountryIcon>
     final size = renderBox.size;
 
     String countryDescription = '';
-    if (widget.countryName != null && widget.countryName!.isNotEmpty) {
-      countryDescription = widget.countryName!;
-    } else if (widget.countryCode != null) {
-      countryDescription = widget.countryCode!;
+    if (widget.country?.name != null && widget.country!.name.isNotEmpty) {
+      countryDescription = widget.country!.name;
+    } else if (widget.country?.code != null && widget.country!.code.isNotEmpty) {
+      countryDescription = widget.country!.code;
+    } else {
+      return;
     }
 
     _overlayEntry = OverlayEntry(
@@ -608,7 +612,7 @@ class _WineCountryIconState extends State<WineCountryIcon>
 
     Overlay.of(context).insert(_overlayEntry!);
     _animationController.forward().then((_) {
-      Future.delayed(const Duration(milliseconds: 100)).then((_) {
+      Future.delayed(const Duration(milliseconds: 2000)).then((_) {
         if (_overlayEntry != null) {
           _overlayEntry!.remove();
           _overlayEntry = null;
@@ -620,24 +624,24 @@ class _WineCountryIconState extends State<WineCountryIcon>
 
   @override
   Widget build(BuildContext context) {
-    if ((widget.countryCode == null || widget.countryCode!.isEmpty) &&
-        (widget.countryName == null || widget.countryName!.isEmpty)) {
+    if ((widget.country?.code == null || widget.country!.code.isEmpty) &&
+        (widget.country?.name == null || widget.country!.name.isEmpty)) {
       return const SizedBox.shrink();
     }
 
-    // Используем countryCode как код страны, если он доступен, иначе используем countryName как отображаемое имя
+    // Используем код страны из объекта Country, если он доступен, иначе используем имя страны как отображаемое имя
     String displayCountryCode = '';
-    if (widget.countryCode != null && widget.countryCode!.isNotEmpty) {
-      displayCountryCode = widget.countryCode!;
-    } else if (widget.countryName != null && widget.countryName!.isNotEmpty) {
-      // Если у нас есть только countryName (полное название), мы не можем получить из него код страны
+    if (widget.country?.code != null && widget.country!.code.isNotEmpty) {
+      displayCountryCode = widget.country!.code;
+    } else if (widget.country?.name != null && widget.country!.name.isNotEmpty) {
+      // Если у нас есть только имя страны (полное название), мы не можем получить из него код страны
       // Вместо этого используем его как отображаемое имя
-      displayCountryCode = widget.countryName!;
+      displayCountryCode = widget.country!.name;
     }
     
-    // Пытаемся использовать countryCode как код страны напрямую
-    final countryCode = widget.countryCode != null && widget.countryCode!.isNotEmpty
-        ? widget.countryCode!.toUpperCase()
+    // Пытаемся использовать код страны из объекта Country напрямую
+    final countryCode = widget.country?.code != null && widget.country!.code.isNotEmpty
+        ? widget.country!.code.toUpperCase()
         : '';
     if (_isValidCountryCode(countryCode)) {
       try {
@@ -662,8 +666,8 @@ class _WineCountryIconState extends State<WineCountryIcon>
                   ),
                   const SizedBox(width: 4),
                   Text(
-                    displayCountryCode,
-                    style: TextStyle(
+                      displayCountryCode,
+                      style: TextStyle(
                       fontSize: widget.size * 0.6,
                       fontWeight: FontWeight.w500,
                     ),
@@ -687,7 +691,7 @@ class _WineCountryIconState extends State<WineCountryIcon>
                 borderRadius: BorderRadius.circular(widget.size / 2),
               ),
               child: Text(
-                displayCountryCode,
+                widget.country?.name ?? displayCountryCode,
                 style: TextStyle(
                   fontSize: widget.size * 0.6,
                   fontWeight: FontWeight.w500,
@@ -712,7 +716,7 @@ class _WineCountryIconState extends State<WineCountryIcon>
               borderRadius: BorderRadius.circular(widget.size / 2),
             ),
             child: Text(
-              displayCountryCode,
+              widget.country?.name ?? displayCountryCode,
               style: TextStyle(
                 fontSize: widget.size * 0.6,
                 fontWeight: FontWeight.w500,
@@ -801,7 +805,7 @@ class WineCharacteristicIconsRow extends StatelessWidget {
         WineColorIcon(color: wine.color, size: iconSize),
         WineSugarIcon(sugar: wine.sugar, size: iconSize),
         WineAlcoholIcon(alcoholLevel: wine.alcoholLevel, size: iconSize),
-        WineCountryIcon(countryCode: wine.winery?.country, countryName: wine.winery?.countryName, size: iconSize), // Используем country и countryName у винодельни
+        WineCountryIcon(country: wine.winery?.country, size: iconSize), // Используем country у винодельни
         WineGrapeIcon(grapeVariety: wine.grapeVariety, size: iconSize),
       ].where((widget) => !(widget is SizedBox)).toList(),
     );
@@ -821,6 +825,10 @@ class WineCharacteristicIconsColumn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    log('--- ГДЕ ЭТОТ КОММЕНТАРИЙ? ---');
+    if (wine.winery != null) {
+      log(wine.winery.toString());
+    }
     return Wrap(
       spacing: 8.0,
       runSpacing: 4.0,
@@ -829,7 +837,7 @@ class WineCharacteristicIconsColumn extends StatelessWidget {
         if (wine.color != null) WineColorIcon(color: wine.color, size: iconSize),
         if (wine.sugar != null) WineSugarIcon(sugar: wine.sugar, size: iconSize),
         if (wine.alcoholLevel != null) WineAlcoholIcon(alcoholLevel: wine.alcoholLevel, size: iconSize),
-        if (wine.winery?.country != null) WineCountryIcon(countryCode: wine.winery?.country, countryName: wine.winery?.countryName, size: iconSize),
+        if (wine.winery?.country != null) WineCountryIcon(country: wine.winery?.country, size: iconSize),
         if (wine.grapeVariety != null && wine.grapeVariety!.isNotEmpty) WineGrapeIcon(grapeVariety: wine.grapeVariety, size: iconSize),
       ],
     );

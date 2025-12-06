@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:winepool_final/features/wines/domain/country.dart';
 import '../domain/wine.dart';
 import '../../../core/providers.dart';
 
