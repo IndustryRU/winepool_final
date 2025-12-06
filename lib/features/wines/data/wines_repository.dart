@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../domain/wine.dart';
@@ -152,11 +154,22 @@ class WinesRepository {
     return response.map((json) => Wine.fromJson(json)).toList();
   }
 
-  Future<Map<String, dynamic>> searchAll(String query) async {
-    final response = await _supabaseClient.rpc('search_all', params: {'search_query': query});
-    print('--- SEARCH ALL RESPONSE ---');
-    print(response);
-    print('--- END SEARCH ALL RESPONSE ---');
-    return response as Map<String, dynamic>;
-  }
+  Future<Map<String, dynamic>> searchAll(String query, [Set<String> categories = const {}]) async {
+    final searchCategories = categories.isEmpty
+        ? ['wines_name', 'wines_grape_variety', 'wineries_name'] // По умолчанию все категории
+        : categories.toList();
+    try {
+      final response = await _supabaseClient.rpc('search_all', params: {
+        'search_query': query,
+        'search_categories': searchCategories,
+      });
+      print('--- SEARCH ALL RESPONSE ---');
+      print(response);
+      print('--- END SEARCH ALL RESPONSE ---');
+      return response as Map<String, dynamic>;
+    } catch (e) {
+      log('Error in searchAll: $e');
+      rethrow;
+    }
+ }
 }

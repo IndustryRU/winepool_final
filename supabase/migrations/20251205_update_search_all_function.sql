@@ -1,13 +1,21 @@
 -- Update the search_all function to return all necessary fields for WineTile
 
-CREATE OR REPLACE FUNCTION search_all(search_query TEXT)
+CREATE OR REPLACE FUNCTION search_all(search_query TEXT, search_categories TEXT[] DEFAULT ARRAY['wines_name', 'wines_grape_variety', 'wineries_name'])
 RETURNS JSONB
 LANGUAGE plpgsql
 AS $$
 DECLARE
     wines_result JSONB;
     wineries_result JSONB;
+    search_wines_name BOOLEAN;
+    search_wines_grape_variety BOOLEAN;
+    search_wineries_name BOOLEAN;
 BEGIN
+    -- Проверяем, какие категории поиска включены
+    search_wines_name := 'wines_name' = ANY(search_categories);
+    search_wines_grape_variety := 'wines_grape_variety' = ANY(search_categories);
+    search_wineries_name := 'wineries_name' = ANY(search_categories);
+
     -- Search wines by name and grape_variety with all necessary fields
     SELECT jsonb_agg(
         DISTINCT jsonb_build_object(
@@ -49,9 +57,12 @@ BEGIN
     ) INTO wines_result
     FROM wines w
     LEFT JOIN wineries wn ON w.winery_id = wn.id
-    WHERE (w.name ILIKE '%' || search_query || '%'
-           OR w.grape_variety ILIKE '%' || search_query || '%')
-          AND w.is_deleted = false;
+    WHERE (
+        (search_wines_name AND w.name ILIKE '%' || search_query || '%')
+        OR
+        (search_wines_grape_variety AND w.grape_variety ILIKE '%' || search_query || '%')
+    )
+    AND w.is_deleted = false;
 
     -- Search wineries by name
     SELECT jsonb_agg(
@@ -69,7 +80,7 @@ BEGIN
         )
     ) INTO wineries_result
     FROM wineries wn
-    WHERE wn.name ILIKE '%' || search_query || '%';
+    WHERE search_wineries_name AND wn.name ILIKE '%' || search_query || '%';
 
     -- If no results, return empty arrays
     IF wines_result IS NULL THEN

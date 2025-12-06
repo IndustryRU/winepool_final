@@ -111,7 +111,15 @@ class AddEditWineScreen extends HookConsumerWidget {
                   child: imageFile.value != null
                       ? Image.file(File(imageFile.value!.path), fit: BoxFit.contain)
                       : imageUrlController.text.isNotEmpty && Uri.parse(imageUrlController.text).isAbsolute
-                          ? Image.network(imageUrlController.text, fit: BoxFit.contain)
+                          ? Image.network(
+                              imageUrlController.text,
+                              fit: BoxFit.contain,
+                              errorBuilder: (context, error, stackTrace) => const Icon(
+                                Icons.image_not_supported,
+                                size: 80,
+                                color: Colors.grey,
+                              ),
+                            )
                           : const Icon(
                               Icons.image_outlined,
                               size: 80,

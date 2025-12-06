@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:winepool_final/features/wines/domain/wine.dart';
@@ -6,43 +9,51 @@ import 'package:winepool_final/features/wines/presentation/wine_tile.dart';
 import '../../../features/wines/application/wines_controller.dart';
 import '../../../features/wines/data/wines_repository.dart';
 
-final searchAllProvider = FutureProvider.autoDispose.family<Map<String, dynamic>, String>(
-  (ref, query) async {
+final searchAllProvider = FutureProvider.autoDispose.family<Map<String, dynamic>, Map<String, dynamic>>(
+  (ref, searchParams) async {
+    final query = searchParams['query'] as String? ?? '';
+    final categories = searchParams['categories'] as Set<String>? ?? {};
+    
     if (query.isEmpty) {
       return {'wines': [], 'wineries': []}; // Возвращаем пустой объект, если запрос пустой
     }
     final winesRepository = ref.watch(winesRepositoryProvider);
-    return await winesRepository.searchAll(query);
+    return await winesRepository.searchAll(query, categories);
   },
 );
 
-class SearchResultsScreen extends ConsumerStatefulWidget {
+class SearchResultsScreen extends HookConsumerWidget {
   const SearchResultsScreen({super.key});
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _SearchResultsScreenState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final searchController = useTextEditingController();
+    final currentQuery = useState('');
+    final selectedSearchCategories = useState({
+      'wines_name',
+      'wines_grape_variety',
+      'wineries_name'
+    }); // По умолчанию включены все категории
 
-class _SearchResultsScreenState extends ConsumerState<SearchResultsScreen> {
-  late final TextEditingController _searchController;
-  String _currentQuery = '';
+    // Используем debounce для поиска
+    final debouncedQuery = useState('');
+    final debounceTimer = useRef<Timer?>(null);
+    
+    // Инициализация и очистка ресурсов
+    useEffect(() {
+      return () {
+        debounceTimer.value?.cancel();
+        searchController.dispose();
+      };
+    }, []);
 
-  @override
-  void initState() {
-    super.initState();
-    _searchController = TextEditingController();
-  }
-
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
     // Обновляем провайдер при изменении текста
-    final searchResults = ref.watch(searchAllProvider(_currentQuery));
+    final searchParams = useMemoized(() => {
+      'query': debouncedQuery.value,
+      'categories': selectedSearchCategories.value,
+    }, [debouncedQuery.value, selectedSearchCategories.value]);
+    
+    final searchResults = ref.watch(searchAllProvider(searchParams));
 
     return WillPopScope(
       onWillPop: () async {
@@ -52,31 +63,100 @@ class _SearchResultsScreenState extends ConsumerState<SearchResultsScreen> {
       },
       child: Scaffold(
       appBar: AppBar(
-        title: TextField(
-          controller: _searchController,
-          decoration: InputDecoration(
-            hintText: 'Поиск вина, винодельни или сорта...',
-            prefixIcon: const Icon(Icons.search),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(25),
-              borderSide: BorderSide.none,
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            TextField(
+              controller: searchController,
+              decoration: InputDecoration(
+                hintText: 'Поиск вина, винодельни или сорта...',
+                prefixIcon: const Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(25),
+                  borderSide: BorderSide.none,
+                ),
+                filled: true,
+                fillColor: Colors.grey[200],
+              ),
+              onChanged: (value) {
+                // Отменяем предыдущий таймер
+                debounceTimer.value?.cancel();
+                
+                if (value.isEmpty) {
+                  // Если значение пустое, обновляем немедленно
+                  debouncedQuery.value = value;
+                } else {
+                  // Устанавливаем новый таймер для debounce
+                  debounceTimer.value = Timer(const Duration(milliseconds: 500), () {
+                    // Проверяем, что виджет еще активен перед обновлением состояния
+                    if (context.mounted) {
+                      debouncedQuery.value = value;
+                    }
+                  });
+                }
+              },
             ),
-            filled: true,
-            fillColor: Colors.grey[200],
-          ),
-          onChanged: (value) {
-            // Добавляем проверку длины запроса
-            if (value.length >= 1) {
-              setState(() {
-                _currentQuery = value;
-              });
-            } else if (value.isEmpty) {
-              setState(() {
-                _currentQuery = value;
-              });
-            }
-            // Если длина меньше 1, но запрос не пустой, не обновляем _currentQuery
-          },
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8.0,
+              children: [
+                FilterChip(
+                  label: const Text('Вина (название)'),
+                  selected: selectedSearchCategories.value.contains('wines_name'),
+                  onSelected: (selected) {
+                    if (selected) {
+                      selectedSearchCategories.value = {
+                        ...selectedSearchCategories.value,
+                        'wines_name'
+                      };
+                    } else {
+                      selectedSearchCategories.value = {
+                        ...selectedSearchCategories.value
+                      }..remove('wines_name');
+                    }
+                    // Обновляем провайдер при изменении категорий
+                    ref.invalidate(searchAllProvider);
+                  },
+                ),
+                FilterChip(
+                  label: const Text('Сорта вин'),
+                  selected: selectedSearchCategories.value.contains('wines_grape_variety'),
+                  onSelected: (selected) {
+                    if (selected) {
+                      selectedSearchCategories.value = {
+                        ...selectedSearchCategories.value,
+                        'wines_grape_variety'
+                      };
+                    } else {
+                      selectedSearchCategories.value = {
+                        ...selectedSearchCategories.value
+                      }..remove('wines_grape_variety');
+                    }
+                    // Обновляем провайдер при изменении категорий
+                    ref.invalidate(searchAllProvider);
+                  },
+                ),
+                FilterChip(
+                  label: const Text('Винодельни'),
+                  selected: selectedSearchCategories.value.contains('wineries_name'),
+                  onSelected: (selected) {
+                    if (selected) {
+                      selectedSearchCategories.value = {
+                        ...selectedSearchCategories.value,
+                        'wineries_name'
+                      };
+                    } else {
+                      selectedSearchCategories.value = {
+                        ...selectedSearchCategories.value
+                      }..remove('wineries_name');
+                    }
+                    // Обновляем провайдер при изменении категорий
+                    ref.invalidate(searchAllProvider);
+                  },
+                ),
+              ],
+            ),
+          ],
         ),
       ),
       body: searchResults.when(

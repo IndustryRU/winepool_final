@@ -156,6 +156,10 @@ class OrderDetailsScreen extends ConsumerWidget {
                     ? Image.network(
                         item.offer?.wine?.imageUrl ?? '',
                         fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) => const Icon(
+                          Icons.wine_bar,
+                          color: Colors.grey,
+                        ),
                       )
                     : const Icon(
                         Icons.wine_bar,
