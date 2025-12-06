@@ -816,11 +816,13 @@ class WineCharacteristicIconsRow extends StatelessWidget {
 class WineCharacteristicIconsColumn extends StatelessWidget {
   final Wine wine;
   final double iconSize;
+  final bool isSearch;
 
   const WineCharacteristicIconsColumn({
     super.key,
     required this.wine,
     this.iconSize = 20.0,
+    this.isSearch = false,
   });
 
   @override
@@ -829,6 +831,7 @@ class WineCharacteristicIconsColumn extends StatelessWidget {
     if (wine.winery != null) {
       log(wine.winery.toString());
     }
+    print(wine.winery?.country);
     return Wrap(
       spacing: 8.0,
       runSpacing: 4.0,
@@ -837,7 +840,12 @@ class WineCharacteristicIconsColumn extends StatelessWidget {
         if (wine.color != null) WineColorIcon(color: wine.color, size: iconSize),
         if (wine.sugar != null) WineSugarIcon(sugar: wine.sugar, size: iconSize),
         if (wine.alcoholLevel != null) WineAlcoholIcon(alcoholLevel: wine.alcoholLevel, size: iconSize),
-        if (wine.winery?.country != null) WineCountryIcon(country: wine.winery?.country, size: iconSize),
+        if (wine.winery?.country != null) WineCountryIcon(
+          country: isSearch ?
+            Country(code: wine.winery?.countryCode ?? '', name: wine.winery?.country?.name ?? '') :
+            wine.winery?.country,
+          size: iconSize,
+        ),
         if (wine.grapeVariety != null && wine.grapeVariety!.isNotEmpty) WineGrapeIcon(grapeVariety: wine.grapeVariety, size: iconSize),
       ],
     );

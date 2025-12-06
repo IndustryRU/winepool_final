@@ -51,12 +51,14 @@ BEGIN
                 'website', wn.website,
                 'location_text', wn.location_text,
                 'country_code', wn.country_code,
+                'country', COALESCE(c.name, wn.country_code::TEXT),
                 'region', wn.region
             )
         )
     ) INTO wines_result
     FROM wines w
     LEFT JOIN wineries wn ON w.winery_id = wn.id
+    LEFT JOIN countries c ON wn.country_code = c.code AND c.code IS NOT NULL
     WHERE (
         (search_wines_name AND w.name ILIKE '%' || search_query || '%')
         OR
@@ -76,10 +78,12 @@ BEGIN
             'website', wn.website,
             'location_text', wn.location_text,
             'country_code', wn.country_code,
+            'country', COALESCE(c.name, wn.country_code::TEXT),
             'region', wn.region
         )
     ) INTO wineries_result
     FROM wineries wn
+    LEFT JOIN countries c ON wn.country_code = c.code AND c.code IS NOT NULL
     WHERE search_wineries_name AND wn.name ILIKE '%' || search_query || '%';
 
     -- If no results, return empty arrays

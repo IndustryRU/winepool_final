@@ -18,7 +18,9 @@ final searchAllProvider = FutureProvider.autoDispose.family<Map<String, dynamic>
       return {'wines': [], 'wineries': []}; // Возвращаем пустой объект, если запрос пустой
     }
     final winesRepository = ref.watch(winesRepositoryProvider);
-    return await winesRepository.searchAll(query, categories);
+    final result = await winesRepository.searchAll(query, categories);
+    print(result);
+    return result;
   },
 );
 
@@ -109,6 +111,7 @@ class SearchResultsScreen extends HookConsumerWidget {
         body: searchResults.when(
           data: (results) {
             final wines = (results['wines'] as List<dynamic>?)?.cast<Map<String, dynamic>>() ?? [];
+            print(wines);
             final wineries = (results['wineries'] as List<dynamic>?)?.cast<Map<String, dynamic>>() ?? [];
 
             if (wines.isEmpty && wineries.isEmpty) {
@@ -130,7 +133,7 @@ class SearchResultsScreen extends HookConsumerWidget {
                 // Преобразуем Map<String, dynamic> из JSON в объект Wine
                 // Для этого Wine.fromJson должен уметь работать с вложенными объектами winery
                 final wine = Wine.fromJson(wineData);
-                return WineTile(wine: wine);
+                return WineTile(wine: wine, isSearch: true);
               }).toList());
             }
 

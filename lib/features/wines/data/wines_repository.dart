@@ -162,8 +162,9 @@ class WinesRepository {
     try {
       final response = await _supabaseClient.rpc('search_all', params: {
         'search_query': query,
-        'search_categories': searchCategories,
+        'search_categories': '{${searchCategories.join(',')}}',
       });
+      print(response);
       print('--- SEARCH ALL RESPONSE ---');
       print(response);
       print('--- END SEARCH ALL RESPONSE ---');

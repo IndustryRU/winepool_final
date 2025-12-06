@@ -4,11 +4,13 @@ import 'package:winepool_final/features/wines/presentation/widgets/wine_characte
 
 class WineTile extends StatelessWidget {
   final Wine wine;
+  final bool isSearch;
 
-  const WineTile({super.key, required this.wine});
+  const WineTile({super.key, required this.wine, this.isSearch = false});
 
   @override
   Widget build(BuildContext context) {
+    print(wine.winery);
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -58,7 +60,7 @@ class WineTile extends StatelessWidget {
                       color: Colors.grey[600],
                     ),
                   ),
-                  WineCharacteristicIconsColumn(wine: wine, iconSize: 16.0),
+                  WineCharacteristicIconsColumn(wine: wine, iconSize: 16.0, isSearch: isSearch),
                   Text(
                     '${wine.averageRating != null ? '${wine.averageRating} ★' : ''}',
                     style: const TextStyle(

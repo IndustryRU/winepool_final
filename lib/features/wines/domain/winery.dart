@@ -26,6 +26,13 @@ abstract class Winery with _$Winery {
 Country? _countryFromJson(dynamic json) {
   if (json == null) return null;
 
+  // Проверяем, является ли json строкой (country_code)
+  if (json is String) {
+    // Создаем объект Country с кодом страны
+    // Имя страны будет недоступно при десериализации из строки
+    return Country(code: json, name: '');
+  }
+
   if (json is Map<String, dynamic>) {
     return Country.fromJson(json);
   }
