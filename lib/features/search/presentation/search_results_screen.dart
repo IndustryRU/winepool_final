@@ -48,12 +48,12 @@ class SearchResultsScreen extends HookConsumerWidget {
     }, []);
 
     // Обновляем провайдер при изменении текста
-    final searchParams = useMemoized(() => {
-      'query': debouncedQuery.value,
-      'categories': selectedSearchCategories.value,
-    }, [debouncedQuery.value, selectedSearchCategories.value]);
-    
-    final searchResults = ref.watch(searchAllProvider(searchParams));
+        final searchParams = useMemoized(() => <String, dynamic>{
+          'query': debouncedQuery.value,
+          'categories': selectedSearchCategories.value,
+        }, [debouncedQuery.value, selectedSearchCategories.value]);
+        
+        final searchResults = ref.watch(searchAllProvider(searchParams));
 
     return WillPopScope(
       onWillPop: () async {
@@ -62,163 +62,235 @@ class SearchResultsScreen extends HookConsumerWidget {
         return false;
       },
       child: Scaffold(
-      appBar: AppBar(
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            TextField(
-              controller: searchController,
-              decoration: InputDecoration(
-                hintText: 'Поиск вина, винодельни или сорта...',
-                prefixIcon: const Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(25),
-                  borderSide: BorderSide.none,
+        appBar: AppBar(
+          title: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              TextFormField(
+                controller: searchController,
+                decoration: InputDecoration(
+                  hintText: 'Поиск вина, винодельни или сорта...',
+                  prefixIcon: const Icon(Icons.search),
+                  suffixIcon: IconButton(
+                    icon: const Icon(Icons.settings),
+                    onPressed: () {
+                      showFiltersModal(context, selectedSearchCategories, ref);
+                    },
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(25),
+                    borderSide: BorderSide.none,
+                  ),
+                  filled: true,
+                  fillColor: Colors.grey[200],
                 ),
-                filled: true,
-                fillColor: Colors.grey[200],
+                onChanged: (value) {
+                  // Отменяем предыдущий таймер
+                  debounceTimer.value?.cancel();
+                  
+                  if (value.isEmpty) {
+                    // Если значение пустое, обновляем немедленно
+                    debouncedQuery.value = value;
+                  } else {
+                    // Устанавливаем новый таймер для debounce
+                    debounceTimer.value = Timer(const Duration(milliseconds: 500), () {
+                      // Проверяем, что виджет еще активен перед обновлением состояния
+                      if (context.mounted) {
+                        debouncedQuery.value = value;
+                      }
+                    });
+                  }
+                },
               ),
-              onChanged: (value) {
-                // Отменяем предыдущий таймер
-                debounceTimer.value?.cancel();
-                
-                if (value.isEmpty) {
-                  // Если значение пустое, обновляем немедленно
-                  debouncedQuery.value = value;
-                } else {
-                  // Устанавливаем новый таймер для debounce
-                  debounceTimer.value = Timer(const Duration(milliseconds: 500), () {
-                    // Проверяем, что виджет еще активен перед обновлением состояния
-                    if (context.mounted) {
-                      debouncedQuery.value = value;
-                    }
-                  });
-                }
-              },
-            ),
-            const SizedBox(height: 8),
-            Wrap(
-              spacing: 8.0,
-              children: [
-                FilterChip(
-                  label: const Text('Вина (название)'),
-                  selected: selectedSearchCategories.value.contains('wines_name'),
-                  onSelected: (selected) {
-                    if (selected) {
-                      selectedSearchCategories.value = {
-                        ...selectedSearchCategories.value,
-                        'wines_name'
-                      };
-                    } else {
-                      selectedSearchCategories.value = {
-                        ...selectedSearchCategories.value
-                      }..remove('wines_name');
-                    }
-                    // Обновляем провайдер при изменении категорий
-                    ref.invalidate(searchAllProvider);
-                  },
-                ),
-                FilterChip(
-                  label: const Text('Сорта вин'),
-                  selected: selectedSearchCategories.value.contains('wines_grape_variety'),
-                  onSelected: (selected) {
-                    if (selected) {
-                      selectedSearchCategories.value = {
-                        ...selectedSearchCategories.value,
-                        'wines_grape_variety'
-                      };
-                    } else {
-                      selectedSearchCategories.value = {
-                        ...selectedSearchCategories.value
-                      }..remove('wines_grape_variety');
-                    }
-                    // Обновляем провайдер при изменении категорий
-                    ref.invalidate(searchAllProvider);
-                  },
-                ),
-                FilterChip(
-                  label: const Text('Винодельни'),
-                  selected: selectedSearchCategories.value.contains('wineries_name'),
-                  onSelected: (selected) {
-                    if (selected) {
-                      selectedSearchCategories.value = {
-                        ...selectedSearchCategories.value,
-                        'wineries_name'
-                      };
-                    } else {
-                      selectedSearchCategories.value = {
-                        ...selectedSearchCategories.value
-                      }..remove('wineries_name');
-                    }
-                    // Обновляем провайдер при изменении категорий
-                    ref.invalidate(searchAllProvider);
-                  },
-                ),
-              ],
-            ),
-          ],
+              const SizedBox(height: 8),
+            ],
+          ),
         ),
-      ),
-      body: searchResults.when(
-        data: (results) {
-          final wines = (results['wines'] as List<dynamic>?)?.cast<Map<String, dynamic>>() ?? [];
-          final wineries = (results['wineries'] as List<dynamic>?)?.cast<Map<String, dynamic>>() ?? [];
+        body: searchResults.when(
+          data: (results) {
+            final wines = (results['wines'] as List<dynamic>?)?.cast<Map<String, dynamic>>() ?? [];
+            final wineries = (results['wineries'] as List<dynamic>?)?.cast<Map<String, dynamic>>() ?? [];
 
-          if (wines.isEmpty && wineries.isEmpty) {
-            return const Center(
-              child: Text('Ничего не найдено'),
-            );
-          }
-
-          final List<Widget> children = [];
-
-          if (wines.isNotEmpty) {
-            children.add(
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Text('Вина', style: Theme.of(context).textTheme.titleLarge),
-              ),
-            );
-            children.addAll(wines.map((wineData) {
-              // Преобразуем Map<String, dynamic> из JSON в объект Wine
-              // Для этого Wine.fromJson должен уметь работать с вложенными объектами winery
-              final wine = Wine.fromJson(wineData);
-              return WineTile(wine: wine);
-            }).toList());
-          }
-
-          if (wineries.isNotEmpty) {
-            children.add(
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Text('Винодельни', style: Theme.of(context).textTheme.titleLarge),
-              ),
-            );
-            children.addAll(wineries.map((wineryData) {
-              // Здесь мы отображаем просто информацию о винодельне
-              // Возможно, потребуется создать отдельный виджет для отображения виноделен
-              return ListTile(
-                title: Text(wineryData['name'] as String),
-                // Добавьте другие поля, если необходимо
+            if (wines.isEmpty && wineries.isEmpty) {
+              return const Center(
+                child: Text('Ничего не найдено'),
               );
-            }).toList());
-          }
+            }
 
-          return ListView(
-            children: children,
-          );
-        },
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => Center(
-          child: SelectableText.rich(
-            TextSpan(
-              text: 'Ошибка: ${error.toString()}',
-              style: const TextStyle(color: Colors.red),
+            final List<Widget> children = [];
+
+            if (wines.isNotEmpty) {
+              children.add(
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Text('Вина', style: Theme.of(context).textTheme.titleLarge),
+                ),
+              );
+              children.addAll(wines.map((wineData) {
+                // Преобразуем Map<String, dynamic> из JSON в объект Wine
+                // Для этого Wine.fromJson должен уметь работать с вложенными объектами winery
+                final wine = Wine.fromJson(wineData);
+                return WineTile(wine: wine);
+              }).toList());
+            }
+
+            if (wineries.isNotEmpty) {
+              children.add(
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Text('Винодельни', style: Theme.of(context).textTheme.titleLarge),
+                ),
+              );
+              children.addAll(wineries.map((wineryData) {
+                // Здесь мы отображаем просто информацию о винодельне
+                // Возможно, потребуется создать отдельный виджет для отображения виноделен
+                return ListTile(
+                  title: Text(wineryData['name'] as String),
+                  // Добавьте другие поля, если необходимо
+                );
+              }).toList());
+            }
+
+            return ListView(
+              children: children,
+            );
+          },
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (error, stack) => Center(
+            child: SelectableText.rich(
+              TextSpan(
+                text: 'Ошибка: ${error.toString()}',
+                style: const TextStyle(color: Colors.red),
+              ),
             ),
           ),
         ),
       ),
-    ),
-  );
+    );
+  }
 }
+void showFiltersModal(
+  BuildContext context,
+  ValueNotifier<Set<String>> selectedCategories,
+  WidgetRef ref,
+) {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    builder: (BuildContext modalContext) {
+      return FiltersModal(
+        initialCategories: selectedCategories.value,
+        onApply: (Set<String> newCategories) {
+          selectedCategories.value = newCategories;
+          ref.invalidate(searchAllProvider);
+          Navigator.of(modalContext).pop();
+        },
+      );
+    },
+ );
+}
+
+class FiltersModal extends HookWidget {
+  final Set<String> initialCategories;
+  final void Function(Set<String> newCategories) onApply;
+
+  const FiltersModal({
+    super.key,
+    required this.initialCategories,
+    required this.onApply,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final selectedCategoriesState = useState<Set<String>>(initialCategories);
+
+    return Container(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Text(
+            'Фильтры поиска',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 16),
+          CheckboxListTile(
+            title: const Text('Вина'),
+            value: selectedCategoriesState.value.contains('wines_name'),
+            onChanged: (bool? value) {
+              if (value == null) return;
+              if (value) {
+                selectedCategoriesState.value = {
+                  ...selectedCategoriesState.value,
+                  'wines_name'
+                };
+              } else {
+                selectedCategoriesState.value = {
+                  ...selectedCategoriesState.value
+                }..remove('wines_name');
+              }
+            },
+          ),
+          CheckboxListTile(
+            title: const Text('Сорта'),
+            value: selectedCategoriesState.value.contains('wines_grape_variety'),
+            onChanged: (bool? value) {
+              if (value == null) return;
+              if (value) {
+                selectedCategoriesState.value = {
+                  ...selectedCategoriesState.value,
+                  'wines_grape_variety'
+                };
+              } else {
+                selectedCategoriesState.value = {
+                  ...selectedCategoriesState.value
+                }..remove('wines_grape_variety');
+              }
+            },
+          ),
+          CheckboxListTile(
+            title: const Text('Винодельни'),
+            value: selectedCategoriesState.value.contains('wineries_name'),
+            onChanged: (bool? value) {
+              if (value == null) return;
+              if (value) {
+                selectedCategoriesState.value = {
+                  ...selectedCategoriesState.value,
+                  'wineries_name'
+                };
+              } else {
+                selectedCategoriesState.value = {
+                  ...selectedCategoriesState.value
+                }..remove('wineries_name');
+              }
+            },
+          ),
+          CheckboxListTile(
+            title: const Text('Местоположение'),
+            value: selectedCategoriesState.value.contains('wineries_location'),
+            onChanged: (bool? value) {
+              if (value == null) return;
+              if (value) {
+                selectedCategoriesState.value = {
+                  ...selectedCategoriesState.value,
+                  'wineries_location'
+                };
+              } else {
+                selectedCategoriesState.value = {
+                  ...selectedCategoriesState.value
+                }..remove('wineries_location');
+              }
+            },
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: () {
+              onApply(selectedCategoriesState.value);
+            },
+            child: const Text('Применить'),
+          ),
+        ],
+      ),
+    );
+  }
 }
