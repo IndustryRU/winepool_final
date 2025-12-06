@@ -9,6 +9,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:uuid/uuid.dart';
 import 'package:winepool_final/features/wines/application/wineries_controller.dart';
 import 'package:winepool_final/features/wines/domain/winery.dart';
+import 'package:winepool_final/features/wines/domain/country.dart';
 import 'package:winepool_final/services/storage_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -23,7 +24,7 @@ class AddEditWineryScreen extends HookConsumerWidget {
     final nameController = useTextEditingController(text: winery?.name);
     final descriptionController = useTextEditingController(text: winery?.description);
     final winemakerController = useTextEditingController(text: winery?.winemaker);
-    final countryController = useTextEditingController(text: winery?.countryCode);
+    final countryController = useTextEditingController(text: winery?.country);
     final regionController = useTextEditingController(text: winery?.region);
     final locationTextController = useTextEditingController(text: winery?.locationText);
     final websiteController = useTextEditingController(text: winery?.website);
@@ -158,12 +159,12 @@ class AddEditWineryScreen extends HookConsumerWidget {
                         name: nameController.text,
                         description: descriptionController.text,
                         winemaker: winemakerController.text,
-                        countryCode: countryController.text,
                         region: regionController.text,
                         website: websiteController.text,
                         locationText: locationTextController.text,
                         logoUrl: logoUrl, // используем новые URL
                         bannerUrl: bannerUrl, // используем новые URL
+                        countryCode: countryController.text,
                       );
 
                       final success = isEditMode

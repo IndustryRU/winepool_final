@@ -10,6 +10,7 @@ import 'package:winepool_final/features/reviews/domain/review.dart';
 import 'package:winepool_final/features/reviews/presentation/add_review_screen.dart';
 import 'package:winepool_final/core/providers/supabase_provider.dart';
 import 'package:winepool_final/features/wines/presentation/widgets/wine_characteristic_icons.dart';
+import 'package:winepool_final/features/wines/domain/winery.dart';
 
 class OfferDetailsScreen extends ConsumerWidget {
   final String offerId;
@@ -88,9 +89,9 @@ class OfferDetailsScreen extends ConsumerWidget {
                   '${wine.alcoholLevel?.toStringAsFixed(1) ?? "Не указан"}%',
                 ),
                 _buildInfoRowWithIcon(
-                  WineCountryIcon(country: wine.winery?.countryCode, size: 24.0),
+                  WineCountryIcon(countryCode: wine.winery?.country, countryName: wine.winery?.countryName, size: 24.0),
                   'Страна:',
-                  wine.winery?.countryCode ?? 'Не указана',
+                  wine.winery?.countryName ?? 'Не указана',
                 ),
                 _buildInfoRowWithIcon(
                   WineGrapeIcon(grapeVariety: wine.grapeVariety, size: 24.0),

@@ -498,13 +498,13 @@ class _WineAlcoholIconState extends State<WineAlcoholIcon>
 
 /// Виджет для отображения пиктограммы страны производства
 class WineCountryIcon extends StatefulWidget {
-  final String? country;
+  final String? countryCode;
   final String? countryName;
   final double size;
 
   const WineCountryIcon({
     super.key,
-    this.country,
+    this.countryCode,
     this.countryName,
     this.size = 20.0,
   });
@@ -569,8 +569,8 @@ class _WineCountryIconState extends State<WineCountryIcon>
     String countryDescription = '';
     if (widget.countryName != null && widget.countryName!.isNotEmpty) {
       countryDescription = widget.countryName!;
-    } else if (widget.country != null) {
-      countryDescription = widget.country!;
+    } else if (widget.countryCode != null) {
+      countryDescription = widget.countryCode!;
     }
 
     _overlayEntry = OverlayEntry(
@@ -620,24 +620,24 @@ class _WineCountryIconState extends State<WineCountryIcon>
 
   @override
   Widget build(BuildContext context) {
-    if ((widget.country == null || widget.country!.isEmpty) &&
+    if ((widget.countryCode == null || widget.countryCode!.isEmpty) &&
         (widget.countryName == null || widget.countryName!.isEmpty)) {
       return const SizedBox.shrink();
     }
 
-    // Используем country как код страны, если он доступен, иначе используем countryName как отображаемое имя
+    // Используем countryCode как код страны, если он доступен, иначе используем countryName как отображаемое имя
     String displayCountryCode = '';
-    if (widget.country != null && widget.country!.isNotEmpty) {
-      displayCountryCode = widget.country!;
+    if (widget.countryCode != null && widget.countryCode!.isNotEmpty) {
+      displayCountryCode = widget.countryCode!;
     } else if (widget.countryName != null && widget.countryName!.isNotEmpty) {
       // Если у нас есть только countryName (полное название), мы не можем получить из него код страны
       // Вместо этого используем его как отображаемое имя
       displayCountryCode = widget.countryName!;
     }
     
-    // Пытаемся использовать country как код страны напрямую
-    final countryCode = widget.country != null && widget.country!.isNotEmpty
-        ? widget.country!.toUpperCase()
+    // Пытаемся использовать countryCode как код страны напрямую
+    final countryCode = widget.countryCode != null && widget.countryCode!.isNotEmpty
+        ? widget.countryCode!.toUpperCase()
         : '';
     if (_isValidCountryCode(countryCode)) {
       try {
@@ -801,7 +801,7 @@ class WineCharacteristicIconsRow extends StatelessWidget {
         WineColorIcon(color: wine.color, size: iconSize),
         WineSugarIcon(sugar: wine.sugar, size: iconSize),
         WineAlcoholIcon(alcoholLevel: wine.alcoholLevel, size: iconSize),
-        WineCountryIcon(country: wine.winery?.countryCode, countryName: wine.winery?.countryName, size: iconSize), // Используем countryCode и countryName у винодельни
+        WineCountryIcon(countryCode: wine.winery?.country, countryName: wine.winery?.countryName, size: iconSize), // Используем country и countryName у винодельни
         WineGrapeIcon(grapeVariety: wine.grapeVariety, size: iconSize),
       ].where((widget) => !(widget is SizedBox)).toList(),
     );
@@ -829,7 +829,7 @@ class WineCharacteristicIconsColumn extends StatelessWidget {
         if (wine.color != null) WineColorIcon(color: wine.color, size: iconSize),
         if (wine.sugar != null) WineSugarIcon(sugar: wine.sugar, size: iconSize),
         if (wine.alcoholLevel != null) WineAlcoholIcon(alcoholLevel: wine.alcoholLevel, size: iconSize),
-        if (wine.winery?.countryCode != null) WineCountryIcon(country: wine.winery?.countryCode, countryName: wine.winery?.countryName, size: iconSize),
+        if (wine.winery?.country != null) WineCountryIcon(countryCode: wine.winery?.country, countryName: wine.winery?.countryName, size: iconSize),
         if (wine.grapeVariety != null && wine.grapeVariety!.isNotEmpty) WineGrapeIcon(grapeVariety: wine.grapeVariety, size: iconSize),
       ],
     );
