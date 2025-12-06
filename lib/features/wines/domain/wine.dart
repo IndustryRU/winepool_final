@@ -16,21 +16,26 @@ String? _valueToString(dynamic value) {
 
 /// Функция для десериализации вложенной модели Winery
 Winery? _wineryFromJson(dynamic json) {
-  print('Winery JSON: $json'); // Добавляем вывод для отладки
   if (json == null) return null;
+  
+  // Если json - это строка, декодируем её в Map
   if (json is String) {
-    // Если приходит строка, пытаемся распарсить как JSON
     try {
       final jsonData = jsonDecode(json);
       if (jsonData is Map<String, dynamic>) {
         return Winery.fromJson(jsonData);
       }
     } catch (e) {
-      print('Ошибка парсинга winery JSON: $e');
+      // Ошибка при декодировании строки JSON
+      return null;
     }
-  } else if (json is Map<String, dynamic>) {
-    return Winery.fromJson(json as Map<String, dynamic>);
   }
+  // Если json - это Map, используем его напрямую
+  else if (json is Map<String, dynamic>) {
+    return Winery.fromJson(json);
+  }
+  
+  // Если тип json не поддерживается
   return null;
 }
 

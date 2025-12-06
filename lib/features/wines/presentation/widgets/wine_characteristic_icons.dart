@@ -524,6 +524,7 @@ class _WineCountryIconState extends State<WineCountryIcon>
   @override
   void initState() {
     super.initState();
+    print(widget.countryName);
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 500), // Увеличил duration
       vsync: this,
@@ -624,13 +625,20 @@ class _WineCountryIconState extends State<WineCountryIcon>
       return const SizedBox.shrink();
     }
 
-    // Используем countryName, если она доступна, иначе country
-    final String displayCountryCode = widget.countryName != null && widget.countryName!.isNotEmpty
-        ? widget.countryName!.toUpperCase().substring(0, 2)
-        : widget.country!;
+    // Используем country как код страны, если он доступен, иначе используем countryName как отображаемое имя
+    String displayCountryCode = '';
+    if (widget.country != null && widget.country!.isNotEmpty) {
+      displayCountryCode = widget.country!;
+    } else if (widget.countryName != null && widget.countryName!.isNotEmpty) {
+      // Если у нас есть только countryName (полное название), мы не можем получить из него код страны
+      // Вместо этого используем его как отображаемое имя
+      displayCountryCode = widget.countryName!;
+    }
     
     // Пытаемся использовать country как код страны напрямую
-    final countryCode = displayCountryCode.toUpperCase();
+    final countryCode = widget.country != null && widget.country!.isNotEmpty
+        ? widget.country!.toUpperCase()
+        : '';
     if (_isValidCountryCode(countryCode)) {
       try {
         return GestureDetector(
@@ -654,7 +662,7 @@ class _WineCountryIconState extends State<WineCountryIcon>
                   ),
                   const SizedBox(width: 4),
                   Text(
-                    countryCode,
+                    displayCountryCode,
                     style: TextStyle(
                       fontSize: widget.size * 0.6,
                       fontWeight: FontWeight.w500,
@@ -679,7 +687,7 @@ class _WineCountryIconState extends State<WineCountryIcon>
                 borderRadius: BorderRadius.circular(widget.size / 2),
               ),
               child: Text(
-                countryCode,
+                displayCountryCode,
                 style: TextStyle(
                   fontSize: widget.size * 0.6,
                   fontWeight: FontWeight.w500,
@@ -704,9 +712,7 @@ class _WineCountryIconState extends State<WineCountryIcon>
               borderRadius: BorderRadius.circular(widget.size / 2),
             ),
             child: Text(
-              widget.countryName != null && widget.countryName!.isNotEmpty
-                  ? widget.countryName!
-                  : widget.country!,
+              displayCountryCode,
               style: TextStyle(
                 fontSize: widget.size * 0.6,
                 fontWeight: FontWeight.w500,

@@ -17,6 +17,7 @@ class WineriesRepository {
         .from('wineries')
         .select('id, name, country_code, region, winemaker, website, description, logo_url, banner_url, location_text, created_at, countries!inner(name)')
         .order('created_at', ascending: false);
+    print(response);
 
     return response.map((json) => Winery.fromJson(json)).toList();
   }
@@ -27,6 +28,7 @@ class WineriesRepository {
         .select('id, name, description, logo_url, banner_url, created_at, countries!inner(name)')
         .eq('id', wineryId)
         .single();
+    print(response);
 
     return Winery.fromJson(response);
   }
@@ -37,6 +39,7 @@ class WineriesRepository {
         .select('*, countries!inner(name)')
         .eq('id', id)
         .single();
+    print(data);
     return Winery.fromJson(data);
   }
   Future<Winery> addWinery(Winery winery) async {
@@ -56,6 +59,7 @@ class WineriesRepository {
         })
         .select('id, name, country_code, region, winemaker, website, description, logo_url, banner_url, location_text, created_at, countries!inner(name)')
         .single();
+    print(response);
 
     print('Завершено добавление винодельни: ${winery.name}');
     print('Завершено обновление винодельни: ${winery.name}');
@@ -83,6 +87,7 @@ class WineriesRepository {
         .eq('id', winery.id!)
         .select('id, name, country_code, region, winemaker, website, description, logo_url, banner_url, location_text, created_at, countries!inner(name)')
         .single();
+    print(response);
 
     return Winery.fromJson(response);
   }
