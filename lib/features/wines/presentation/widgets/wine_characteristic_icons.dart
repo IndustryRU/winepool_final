@@ -691,7 +691,7 @@ class _WineCountryIconState extends State<WineCountryIcon>
                 borderRadius: BorderRadius.circular(widget.size / 2),
               ),
               child: Text(
-                widget.country?.name ?? displayCountryCode,
+                displayCountryCode,
                 style: TextStyle(
                   fontSize: widget.size * 0.6,
                   fontWeight: FontWeight.w500,
@@ -842,7 +842,7 @@ class WineCharacteristicIconsColumn extends StatelessWidget {
         if (wine.alcoholLevel != null) WineAlcoholIcon(alcoholLevel: wine.alcoholLevel, size: iconSize),
         if (wine.winery?.country != null) WineCountryIcon(
           country: isSearch ?
-            Country(code: wine.winery?.countryCode ?? '', name: wine.winery?.country?.name ?? '') :
+            Country(code: wine.winery?.countryCode ?? '', name: wine.winery?.country?.code ?? '') :
             wine.winery?.country,
           size: iconSize,
         ),
