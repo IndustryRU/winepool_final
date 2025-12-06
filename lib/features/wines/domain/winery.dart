@@ -17,7 +17,17 @@ abstract class Winery with _$Winery {
     @JsonKey(name: 'location_text') String? locationText,
     @JsonKey(name: 'country_code') String? countryCode,
     @JsonKey(name: 'region') String? region,
+    @JsonKey(name: 'countries') Map<String, dynamic>? countries,
   }) = _Winery;
 
   factory Winery.fromJson(Map<String, dynamic> json) => _$WineryFromJson(json);
+}
+
+extension WineryExtension on Winery {
+  String? get countryName {
+    if (countries != null && countries!['name'] != null) {
+      return countries!['name'];
+    }
+    return null;
+  }
 }

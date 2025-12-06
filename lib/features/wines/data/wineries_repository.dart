@@ -15,7 +15,7 @@ class WineriesRepository {
   Future<List<Winery>> fetchAllWineries() async {
     final response = await _supabaseClient
         .from('wineries')
-        .select('id, name, country_code, region, winemaker, website, description, logo_url, banner_url, location_text, created_at')
+        .select('id, name, country_code, region, winemaker, website, description, logo_url, banner_url, location_text, created_at, countries!inner(name)')
         .order('created_at', ascending: false);
 
     return response.map((json) => Winery.fromJson(json)).toList();
@@ -24,7 +24,7 @@ class WineriesRepository {
   Future<Winery> fetchWinery(String wineryId) async {
     final response = await _supabaseClient
         .from('wineries')
-        .select('id, name, description, logo_url, banner_url, created_at')
+        .select('id, name, description, logo_url, banner_url, created_at, countries!inner(name)')
         .eq('id', wineryId)
         .single();
 
@@ -34,7 +34,7 @@ class WineriesRepository {
   Future<Winery> fetchWineryById(String id) async {
     final data = await _supabaseClient
         .from('wineries')
-        .select()
+        .select('*, countries!inner(name)')
         .eq('id', id)
         .single();
     return Winery.fromJson(data);
@@ -54,7 +54,7 @@ class WineriesRepository {
           'banner_url': winery.bannerUrl,
           'location_text': winery.locationText,
         })
-        .select('id, name, country_code, region, winemaker, website, description, logo_url, banner_url, location_text, created_at')
+        .select('id, name, country_code, region, winemaker, website, description, logo_url, banner_url, location_text, created_at, countries!inner(name)')
         .single();
 
     print('Завершено добавление винодельни: ${winery.name}');
@@ -81,7 +81,7 @@ class WineriesRepository {
           'location_text': winery.locationText,
         })
         .eq('id', winery.id!)
-        .select('id, name, country_code, region, winemaker, website, description, logo_url, banner_url, location_text, created_at')
+        .select('id, name, country_code, region, winemaker, website, description, logo_url, banner_url, location_text, created_at, countries!inner(name)')
         .single();
 
     return Winery.fromJson(response);

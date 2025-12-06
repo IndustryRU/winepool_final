@@ -60,7 +60,7 @@ final class WinesByWineryProvider
     with $FutureModifier<List<Wine>>, $FutureProvider<List<Wine>> {
   const WinesByWineryProvider._({
     required WinesByWineryFamily super.from,
-    required String super.argument,
+    required String? super.argument,
   }) : super(
          retry: null,
          name: r'winesByWineryProvider',
@@ -86,7 +86,7 @@ final class WinesByWineryProvider
 
   @override
   FutureOr<List<Wine>> create(Ref ref) {
-    final argument = this.argument as String;
+    final argument = this.argument as String?;
     return winesByWinery(ref, argument);
   }
 
@@ -101,10 +101,10 @@ final class WinesByWineryProvider
   }
 }
 
-String _$winesByWineryHash() => r'6863e1005f4543f289ba99d361b17ed00b167122';
+String _$winesByWineryHash() => r'02997cda6cc513f913de2a4729b97d0f84f2421f';
 
 final class WinesByWineryFamily extends $Family
-    with $FunctionalFamilyOverride<FutureOr<List<Wine>>, String> {
+    with $FunctionalFamilyOverride<FutureOr<List<Wine>>, String?> {
   const WinesByWineryFamily._()
     : super(
         retry: null,
@@ -114,7 +114,7 @@ final class WinesByWineryFamily extends $Family
         isAutoDispose: true,
       );
 
-  WinesByWineryProvider call(String wineryId) =>
+  WinesByWineryProvider call(String? wineryId) =>
       WinesByWineryProvider._(argument: wineryId, from: this);
 
   @override
@@ -341,7 +341,7 @@ final class WineMutationProvider
   }
 }
 
-String _$wineMutationHash() => r'8438b4c0293abd9efa399fb58873d9d2182a419a';
+String _$wineMutationHash() => r'd383c459a66c9f516e3a284b7f84f419d9cd49e3';
 
 abstract class _$WineMutation extends $Notifier<AsyncValue<void>> {
   AsyncValue<void> build();
