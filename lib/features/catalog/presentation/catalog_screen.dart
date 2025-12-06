@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:winepool_final/features/wines/domain/wine.dart';
@@ -14,13 +15,27 @@ import 'package:winepool_final/features/catalog/application/catalog_controller.d
 //   return await ref.watch(winesWithFiltersProvider(filters));
 // });
 
-class CatalogScreen extends ConsumerWidget {
+class CatalogScreen extends HookConsumerWidget {
   const CatalogScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final filters = ref.watch(catalogFiltersProvider);
     final winesAsync = ref.watch(winesWithFiltersProvider(filters));
+    final scale = useState<double>(1.0);
+    final alignment = useState<Alignment>(Alignment.center);
+    final controller = useAnimationController(duration: const Duration(milliseconds: 100));
+    final curvedAnimation = CurvedAnimation(parent: controller, curve: Curves.easeOut);
+    final animation = Tween<double>(begin: 1.0, end: 1.4).animate(curvedAnimation);
+
+    useEffect(() {
+      void listener() {
+        scale.value = animation.value;
+      }
+
+      animation.addListener(listener);
+      return () => animation.removeListener(listener);
+    }, [animation]);
 
     return WillPopScope(
       onWillPop: () async {
@@ -28,7 +43,29 @@ class CatalogScreen extends ConsumerWidget {
         context.go('/buyer-home'); // Предполагаем, что каталог открывается из buyer-home
         return false;
       },
-      child: Scaffold(
+      child: GestureDetector(
+        onLongPressStart: (LongPressStartDetails details) {
+          // Convert local position to alignment
+          RenderBox renderBox = context.findRenderObject() as RenderBox;
+          Offset localPosition = details.localPosition;
+          Size size = renderBox.size;
+          double dx = (localPosition.dx / size.width - 0.5) * 2; // Convert to range [-1, 1]
+          double dy = (localPosition.dy / size.height - 0.5) * 2; // Convert to range [-1, 1]
+          alignment.value = Alignment(dx, dy);
+          
+          controller
+            ..duration = const Duration(milliseconds: 100);
+          controller.forward();
+        },
+        onLongPressEnd: (LongPressEndDetails details) {
+          controller
+            ..duration = const Duration(milliseconds: 100);
+          controller.reverse();
+        },
+        child: Transform.scale(
+          scale: scale.value,
+          alignment: alignment.value,
+          child: Scaffold(
         appBar: AppBar(
           title: const Text('Каталог вин'),
         ),
@@ -68,8 +105,10 @@ class CatalogScreen extends ConsumerWidget {
             ),
           ],
         ),
-      ),
-    );
+      ), // Закрывающая скобка для Scaffold
+    ), // Закрывающая скобка для Transform.scale
+  ), // Закрывающая скобка для GestureDetector
+); // Закрывающая скобка для WillPopScope
   }
 }
 
