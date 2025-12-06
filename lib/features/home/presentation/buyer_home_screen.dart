@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:winepool_final/features/auth/application/auth_controller.dart';
@@ -6,77 +7,116 @@ import 'package:winepool_final/features/wines/application/wines_controller.dart'
 import 'package:winepool_final/features/wines/domain/wine.dart';
 import 'package:winepool_final/features/wines/presentation/widgets/wine_characteristic_icons.dart';
 
-class BuyerHomeScreen extends ConsumerWidget {
+class BuyerHomeScreen extends HookConsumerWidget {
   const BuyerHomeScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('WinePool'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: () => context.push('/search'),
-            tooltip: 'Поиск',
-          ),
-          IconButton(
-            icon: const Icon(Icons.receipt_long),
-            onPressed: () => context.push('/my-orders'),
-            tooltip: 'Мои заказы',
-          ),
-          IconButton(
-            icon: const Icon(Icons.shopping_cart),
-            onPressed: () => context.push('/cart'),
-          ),
-          IconButton(
-            icon: const Icon(Icons.person),
-            onPressed: () => context.push('/profile'),
-            tooltip: 'Профиль',
-          ),
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () {
-              ref.read(authControllerProvider.notifier).signOut();
-            },
-            tooltip: 'Выйти',
-          ),
+    final scale = useState<double>(1.0);
+    final alignment = useState<Alignment>(Alignment.center);
+    final controller = useAnimationController(duration: const Duration(milliseconds: 100));
+    final curvedAnimation = CurvedAnimation(parent: controller, curve: Curves.easeOut);
+    final animation = Tween<double>(begin: 1.0, end: 1.4).animate(curvedAnimation);
+
+    useEffect(() {
+      void listener() {
+        scale.value = animation.value;
+      }
+
+      animation.addListener(listener);
+      return () => animation.removeListener(listener);
+    }, [animation]);
+
+    return GestureDetector(
+     onLongPressStart: (LongPressStartDetails details) {
+       // Convert local position to alignment
+       RenderBox renderBox = context.findRenderObject() as RenderBox;
+       Offset localPosition = details.localPosition;
+       Size size = renderBox.size;
+       double dx = (localPosition.dx / size.width - 0.5) * 2; // Convert to range [-1, 1]
+       double dy = (localPosition.dy / size.height - 0.5) * 2; // Convert to range [-1, 1]
+       alignment.value = Alignment(dx, dy);
+       
+       controller
+         ..duration = const Duration(milliseconds: 100);
+       controller.forward();
+     },
+     onLongPressEnd: (LongPressEndDetails details) {
+       controller
+         ..duration = const Duration(milliseconds: 100);
+       controller.reverse();
+     },
+     child: Transform.scale(
+        scale: scale.value,
+        alignment: alignment.value,
+        child: Scaffold(
+    appBar: AppBar(
+      title: const Text('WinePool'),
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.search),
+          onPressed: () => context.push('/search'),
+          tooltip: 'Поиск',
+        ),
+        IconButton(
+          icon: const Icon(Icons.receipt_long),
+          onPressed: () => context.push('/my-orders'),
+          tooltip: 'Мои заказы',
+        ),
+        IconButton(
+          icon: const Icon(Icons.shopping_cart),
+          onPressed: () => context.push('/cart'),
+        ),
+        IconButton(
+          icon: const Icon(Icons.person),
+          onPressed: () => context.push('/profile'),
+          tooltip: 'Профиль',
+        ),
+        IconButton(
+          icon: const Icon(Icons.logout),
+          onPressed: () {
+            ref.read(authControllerProvider.notifier).signOut();
+          },
+          tooltip: 'Выйти',
+        ),
+      ],
+    ),
+    body: SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Слайдер с баннерами
+          _buildBannerSlider(),
+          
+          const SizedBox(height: 16),
+          
+          // Слайдер категорий
+          _buildCategorySlider(context),
+          
+          const SizedBox(height: 16),
+          
+          // Поле поиска
+          _buildSearchField(context),
+          
+          const SizedBox(height: 16),
+          
+          // Подборка "Популярные вина"
+          _buildSectionHeader('Популярные вина'),
+          _buildPopularWineList(ref),
+          
+          const SizedBox(height: 16),
+          
+          // Подборка "Новинки"
+          _buildSectionHeader('Новинки'),
+          _buildNewWineList(ref),
+          
+          const SizedBox(height: 16),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Слайдер с баннерами
-            _buildBannerSlider(),
-            
-            const SizedBox(height: 16),
-            
-            // Слайдер категорий
-            _buildCategorySlider(context),
-            
-            const SizedBox(height: 16),
-            
-            // Поле поиска
-            _buildSearchField(context),
-            
-            const SizedBox(height: 16),
-            
-            // Подборка "Популярные вина"
-            _buildSectionHeader('Популярные вина'),
-            _buildPopularWineList(ref),
-            
-            const SizedBox(height: 16),
-            
-            // Подборка "Новинки"
-            _buildSectionHeader('Новинки'),
-            _buildNewWineList(ref),
-            
-            const SizedBox(height: 16),
-          ],
-        ),
-      ),
-    );
+    ),
+  ), // Закрывающая скобка для Scaffold
+), // Закрывающая скобка для Transform.scale
+); // Закрывающая скобка для GestureDetector
   }
 
   // Виджет слайдера с баннерами

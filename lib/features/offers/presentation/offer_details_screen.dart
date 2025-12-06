@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:winepool_final/features/cart/application/cart_controller.dart';
@@ -12,10 +13,10 @@ import 'package:winepool_final/core/providers/supabase_provider.dart';
 import 'package:winepool_final/features/wines/presentation/widgets/wine_characteristic_icons.dart';
 import 'package:winepool_final/features/wines/domain/winery.dart';
 
-class OfferDetailsScreen extends ConsumerWidget {
+class OfferDetailsScreen extends HookConsumerWidget {
   final String offerId;
 
-  const OfferDetailsScreen({
+ const OfferDetailsScreen({
     super.key,
     required this.offerId,
   });
@@ -23,6 +24,7 @@ class OfferDetailsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final offerState = ref.watch(offerDetailsControllerProvider(offerId));
+    final scale = useState<double>(1.0);
 
     return Scaffold(
       appBar: AppBar(
@@ -45,7 +47,7 @@ class OfferDetailsScreen extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Фото вина
-                _buildWineImage(wine.imageUrl),
+                _buildWineImage(wine.imageUrl, scale, context),
                 
                 const SizedBox(height: 16),
                 
@@ -275,9 +277,9 @@ class OfferDetailsScreen extends ConsumerWidget {
         ),
       ),
     );
- }
+  }
 
-  Widget _buildSectionTitle(String title) {
+ Widget _buildSectionTitle(String title) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0),
       child: Text(
@@ -288,9 +290,9 @@ class OfferDetailsScreen extends ConsumerWidget {
         ),
       ),
     );
- }
+  }
 
-  Widget _buildInfoRow(String label, String value) {
+ Widget _buildInfoRow(String label, String value) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0),
       child: Row(
@@ -316,9 +318,9 @@ class OfferDetailsScreen extends ConsumerWidget {
         ],
       ),
     );
- }
+  }
 
-  Widget _buildInfoRowWithIcon(Widget icon, String label, String value) {
+ Widget _buildInfoRowWithIcon(Widget icon, String label, String value) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0),
       child: Row(
@@ -354,31 +356,64 @@ class OfferDetailsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildWineImage(String? imageUrl) {
+  Widget _buildWineImage(String? imageUrl, ValueNotifier<double> scale, BuildContext context) {
     final bool isValidUrl = imageUrl != null && imageUrl.startsWith('http');
-    
-    return Container(
-      width: double.infinity,
-      height: 250,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        color: isValidUrl ? null : Colors.grey[30],
+    final alignment = useState<Alignment>(Alignment.center);
+    final controller = useAnimationController(duration: const Duration(milliseconds: 1000));
+    final curvedAnimation = CurvedAnimation(parent: controller, curve: Curves.easeOut);
+    final animation = Tween<double>(begin: 1.0, end: 1.6).animate(curvedAnimation);
+
+    useEffect(() {
+      void listener() {
+        scale.value = animation.value;
+      }
+
+      animation.addListener(listener);
+      return () => animation.removeListener(listener);
+    }, [animation]);
+
+    return GestureDetector(
+       onLongPressStart: (LongPressStartDetails details) {
+          // Convert local position to alignment
+          RenderBox renderBox = context.findRenderObject() as RenderBox;
+          Offset localPosition = details.localPosition;
+          Size size = renderBox.size;
+          double dx = (localPosition.dx / size.width - 0.5) * 2; // Convert to range [-1, 1]
+          double dy = (localPosition.dy / size.height - 0.5) * 2; // Convert to range [-1, 1]
+          alignment.value = Alignment(dx, dy);
+          
+          controller.forward();
+        },
+        onLongPressEnd: (LongPressEndDetails details) {
+          controller.reverse();
+        },
+       child: Transform.scale(
+        scale: scale.value,
+        alignment: alignment.value,
+        child: Container(
+          width: double.infinity,
+          height: 250,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            color: isValidUrl ? null : Colors.grey[30],
+          ),
+          child: isValidUrl
+              ? Image.network(
+                  imageUrl,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) => const Icon(
+                    Icons.wine_bar,
+                    size: 100,
+                    color: Colors.grey,
+                  ),
+                )
+              : const Icon(
+                  Icons.wine_bar,
+                  size: 100,
+                  color: Colors.grey,
+                ),
+        ),
       ),
-      child: isValidUrl
-          ? Image.network(
-              imageUrl,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) => const Icon(
-                Icons.wine_bar,
-                size: 100,
-                color: Colors.grey,
-              ),
-            )
-          : const Icon(
-              Icons.wine_bar,
-              size: 100,
-              color: Colors.grey,
-            ),
     );
   }
 }
