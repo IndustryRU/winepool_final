@@ -71,8 +71,8 @@ class CatalogScreen extends HookConsumerWidget {
         ),
         body: Column(
           children: [
-            // Панель фильтров
-            FilterPanel(
+            // Горизонтальный слайдер фильтров
+            FilterSlider(
               filters: filters,
               onFiltersChanged: (newFilters) {
                 ref.read(catalogFiltersProvider.notifier).updateFilters(newFilters);
@@ -112,194 +112,280 @@ class CatalogScreen extends HookConsumerWidget {
   }
 }
 
-class FilterPanel extends StatefulWidget {
-  final Map<String, dynamic> filters;
+// Фильтры
+const List<String> filterKeys = [
+  'color',
+  'type',
+  'sugar',
+  'price',
+  'country',
+  'region',
+  'grape',
+  'rating',
+  'year',
+  'volume',
+];
+
+class FilterSlider extends HookConsumerWidget {
+ final Map<String, dynamic> filters;
   final Function(Map<String, dynamic>) onFiltersChanged;
 
-  const FilterPanel({
+  const FilterSlider({
     super.key,
     required this.filters,
     required this.onFiltersChanged,
   });
 
   @override
-  State<FilterPanel> createState() => _FilterPanelState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final selectedFilters = useState<Map<String, dynamic>>(Map.from(filters));
 
-class _FilterPanelState extends State<FilterPanel> {
-  late Map<String, dynamic> _currentFilters;
-
-  @override
-  void initState() {
-    super.initState();
-    _currentFilters = Map.from(widget.filters);
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
-      child: Column(
+      height: 35,
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      child: ListView(
+        scrollDirection: Axis.horizontal,
         children: [
-          // Фильтр по цвету
-          _buildColorFilter(),
-          const SizedBox(height: 16),
-          
-          // Фильтр по типу
-          _buildTypeFilter(),
-          const SizedBox(height: 16),
-          
-          // Фильтр по уровню сахара
-          _buildSugarFilter(),
-          const SizedBox(height: 16),
-          
-          // Фильтр по цене
-          _buildPriceFilter(),
-          
-          // Кнопка применения фильтров
-          const SizedBox(height: 16),
-          Consumer(
-            builder: (context, ref, child) {
-              return ElevatedButton(
-                onPressed: () => _applyFilters(ref),
-                child: const Text('Применить фильтры'),
-              );
-            },
-          ),
+          for (String filterKey in filterKeys)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              child: FilterButton(
+                filterKey: filterKey,
+                isActive: selectedFilters.value.containsKey(filterKey),
+                onPressed: () => _showFilterModal(context, filterKey, selectedFilters, onFiltersChanged),
+              ),
+            ),
         ],
       ),
     );
   }
 
-  Widget _buildColorFilter() {
+  void _showFilterModal(
+    BuildContext context,
+    String filterKey,
+    ValueNotifier<Map<String, dynamic>> selectedFilters,
+    Function(Map<String, dynamic>) onFiltersChanged,
+  ) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (BuildContext context) {
+        return DraggableScrollableSheet(
+          expand: false,
+          builder: (BuildContext context, ScrollController scrollController) {
+            return Container(
+              padding: EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        _getFilterTitle(filterKey),
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          // Сбросить фильтр
+                          selectedFilters.value.remove(filterKey);
+                          selectedFilters.value = Map.from(selectedFilters.value);
+                          onFiltersChanged(selectedFilters.value);
+                          Navigator.of(context).pop();
+                        },
+                        child: Text('Сбросить'),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          // Применить фильтр
+                          onFiltersChanged(selectedFilters.value);
+                          Navigator.of(context).pop();
+                        },
+                        child: Text('Применить'),
+                      ),
+                    ],
+                  ),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      controller: scrollController,
+                      child: _buildFilterContent(context, filterKey, selectedFilters),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  String _getFilterTitle(String filterKey) {
+    switch (filterKey) {
+      case 'color':
+        return 'Цвет';
+      case 'type':
+        return 'Тип';
+      case 'sugar':
+        return 'Сахар';
+      case 'price':
+        return 'Цена';
+      case 'country':
+        return 'Страна';
+      case 'region':
+        return 'Регион';
+      case 'grape':
+        return 'Сорт';
+      case 'rating':
+        return 'Рейтинг';
+      case 'year':
+        return 'Год';
+      case 'volume':
+        return 'Объем';
+      default:
+        return filterKey;
+    }
+  }
+
+  Widget _buildFilterContent(
+    BuildContext context,
+    String filterKey,
+    ValueNotifier<Map<String, dynamic>> selectedFilters,
+  ) {
+    switch (filterKey) {
+      case 'color':
+        return _buildColorFilter(context, selectedFilters);
+      case 'type':
+        return _buildTypeFilter(context, selectedFilters);
+      case 'sugar':
+        return _buildSugarFilter(context, selectedFilters);
+      case 'price':
+        return _buildPriceFilter(context, selectedFilters);
+      case 'country':
+        return _buildCountryFilter(context, selectedFilters);
+      case 'region':
+        return _buildRegionFilter(context, selectedFilters);
+      case 'grape':
+        return _buildGrapeFilter(context, selectedFilters);
+      case 'rating':
+        return _buildRatingFilter(context, selectedFilters);
+      case 'year':
+        return _buildYearFilter(context, selectedFilters);
+      case 'volume':
+        return _buildVolumeFilter(context, selectedFilters);
+      default:
+        return Container();
+    }
+  }
+
+  Widget _buildColorFilter(BuildContext context, ValueNotifier<Map<String, dynamic>> selectedFilters) {
+    final selectedValues = (selectedFilters.value['color'] as List<String>?) ?? [];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Цвет:', style: TextStyle(fontWeight: FontWeight.bold)),
-        const SizedBox(height: 8),
-        Wrap(
-          spacing: 8,
-          children: WineColor.values
-              .where((color) => color != WineColor.unknown)
-              .map((color) => FilterChip(
-                    label: Text(_colorToString(color)),
-                    selected: _currentFilters['color'] == color.name,
-                    onSelected: (selected) {
-                      setState(() {
-                        if (selected) {
-                          _currentFilters['color'] = color.name;
-                        } else {
-                          _currentFilters.remove('color');
-                        }
-                      });
-                    },
-                  ))
-              .toList(),
-        ),
+        for (WineColor color in WineColor.values.where((c) => c != WineColor.unknown))
+          CheckboxListTile(
+            title: Text(color.nameRu),
+            value: selectedValues.contains(color.name),
+            onChanged: (bool? value) {
+              if (value == true) {
+                selectedValues.add(color.name);
+              } else {
+                selectedValues.remove(color.name);
+              }
+              selectedFilters.value['color'] = selectedValues;
+              selectedFilters.value = Map.from(selectedFilters.value);
+            },
+          ),
       ],
     );
   }
 
-  Widget _buildTypeFilter() {
+  Widget _buildTypeFilter(BuildContext context, ValueNotifier<Map<String, dynamic>> selectedFilters) {
+    final selectedValues = (selectedFilters.value['type'] as List<String>?) ?? [];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Тип:', style: TextStyle(fontWeight: FontWeight.bold)),
-        const SizedBox(height: 8),
-        Wrap(
-          spacing: 8,
-          children: WineType.values
-              .where((type) => type != WineType.unknown)
-              .map((type) => FilterChip(
-                    label: Text(_typeToString(type)),
-                    selected: _currentFilters['type'] == type.name,
-                    onSelected: (selected) {
-                      setState(() {
-                        if (selected) {
-                          _currentFilters['type'] = type.name;
-                        } else {
-                          _currentFilters.remove('type');
-                        }
-                      });
-                    },
-                  ))
-              .toList(),
-        ),
+        for (WineType type in WineType.values.where((t) => t != WineType.unknown))
+          CheckboxListTile(
+            title: Text(type.nameRu),
+            value: selectedValues.contains(type.name),
+            onChanged: (bool? value) {
+              if (value == true) {
+                selectedValues.add(type.name);
+              } else {
+                selectedValues.remove(type.name);
+              }
+              selectedFilters.value['type'] = selectedValues;
+              selectedFilters.value = Map.from(selectedFilters.value);
+            },
+          ),
       ],
     );
   }
 
-  Widget _buildSugarFilter() {
+  Widget _buildSugarFilter(BuildContext context, ValueNotifier<Map<String, dynamic>> selectedFilters) {
+    final selectedValues = (selectedFilters.value['sugar'] as List<String>?) ?? [];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Сахар:', style: TextStyle(fontWeight: FontWeight.bold)),
-        const SizedBox(height: 8),
-        Wrap(
-          spacing: 8,
-          children: WineSugar.values
-              .where((sugar) => sugar != WineSugar.unknown)
-              .map((sugar) => FilterChip(
-                    label: Text(_sugarToString(sugar)),
-                    selected: _currentFilters['sugar'] == sugar.name,
-                    onSelected: (selected) {
-                      setState(() {
-                        if (selected) {
-                          _currentFilters['sugar'] = sugar.name;
-                        } else {
-                          _currentFilters.remove('sugar');
-                        }
-                      });
-                    },
-                  ))
-              .toList(),
-        ),
+        for (WineSugar sugar in WineSugar.values.where((s) => s != WineSugar.unknown))
+          CheckboxListTile(
+            title: Text(sugar.nameRu),
+            value: selectedValues.contains(sugar.name),
+            onChanged: (bool? value) {
+              if (value == true) {
+                selectedValues.add(sugar.name);
+              } else {
+                selectedValues.remove(sugar.name);
+              }
+              selectedFilters.value['sugar'] = selectedValues;
+              selectedFilters.value = Map.from(selectedFilters.value);
+            },
+          ),
       ],
     );
   }
 
-  Widget _buildPriceFilter() {
+  Widget _buildPriceFilter(BuildContext context, ValueNotifier<Map<String, dynamic>> selectedFilters) {
+    final minPrice = selectedFilters.value['min_price'] ?? 0;
+    final maxPrice = selectedFilters.value['max_price'] ?? 10000;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Цена:', style: TextStyle(fontWeight: FontWeight.bold)),
-        const SizedBox(height: 8),
+        Text('От ${minPrice} до ${maxPrice}'),
+        RangeSlider(
+          min: 0,
+          max: 10000,
+          divisions: 100,
+          values: RangeValues(minPrice.toDouble(), maxPrice.toDouble()),
+          onChanged: (RangeValues values) {
+            selectedFilters.value['min_price'] = values.start.toInt();
+            selectedFilters.value['max_price'] = values.end.toInt();
+            selectedFilters.value = Map.from(selectedFilters.value);
+          },
+        ),
         Row(
           children: [
             Expanded(
               child: TextField(
-                decoration: const InputDecoration(
-                  labelText: 'Мин. цена',
-                  border: OutlineInputBorder(),
-                ),
+                decoration: InputDecoration(labelText: 'Мин. цена'),
                 keyboardType: TextInputType.number,
                 onChanged: (value) {
-                  setState(() {
-                    if (value.isNotEmpty) {
-                      _currentFilters['min_price'] = int.tryParse(value);
-                    } else {
-                      _currentFilters.remove('min_price');
-                    }
-                  });
+                  final val = int.tryParse(value) ?? 0;
+                  selectedFilters.value['min_price'] = val;
+                  selectedFilters.value = Map.from(selectedFilters.value);
                 },
               ),
             ),
-            const SizedBox(width: 8),
+            SizedBox(width: 16),
             Expanded(
               child: TextField(
-                decoration: const InputDecoration(
-                  labelText: 'Макс. цена',
-                  border: OutlineInputBorder(),
-                ),
+                decoration: InputDecoration(labelText: 'Макс. цена'),
                 keyboardType: TextInputType.number,
                 onChanged: (value) {
-                  setState(() {
-                    if (value.isNotEmpty) {
-                      _currentFilters['max_price'] = int.tryParse(value);
-                    } else {
-                      _currentFilters.remove('max_price');
-                    }
-                  });
+                  final val = int.tryParse(value) ?? 10000;
+                  selectedFilters.value['max_price'] = val;
+                  selectedFilters.value = Map.from(selectedFilters.value);
                 },
               ),
             ),
@@ -309,21 +395,204 @@ class _FilterPanelState extends State<FilterPanel> {
     );
   }
 
-  void _applyFilters(WidgetRef ref) {
-    widget.onFiltersChanged(_currentFilters);
-    // Инвалидируем провайдер с фильтрами, чтобы обновить список вин
-    ref.invalidate(winesWithFiltersProvider(_currentFilters));
+  Widget _buildCountryFilter(BuildContext context, ValueNotifier<Map<String, dynamic>> selectedFilters) {
+    // Заглушка для фильтра страны
+    return TextField(
+      decoration: InputDecoration(labelText: 'Поиск по стране'),
+      onChanged: (value) {
+        // Здесь будет реализация поиска по стране
+        // selectedFilters.value['country'] = value;
+        // selectedFilters.value = Map.from(selectedFilters.value);
+      },
+    );
   }
 
-  String _colorToString(WineColor color) {
-    return color.nameRu;
+  Widget _buildRegionFilter(BuildContext context, ValueNotifier<Map<String, dynamic>> selectedFilters) {
+    // Заглушка для фильтра региона
+    return TextField(
+      decoration: InputDecoration(labelText: 'Поиск по региону'),
+      onChanged: (value) {
+        // Здесь будет реализация поиска по региону
+        // selectedFilters.value['region'] = value;
+        // selectedFilters.value = Map.from(selectedFilters.value);
+      },
+    );
   }
 
-  String _typeToString(WineType type) {
-    return type.nameRu;
+  Widget _buildGrapeFilter(BuildContext context, ValueNotifier<Map<String, dynamic>> selectedFilters) {
+    // Заглушка для фильтра сорта
+    return TextField(
+      decoration: InputDecoration(labelText: 'Поиск по сорту'),
+      onChanged: (value) {
+        // Здесь будет реализация поиска по сорту
+        // selectedFilters.value['grape'] = value;
+        // selectedFilters.value = Map.from(selectedFilters.value);
+      },
+    );
   }
 
-  String _sugarToString(WineSugar sugar) {
-    return sugar.nameRu;
+  Widget _buildRatingFilter(BuildContext context, ValueNotifier<Map<String, dynamic>> selectedFilters) {
+    final rating = selectedFilters.value['rating'] ?? 0.0;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('От ${rating.toStringAsFixed(1)} звезд'),
+        Slider(
+          min: 0,
+          max: 5,
+          divisions: 10,
+          label: rating.toStringAsFixed(1),
+          value: rating,
+          onChanged: (double value) {
+            selectedFilters.value['rating'] = value;
+            selectedFilters.value = Map.from(selectedFilters.value);
+          },
+        ),
+        Row(
+          children: [
+            for (int i = 0; i <= 5; i++)
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () {
+                    selectedFilters.value['rating'] = i.toDouble();
+                    selectedFilters.value = Map.from(selectedFilters.value);
+                  },
+                  child: Text(i.toString()),
+                ),
+              ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildYearFilter(BuildContext context, ValueNotifier<Map<String, dynamic>> selectedFilters) {
+    final minYear = selectedFilters.value['min_year'] ?? 1900;
+    final maxYear = selectedFilters.value['max_year'] ?? DateTime.now().year;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: DropdownButtonFormField<int>(
+                value: minYear,
+                items: [
+                  for (int year = 1900; year <= DateTime.now().year; year++)
+                    DropdownMenuItem(value: year, child: Text(year.toString())),
+                ],
+                onChanged: (value) {
+                  selectedFilters.value['min_year'] = value;
+                  selectedFilters.value = Map.from(selectedFilters.value);
+                },
+              ),
+            ),
+            SizedBox(width: 16),
+            Text('до'),
+            SizedBox(width: 16),
+            Expanded(
+              child: DropdownButtonFormField<int>(
+                value: maxYear,
+                items: [
+                  for (int year = 1900; year <= DateTime.now().year; year++)
+                    DropdownMenuItem(value: year, child: Text(year.toString())),
+                ],
+                onChanged: (value) {
+                  selectedFilters.value['max_year'] = value;
+                  selectedFilters.value = Map.from(selectedFilters.value);
+                },
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildVolumeFilter(BuildContext context, ValueNotifier<Map<String, dynamic>> selectedFilters) {
+    final selectedValues = (selectedFilters.value['volume'] as List<String>?) ?? [];
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        for (String volume in ['0.375', '0.75', '1.5', '3', '6'])
+          CheckboxListTile(
+            title: Text('${volume} л'),
+            value: selectedValues.contains(volume),
+            onChanged: (bool? value) {
+              if (value == true) {
+                selectedValues.add(volume);
+              } else {
+                selectedValues.remove(volume);
+              }
+              selectedFilters.value['volume'] = selectedValues;
+              selectedFilters.value = Map.from(selectedFilters.value);
+            },
+          ),
+      ],
+    );
+  }
+}
+
+class FilterButton extends StatelessWidget {
+  final String filterKey;
+  final bool isActive;
+  final VoidCallback onPressed;
+
+  const FilterButton({
+    super.key,
+    required this.filterKey,
+    required this.isActive,
+    required this.onPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: isActive ? Colors.grey[400] : Colors.grey[200],
+        foregroundColor: Colors.black87,
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (filterKey == 'price') ...[
+            Icon(Icons.monetization_on_outlined, size: 16),
+            const SizedBox(width: 4),
+          ] else if (filterKey == 'rating') ...[
+            Icon(Icons.star_border_outlined, size: 16),
+            const SizedBox(width: 4),
+          ],
+          Text(_getFilterTitle(filterKey)),
+        ],
+      ),
+    );
+  }
+
+  String _getFilterTitle(String filterKey) {
+    switch (filterKey) {
+      case 'color':
+        return 'Цвет';
+      case 'type':
+        return 'Тип';
+      case 'sugar':
+        return 'Сахар';
+      case 'price':
+        return 'Цена';
+      case 'country':
+        return 'Страна';
+      case 'region':
+        return 'Регион';
+      case 'grape':
+        return 'Сорт';
+      case 'rating':
+        return 'Рейтинг';
+      case 'year':
+        return 'Год';
+      case 'volume':
+        return 'Объем';
+      default:
+        return filterKey;
+    }
   }
 }

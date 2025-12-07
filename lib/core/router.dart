@@ -27,6 +27,7 @@ import 'package:winepool_final/features/orders/presentation/my_orders_screen.dar
 import 'package:winepool_final/features/profile/presentation/profile_screen.dart';
 import 'package:winepool_final/features/profile/presentation/ebs_verification_screen.dart';
 import 'package:winepool_final/features/catalog/presentation/catalog_screen.dart';
+import 'package:winepool_final/features/catalog/presentation/category_screen.dart';
 import 'package:winepool_final/features/search/presentation/search_results_screen.dart';
 
 // Создаем ключ над провайдером
@@ -57,6 +58,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/catalog',
+        builder: (_, __) => const CategoryScreen(),
+      ),
+      GoRoute(
+        path: '/wines-catalog',
         builder: (_, __) => const CatalogScreen(),
       ),
       ShellRoute(
