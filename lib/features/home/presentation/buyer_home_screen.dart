@@ -125,14 +125,14 @@ class BuyerHomeScreen extends HookConsumerWidget {
       height: 200,
       margin: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
-        color: Colors.grey[300],
+        color: Colors.black,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Stack(
         children: [
           Positioned.fill(
             child: Image.asset(
-              'assets/images/massandra_banner.png',
+              'assets/images/WP_banner1.png',
               fit: BoxFit.contain,
             ),
           ),
@@ -164,10 +164,12 @@ class BuyerHomeScreen extends HookConsumerWidget {
   // Слайдер категорий
   Widget _buildCategorySlider(BuildContext context) {
     final categories = [
-      {'name': 'Каталог', 'icon': Icons.category},
+      {'name': 'Винотека', 'icon': Icons.wine_bar},
+      {'name': 'WinPool', 'icon': Icons.location_on},
       {'name': 'Акции', 'icon': Icons.local_offer},
       {'name': 'Подборки', 'icon': Icons.collections},
-      {'name': 'Бренды', 'icon': Icons.business},
+      {'name': 'Винодельни', 'icon': Icons.business},
+      {'name': 'Сообщество', 'icon': Icons.people},
       {'name': 'Помощь', 'icon': Icons.help},
     ];
 
@@ -182,6 +184,8 @@ class BuyerHomeScreen extends HookConsumerWidget {
             onTap: () {
               if (category['name'] == 'Каталог') {
                 context.go('/catalog');
+              } else if (category['name'] == 'Винотека') {
+                context.go('/catalog'); // или другой маршрут, если нужно
               }
             },
             child: Container(
