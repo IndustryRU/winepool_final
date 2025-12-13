@@ -117,13 +117,40 @@ class WinesRepository {
         if (value != null) {
           switch (key) {
             case 'color':
-              query = query.eq('color', value);
+              // Проверяем, является ли значение списком (для множественного выбора)
+              if (value is List) {
+                if (value.isNotEmpty) {
+                  // Используем in для фильтрации по нескольким цветам
+                  query = query.inFilter('color', value);
+                }
+              } else {
+                // Для обратной совместимости с одиночным значением
+                query = query.eq('color', value);
+              }
               break;
             case 'type':
-              query = query.eq('type', value);
+              // Проверяем, является ли значение списком (для множественного выбора)
+              if (value is List) {
+                if (value.isNotEmpty) {
+                  // Используем in для фильтрации по нескольким типам
+                  query = query.inFilter('type', value);
+                }
+              } else {
+                // Для обратной совместимости с одиночным значением
+                query = query.eq('type', value);
+              }
               break;
             case 'sugar':
-              query = query.eq('sugar', value);
+              // Проверяем, является ли значение списком (для множественного выбора)
+              if (value is List) {
+                if (value.isNotEmpty) {
+                  // Используем in для фильтрации по нескольким уровням сахара
+                  query = query.inFilter('sugar', value);
+                }
+              } else {
+                // Для обратной совместимости с одиночным значением
+                query = query.eq('sugar', value);
+              }
               break;
             case 'min_price':
               query = query.gte('price', value);
@@ -133,6 +160,12 @@ class WinesRepository {
               break;
             case 'vintage':
               query = query.eq('vintage', value);
+              break;
+            case 'min_year':
+              query = query.gte('vintage', value);
+              break;
+            case 'max_year':
+              query = query.lte('vintage', value);
               break;
             case 'min_rating':
               query = query.gte('average_rating', value);
@@ -170,6 +203,54 @@ class WinesRepository {
                 case 'year_desc':
                   query = query.order('vintage', ascending: false);
                   break;
+              }
+              break;
+            case 'country':
+              // Проверяем, является ли значение списком (для множественного выбора)
+              if (value is List) {
+                if (value.isNotEmpty) {
+                  // Используем in для фильтрации по нескольким странам
+                  query = query.inFilter('wineries.country_code', value);
+                }
+              } else {
+                // Для обратной совместимости с одиночным значением
+                query = query.eq('wineries.country_code', value);
+              }
+              break;
+            case 'region':
+              // Проверяем, является ли значение списком (для множественного выбора)
+              if (value is List) {
+                if (value.isNotEmpty) {
+                  // Используем in для фильтрации по нескольким регионам
+                  query = query.inFilter('region_code', value);
+                }
+              } else {
+                // Для обратной совместимости с одиночным значением
+                query = query.eq('region_code', value);
+              }
+              break;
+            case 'grape':
+              // Проверяем, является ли значение списком (для множественного выбора)
+              if (value is List) {
+                if (value.isNotEmpty) {
+                  // Используем in для фильтрации по нескольким сортам
+                  query = query.inFilter('grape_variety', value);
+                }
+              } else {
+                // Для обратной совместимости с одиночным значением
+                query = query.eq('grape_variety', value);
+              }
+              break;
+            case 'volume':
+              // Проверяем, является ли значение списком (для множественного выбора)
+              if (value is List) {
+                if (value.isNotEmpty) {
+                  // Используем in для фильтрации по нескольким объемам
+                  query = query.inFilter('volume', value);
+                }
+              } else {
+                // Для обратной совместимости с одиночным значением
+                query = query.eq('volume', value);
               }
               break;
             // Можно добавить другие фильтры по мере необходимости

@@ -8,6 +8,16 @@ import 'package:winepool_final/features/wines/application/wines_controller.dart'
 import 'package:winepool_final/features/wines/domain/wine_characteristics.dart';
 import 'package:winepool_final/features/catalog/application/catalog_controller.dart';
 import 'package:winepool_final/features/catalog/presentation/widgets/filter_helpers.dart';
+import 'package:winepool_final/features/catalog/presentation/widgets/price_filter_widget.dart';
+import 'package:winepool_final/features/catalog/presentation/widgets/color_filter_widget.dart';
+import 'package:winepool_final/features/catalog/presentation/widgets/type_filter_widget.dart';
+import 'package:winepool_final/features/catalog/presentation/widgets/sugar_filter_widget.dart';
+import 'package:winepool_final/features/catalog/presentation/widgets/country_filter_widget.dart';
+import 'package:winepool_final/features/catalog/presentation/widgets/region_filter_widget.dart';
+import 'package:winepool_final/features/catalog/presentation/widgets/grape_filter_widget.dart';
+import 'package:winepool_final/features/catalog/presentation/widgets/rating_filter_widget.dart';
+import 'package:winepool_final/features/catalog/presentation/widgets/year_filter_widget.dart';
+import 'package:winepool_final/features/catalog/presentation/widgets/volume_filter_widget.dart';
 
 // Провайдер для фильтров
 
@@ -47,7 +57,9 @@ class CatalogScreen extends HookConsumerWidget {
       child: GestureDetector(
         onLongPressStart: (LongPressStartDetails details) {
           // Convert local position to alignment
-          RenderBox renderBox = context.findRenderObject() as RenderBox;
+          final RenderBox? renderBox = context.findRenderObject() as RenderBox?;
+          if (renderBox == null) return; // Проверяем, что RenderBox не null
+          
           Offset localPosition = details.localPosition;
           Size size = renderBox.size;
           double dx = (localPosition.dx / size.width - 0.5) * 2; // Convert to range [-1, 1]
@@ -116,7 +128,7 @@ class CatalogScreen extends HookConsumerWidget {
     ), // Закрывающая скобка для Transform.scale
   ), // Закрывающая скобка для GestureDetector
 ); // Закрывающая скобка для WillPopScope
-  }
+ }
 }
 
 // Фильтры
@@ -130,10 +142,10 @@ const List<String> filterKeys = [
   'grape',
   'rating',
   'year',
-  'volume',
+ 'volume',
 ];
 
-class FilterSlider extends HookConsumerWidget {
+class FilterSlider extends StatefulWidget {
   final Map<String, dynamic> filters;
    final Function(Map<String, dynamic>) onFiltersChanged;
 
@@ -143,9 +155,21 @@ class FilterSlider extends HookConsumerWidget {
     required this.onFiltersChanged,
   });
 
-   @override
-   Widget build(BuildContext context, WidgetRef ref) {
-    final selectedFilters = useState<Map<String, dynamic>>(Map.from(filters));
+  @override
+ State<FilterSlider> createState() => _FilterSliderState();
+}
+
+class _FilterSliderState extends State<FilterSlider> {
+ late ValueNotifier<Map<String, dynamic>> selectedFilters;
+
+  @override
+ void initState() {
+    super.initState();
+    selectedFilters = ValueNotifier<Map<String, dynamic>>(Map.from(widget.filters));
+  }
+
+  @override
+ Widget build(BuildContext context) {
     final sortOption = selectedFilters.value['sort_option'] ?? '';
 
     return Container(
@@ -160,7 +184,7 @@ class FilterSlider extends HookConsumerWidget {
             child: FilterButton(
               filterKey: 'sort',
               isActive: sortOption.isNotEmpty,
-              onPressed: () => _showSortModal(context, selectedFilters, onFiltersChanged),
+              onPressed: () => _showSortModal(context, selectedFilters, widget.onFiltersChanged),
             ),
           ),
           for (String filterKey in filterKeys)
@@ -169,7 +193,7 @@ class FilterSlider extends HookConsumerWidget {
               child: FilterButton(
                 filterKey: filterKey,
                 isActive: selectedFilters.value.containsKey(filterKey),
-                onPressed: () => _showFilterModal(context, filterKey, selectedFilters, onFiltersChanged),
+                onPressed: () => _showFilterModal(context, filterKey, selectedFilters, widget.onFiltersChanged),
               ),
             ),
         ],
@@ -182,7 +206,7 @@ class FilterSlider extends HookConsumerWidget {
     String filterKey,
     ValueNotifier<Map<String, dynamic>> selectedFilters,
     Function(Map<String, dynamic>) onFiltersChanged,
-  ) {
+ ) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -236,7 +260,7 @@ class FilterSlider extends HookConsumerWidget {
     );
   }
 
-  void _showSortModal(
+ void _showSortModal(
     BuildContext context,
     ValueNotifier<Map<String, dynamic>> selectedFilters,
     Function(Map<String, dynamic>) onFiltersChanged,
@@ -362,9 +386,8 @@ class FilterSlider extends HookConsumerWidget {
         );
       },
     );
-  }
+ }
     
-
   Widget _buildFilterContent(
     BuildContext context,
     String filterKey,
@@ -372,286 +395,31 @@ class FilterSlider extends HookConsumerWidget {
   ) {
     switch (filterKey) {
       case 'color':
-        return _buildColorFilter(context, selectedFilters);
+        return buildColorFilter(context, selectedFilters);
       case 'type':
-        return _buildTypeFilter(context, selectedFilters);
+        return buildTypeFilter(context, selectedFilters);
       case 'sugar':
-        return _buildSugarFilter(context, selectedFilters);
+        return buildSugarFilter(context, selectedFilters);
       case 'price':
-        return _buildPriceFilter(context, selectedFilters);
+        return PriceFilterWidget(selectedFilters: selectedFilters);
       case 'country':
-        return _buildCountryFilter(context, selectedFilters);
+        return buildCountryFilter(context, selectedFilters);
       case 'region':
-        return _buildRegionFilter(context, selectedFilters);
+        return buildRegionFilter(context, selectedFilters);
       case 'grape':
-        return _buildGrapeFilter(context, selectedFilters);
+        return buildGrapeFilter(context, selectedFilters);
       case 'rating':
-        return _buildRatingFilter(context, selectedFilters);
+        return buildRatingFilter(context, selectedFilters);
       case 'year':
-        return _buildYearFilter(context, selectedFilters);
+        return buildYearFilter(context, selectedFilters);
       case 'volume':
-        return _buildVolumeFilter(context, selectedFilters);
+        return buildVolumeFilter(context, selectedFilters);
       default:
         return Container();
     }
   }
 
-  Widget _buildColorFilter(BuildContext context, ValueNotifier<Map<String, dynamic>> selectedFilters) {
-    final selectedValues = (selectedFilters.value['color'] as List<String>?) ?? [];
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        for (WineColor color in WineColor.values.where((c) => c != WineColor.unknown))
-          CheckboxListTile(
-            title: Text(color.nameRu),
-            value: selectedValues.contains(color.name),
-            onChanged: (bool? value) {
-              if (value == true) {
-                selectedValues.add(color.name);
-              } else {
-                selectedValues.remove(color.name);
-              }
-              selectedFilters.value['color'] = selectedValues;
-              selectedFilters.value = Map.from(selectedFilters.value);
-            },
-          ),
-      ],
-    );
-  }
-
-  Widget _buildTypeFilter(BuildContext context, ValueNotifier<Map<String, dynamic>> selectedFilters) {
-    final selectedValues = (selectedFilters.value['type'] as List<String>?) ?? [];
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        for (WineType type in WineType.values.where((t) => t != WineType.unknown))
-          CheckboxListTile(
-            title: Text(type.nameRu),
-            value: selectedValues.contains(type.name),
-            onChanged: (bool? value) {
-              if (value == true) {
-                selectedValues.add(type.name);
-              } else {
-                selectedValues.remove(type.name);
-              }
-              selectedFilters.value['type'] = selectedValues;
-              selectedFilters.value = Map.from(selectedFilters.value);
-            },
-          ),
-      ],
-    );
-  }
-
-  Widget _buildSugarFilter(BuildContext context, ValueNotifier<Map<String, dynamic>> selectedFilters) {
-    final selectedValues = (selectedFilters.value['sugar'] as List<String>?) ?? [];
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        for (WineSugar sugar in WineSugar.values.where((s) => s != WineSugar.unknown))
-          CheckboxListTile(
-            title: Text(sugar.nameRu),
-            value: selectedValues.contains(sugar.name),
-            onChanged: (bool? value) {
-              if (value == true) {
-                selectedValues.add(sugar.name);
-              } else {
-                selectedValues.remove(sugar.name);
-              }
-              selectedFilters.value['sugar'] = selectedValues;
-              selectedFilters.value = Map.from(selectedFilters.value);
-            },
-          ),
-      ],
-    );
-  }
-
-  Widget _buildPriceFilter(BuildContext context, ValueNotifier<Map<String, dynamic>> selectedFilters) {
-    final minPrice = selectedFilters.value['min_price'] ?? 0;
-    final maxPrice = selectedFilters.value['max_price'] ?? 10000;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text('От ${minPrice} до ${maxPrice}'),
-        RangeSlider(
-          min: 0,
-          max: 10000,
-          divisions: 100,
-          values: RangeValues(minPrice.toDouble(), maxPrice.toDouble()),
-          onChanged: (RangeValues values) {
-            selectedFilters.value['min_price'] = values.start.toInt();
-            selectedFilters.value['max_price'] = values.end.toInt();
-            selectedFilters.value = Map.from(selectedFilters.value);
-          },
-        ),
-        Row(
-          children: [
-            Expanded(
-              child: TextField(
-                decoration: InputDecoration(labelText: 'Мин. цена'),
-                keyboardType: TextInputType.number,
-                onChanged: (value) {
-                  final val = int.tryParse(value) ?? 0;
-                  selectedFilters.value['min_price'] = val;
-                  selectedFilters.value = Map.from(selectedFilters.value);
-                },
-              ),
-            ),
-            SizedBox(width: 16),
-            Expanded(
-              child: TextField(
-                decoration: InputDecoration(labelText: 'Макс. цена'),
-                keyboardType: TextInputType.number,
-                onChanged: (value) {
-                  final val = int.tryParse(value) ?? 10000;
-                  selectedFilters.value['max_price'] = val;
-                  selectedFilters.value = Map.from(selectedFilters.value);
-                },
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildCountryFilter(BuildContext context, ValueNotifier<Map<String, dynamic>> selectedFilters) {
-    // Заглушка для фильтра страны
-    return TextField(
-      decoration: InputDecoration(labelText: 'Поиск по стране'),
-      onChanged: (value) {
-        // Здесь будет реализация поиска по стране
-        // selectedFilters.value['country'] = value;
-        // selectedFilters.value = Map.from(selectedFilters.value);
-      },
-    );
-  }
-
-  Widget _buildRegionFilter(BuildContext context, ValueNotifier<Map<String, dynamic>> selectedFilters) {
-    // Заглушка для фильтра региона
-    return TextField(
-      decoration: InputDecoration(labelText: 'Поиск по региону'),
-      onChanged: (value) {
-        // Здесь будет реализация поиска по региону
-        // selectedFilters.value['region'] = value;
-        // selectedFilters.value = Map.from(selectedFilters.value);
-      },
-    );
-  }
-
-  Widget _buildGrapeFilter(BuildContext context, ValueNotifier<Map<String, dynamic>> selectedFilters) {
-    // Заглушка для фильтра сорта
-    return TextField(
-      decoration: InputDecoration(labelText: 'Поиск по сорту'),
-      onChanged: (value) {
-        // Здесь будет реализация поиска по сорту
-        // selectedFilters.value['grape'] = value;
-        // selectedFilters.value = Map.from(selectedFilters.value);
-      },
-    );
-  }
-
-  Widget _buildRatingFilter(BuildContext context, ValueNotifier<Map<String, dynamic>> selectedFilters) {
-    final rating = selectedFilters.value['rating'] ?? 0.0;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text('От ${rating.toStringAsFixed(1)} звезд'),
-        Slider(
-          min: 0,
-          max: 5,
-          divisions: 10,
-          label: rating.toStringAsFixed(1),
-          value: rating,
-          onChanged: (double value) {
-            selectedFilters.value['rating'] = value;
-            selectedFilters.value = Map.from(selectedFilters.value);
-          },
-        ),
-        Row(
-          children: [
-            for (int i = 0; i <= 5; i++)
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: () {
-                    selectedFilters.value['rating'] = i.toDouble();
-                    selectedFilters.value = Map.from(selectedFilters.value);
-                  },
-                  child: Text(i.toString()),
-                ),
-              ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildYearFilter(BuildContext context, ValueNotifier<Map<String, dynamic>> selectedFilters) {
-    final minYear = selectedFilters.value['min_year'] ?? 1900;
-    final maxYear = selectedFilters.value['max_year'] ?? DateTime.now().year;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Expanded(
-              child: DropdownButtonFormField<int>(
-                value: minYear,
-                items: [
-                  for (int year = 1900; year <= DateTime.now().year; year++)
-                    DropdownMenuItem(value: year, child: Text(year.toString())),
-                ],
-                onChanged: (value) {
-                  selectedFilters.value['min_year'] = value;
-                  selectedFilters.value = Map.from(selectedFilters.value);
-                },
-              ),
-            ),
-            SizedBox(width: 16),
-            Text('до'),
-            SizedBox(width: 16),
-            Expanded(
-              child: DropdownButtonFormField<int>(
-                value: maxYear,
-                items: [
-                  for (int year = 1900; year <= DateTime.now().year; year++)
-                    DropdownMenuItem(value: year, child: Text(year.toString())),
-                ],
-                onChanged: (value) {
-                  selectedFilters.value['max_year'] = value;
-                  selectedFilters.value = Map.from(selectedFilters.value);
-                },
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildVolumeFilter(BuildContext context, ValueNotifier<Map<String, dynamic>> selectedFilters) {
-    final selectedValues = (selectedFilters.value['volume'] as List<String>?) ?? [];
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        for (String volume in ['0.375', '0.75', '1.5', '3', '6'])
-          CheckboxListTile(
-            title: Text('${volume} л'),
-            value: selectedValues.contains(volume),
-            onChanged: (bool? value) {
-              if (value == true) {
-                selectedValues.add(volume);
-              } else {
-                selectedValues.remove(volume);
-              }
-              selectedFilters.value['volume'] = selectedValues;
-              selectedFilters.value = Map.from(selectedFilters.value);
-            },
-          ),
-      ],
-    );
-  }
 }
-
 
 class FilterButton extends StatelessWidget {
   final String filterKey;
@@ -666,11 +434,11 @@ class FilterButton extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+ Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
-        backgroundColor: isActive ? Colors.grey[400] : Colors.grey[200],
+        backgroundColor: isActive ? Colors.grey[40] : Colors.grey[200],
         foregroundColor: Colors.black87,
       ),
       child: Row(
@@ -692,4 +460,34 @@ class FilterButton extends StatelessWidget {
     );
   }
 
+}
+
+// Вспомогательная функция для получения заголовка фильтра
+String getFilterTitle(String filterKey) {
+  switch (filterKey) {
+    case 'sort':
+      return 'Порядок';
+    case 'color':
+      return 'Цвет';
+    case 'type':
+      return 'Тип';
+    case 'sugar':
+      return 'Сахар';
+    case 'price':
+      return 'Цена';
+    case 'country':
+      return 'Страна';
+    case 'region':
+      return 'Регион';
+    case 'grape':
+      return 'Сорт';
+    case 'rating':
+      return 'Рейтинг';
+    case 'year':
+      return 'Год';
+    case 'volume':
+      return 'Объем';
+    default:
+      return filterKey;
+  }
 }
