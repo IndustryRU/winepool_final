@@ -289,7 +289,7 @@ final class WinesWithFiltersProvider
   }
 }
 
-String _$winesWithFiltersHash() => r'ab89d9e0e65eab9d6efcecfbd1e53de7a9ece908';
+String _$winesWithFiltersHash() => r'30447becc7e1edc73ae58c89a295f03a974815e8';
 
 final class WinesWithFiltersFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<List<Wine>>, Map<String, dynamic>> {

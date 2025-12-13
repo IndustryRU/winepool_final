@@ -9,8 +9,31 @@ class WineTile extends StatelessWidget {
   const WineTile({super.key, required this.wine, this.isSearch = false});
 
   @override
-  Widget build(BuildContext context) {
+ Widget build(BuildContext context) {
     print(wine.winery);
+    
+    // Вычисляем минимальную и максимальную цену из предложений
+    String priceInfo = '';
+    if (wine.offers != null && wine.offers!.isNotEmpty) {
+      final prices = wine.offers!.map((offer) => offer.price ?? 0).toList();
+      prices.removeWhere((price) => price == 0); // Убираем нулевые цены
+      
+      if (prices.isNotEmpty) {
+        final minPrice = prices.reduce((a, b) => a < b ? a : b);
+        final maxPrice = prices.reduce((a, b) => a > b ? a : b);
+        
+        if (minPrice == maxPrice) {
+          priceInfo = '${minPrice.toStringAsFixed(0)} ₽';
+        } else {
+          priceInfo = 'от ${minPrice.toStringAsFixed(0)} до ${maxPrice.toStringAsFixed(0)} ₽';
+        }
+      } else {
+        priceInfo = 'Цена не указана';
+      }
+    } else {
+      priceInfo = 'Цена не указана';
+    }
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -61,12 +84,26 @@ class WineTile extends StatelessWidget {
                     ),
                   ),
                   WineCharacteristicIconsColumn(wine: wine, iconSize: 16.0, isSearch: isSearch),
-                  Text(
-                    '${wine.averageRating != null ? '${wine.averageRating} ★' : ''}',
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                    ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          priceInfo,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                      if (wine.averageRating != null)
+                        Text(
+                          '${wine.averageRating} ★',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                    ],
                   ),
                 ],
               ),

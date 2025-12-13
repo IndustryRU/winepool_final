@@ -34,6 +34,7 @@ _Wine _$WineFromJson(Map<String, dynamic> json) => _Wine(
       ? null
       : DateTime.parse(json['updated_at'] as String),
   isDeleted: json['is_deleted'] as bool? ?? false,
+  offers: _offersFromJson(json['offers']),
 );
 
 Map<String, dynamic> _$WineToJson(_Wine instance) => <String, dynamic>{

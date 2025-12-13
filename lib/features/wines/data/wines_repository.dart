@@ -110,160 +110,36 @@ class WinesRepository {
   }
 
   Future<List<Wine>> fetchWines(Map<String, dynamic> filters) async {
-      var query = _supabaseClient.from('wines').select('*, wineries:winery_id(*, country:country_code(*))') as dynamic;
-
-      // Применяем фильтры
-      filters.forEach((key, value) {
-        if (value != null) {
-          switch (key) {
-            case 'color':
-              // Проверяем, является ли значение списком (для множественного выбора)
-              if (value is List) {
-                if (value.isNotEmpty) {
-                  // Используем in для фильтрации по нескольким цветам
-                  query = query.inFilter('color', value);
-                }
-              } else {
-                // Для обратной совместимости с одиночным значением
-                query = query.eq('color', value);
-              }
-              break;
-            case 'type':
-              // Проверяем, является ли значение списком (для множественного выбора)
-              if (value is List) {
-                if (value.isNotEmpty) {
-                  // Используем in для фильтрации по нескольким типам
-                  query = query.inFilter('type', value);
-                }
-              } else {
-                // Для обратной совместимости с одиночным значением
-                query = query.eq('type', value);
-              }
-              break;
-            case 'sugar':
-              // Проверяем, является ли значение списком (для множественного выбора)
-              if (value is List) {
-                if (value.isNotEmpty) {
-                  // Используем in для фильтрации по нескольким уровням сахара
-                  query = query.inFilter('sugar', value);
-                }
-              } else {
-                // Для обратной совместимости с одиночным значением
-                query = query.eq('sugar', value);
-              }
-              break;
-            case 'min_price':
-              query = query.gte('price', value);
-              break;
-            case 'max_price':
-              query = query.lte('price', value);
-              break;
-            case 'vintage':
-              query = query.eq('vintage', value);
-              break;
-            case 'min_year':
-              query = query.gte('vintage', value);
-              break;
-            case 'max_year':
-              query = query.lte('vintage', value);
-              break;
-            case 'min_rating':
-              query = query.gte('average_rating', value);
-              break;
-            case 'max_rating':
-              query = query.lte('average_rating', value);
-              break;
-            case 'winery_id':
-              query = query.eq('winery_id', value);
-              break;
-            case 'sort_option':
-              // Обработка параметров сортировки
-              switch (value) {
-                case 'price_asc':
-                  query = query.order('price', ascending: true);
-                  break;
-                case 'price_desc':
-                  query = query.order('price', ascending: false);
-                  break;
-                case 'rating_asc':
-                  query = query.order('average_rating', ascending: true);
-                  break;
-                case 'rating_desc':
-                  query = query.order('average_rating', ascending: false);
-                  break;
-                case 'name_asc':
-                  query = query.order('name', ascending: true);
-                  break;
-                case 'name_desc':
-                  query = query.order('name', ascending: false);
-                  break;
-                case 'year_asc':
-                  query = query.order('vintage', ascending: true);
-                  break;
-                case 'year_desc':
-                  query = query.order('vintage', ascending: false);
-                  break;
-              }
-              break;
-            case 'country':
-              // Проверяем, является ли значение списком (для множественного выбора)
-              if (value is List) {
-                if (value.isNotEmpty) {
-                  // Используем in для фильтрации по нескольким странам
-                  query = query.inFilter('wineries.country_code', value);
-                }
-              } else {
-                // Для обратной совместимости с одиночным значением
-                query = query.eq('wineries.country_code', value);
-              }
-              break;
-            case 'region':
-              // Проверяем, является ли значение списком (для множественного выбора)
-              if (value is List) {
-                if (value.isNotEmpty) {
-                  // Используем in для фильтрации по нескольким регионам
-                  query = query.inFilter('region_code', value);
-                }
-              } else {
-                // Для обратной совместимости с одиночным значением
-                query = query.eq('region_code', value);
-              }
-              break;
-            case 'grape':
-              // Проверяем, является ли значение списком (для множественного выбора)
-              if (value is List) {
-                if (value.isNotEmpty) {
-                  // Используем in для фильтрации по нескольким сортам
-                  query = query.inFilter('grape_variety', value);
-                }
-              } else {
-                // Для обратной совместимости с одиночным значением
-                query = query.eq('grape_variety', value);
-              }
-              break;
-            case 'volume':
-              // Проверяем, является ли значение списком (для множественного выбора)
-              if (value is List) {
-                if (value.isNotEmpty) {
-                  // Используем in для фильтрации по нескольким объемам
-                  query = query.inFilter('volume', value);
-                }
-              } else {
-                // Для обратной совместимости с одиночным значением
-                query = query.eq('volume', value);
-              }
-              break;
-            // Можно добавить другие фильтры по мере необходимости
-          }
-        }
+    try {
+      // Вызываем RPC-функцию с фильтрами
+      final response = await _supabaseClient.rpc('get_wines_with_prices', params: {
+        'filters': filters,
       });
 
-      final List<dynamic> response = await query;
-      print('--- FETCH WINES WITH FILTERS RESPONSE ---');
+      print('--- FETCH WINES WITH RPC RESPONSE ---');
       print(response);
-      print('--- END FETCH WINES WITH FILTERS RESPONSE ---');
-      return response.map((json) => Wine.fromJson(json)).toList();
+      print('--- END FETCH WINES WITH RPC RESPONSE ---');
+
+      // Обрабатываем результат, так как теперь мы получаем JSONB-объекты
+      final List<dynamic> results = response as List<dynamic>;
+      final processedResponse = results.map((item) {
+        if (item is Map<String, dynamic>) {
+          // Извлекаем данные из поля 'result', которое возвращает наша функция
+          return item['result'] as Map<String, dynamic>;
+        } else if (item is Map<String, dynamic> && item.containsKey('result')) {
+          return (item['result'] as Map<String, dynamic>?) ?? {};
+        } else {
+          // Если структура отличается, возвращаем как есть
+          return item is Map<String, dynamic> ? item : {};
+        }
+      }).whereType<Map<String, dynamic>>().toList();
+
+      return processedResponse.map((json) => Wine.fromJson(json)).toList();
+    } catch (e) {
+      print('Error in fetchWines: $e');
+      rethrow;
     }
+  }
 
   Future<Map<String, dynamic>> searchAll(String query, [Set<String> categories = const {}]) async {
     final searchCategories = categories.isEmpty
@@ -283,5 +159,5 @@ class WinesRepository {
       log('Error in searchAll: $e');
       rethrow;
     }
- }
+  }
 }

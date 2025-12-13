@@ -11,7 +11,7 @@ class PriceFilterWidget extends HookConsumerWidget {
   });
 
   @override
- Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final minPrice = selectedFilters.value['min_price'] ?? 0;
     final maxPrice = selectedFilters.value['max_price'] ?? 10000;
     final currentMinPrice = useState(minPrice);
@@ -36,10 +36,30 @@ class PriceFilterWidget extends HookConsumerWidget {
           min: 0,
           max: 10000,
           divisions: 100, // Шаг 100 руб, так как (10000-0)/100 = 100
-          values: RangeValues(currentMinPrice.value.toDouble(), currentMaxPrice.value.toDouble()),
+          values: RangeValues(
+            currentMinPrice.value.toDouble(),
+            currentMaxPrice.value.toDouble()
+          ),
           onChanged: (RangeValues values) {
-            final newMin = (values.start ~/ 100) * 100; // Округляем до сотен
-            final newMax = (values.end ~/ 10) * 100;   // Округляем до сотен (исправлено: было ~/ 10)
+            double newStart = values.start;
+            double newEnd = values.end;
+            
+            // Проверяем, что значения находятся в допустимых пределах
+            if (newEnd > 10000) {
+              newEnd = 10000;
+            }
+            if (newStart < 0) {
+              newStart = 0;
+            }
+            
+            // Убедимся, что start не больше end
+            if (newStart > newEnd) {
+              newStart = newEnd;
+            }
+            
+            // Округляем до сотен
+            final newMin = (newStart ~/ 100) * 100;
+            final newMax = (newEnd ~/ 100) * 100;
             
             currentMinPrice.value = newMin;
             currentMaxPrice.value = newMax;
