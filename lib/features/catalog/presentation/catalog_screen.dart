@@ -30,7 +30,7 @@ class CatalogScreen extends HookConsumerWidget {
   const CatalogScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+ Widget build(BuildContext context, WidgetRef ref) {
     final filters = ref.watch(catalogFiltersProvider);
     final winesAsync = ref.watch(winesWithFiltersProvider(filters));
     final scale = useState<double>(1.0);
@@ -141,7 +141,7 @@ const List<String> filterKeys = [
   'region',
   'grape',
   'rating',
-  'year',
+ 'year',
  'volume',
 ];
 
@@ -168,7 +168,7 @@ class _FilterSliderState extends State<FilterSlider> {
     selectedFilters = ValueNotifier<Map<String, dynamic>>(Map.from(widget.filters));
   }
 
-  @override
+ @override
  Widget build(BuildContext context) {
     final sortOption = selectedFilters.value['sort_option'] ?? '';
 
@@ -211,48 +211,52 @@ class _FilterSliderState extends State<FilterSlider> {
       context: context,
       isScrollControlled: true,
       builder: (BuildContext context) {
-        return DraggableScrollableSheet(
-          expand: false,
-          builder: (BuildContext context, ScrollController scrollController) {
-            return Container(
-              padding: EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return DraggableScrollableSheet(
+              expand: false,
+              builder: (BuildContext context, ScrollController scrollController) {
+                return Container(
+                  padding: EdgeInsets.all(16),
+                  child: Column(
                     children: [
-                      Text(
-                        getFilterTitle(filterKey),
-                        style: Theme.of(context).textTheme.titleLarge,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            getFilterTitle(filterKey),
+                            style: Theme.of(context).textTheme.titleLarge,
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              // Сбросить фильтр
+                              selectedFilters.value.remove(filterKey);
+                              selectedFilters.value = Map.from(selectedFilters.value);
+                              onFiltersChanged(selectedFilters.value);
+                              Navigator.of(context).pop();
+                            },
+                            child: Text('Сбросить'),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              // Применить фильтр
+                              onFiltersChanged(selectedFilters.value);
+                              Navigator.of(context).pop();
+                            },
+                            child: Text('Применить'),
+                          ),
+                        ],
                       ),
-                      TextButton(
-                        onPressed: () {
-                          // Сбросить фильтр
-                          selectedFilters.value.remove(filterKey);
-                          selectedFilters.value = Map.from(selectedFilters.value);
-                          onFiltersChanged(selectedFilters.value);
-                          Navigator.of(context).pop();
-                        },
-                        child: Text('Сбросить'),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          // Применить фильтр
-                          onFiltersChanged(selectedFilters.value);
-                          Navigator.of(context).pop();
-                        },
-                        child: Text('Применить'),
+                      Expanded(
+                        child: SingleChildScrollView(
+                          controller: scrollController,
+                          child: _buildFilterContent(context, filterKey, selectedFilters),
+                        ),
                       ),
                     ],
                   ),
-                  Expanded(
-                    child: SingleChildScrollView(
-                      controller: scrollController,
-                      child: _buildFilterContent(context, filterKey, selectedFilters),
-                    ),
-                  ),
-                ],
-              ),
+                );
+              },
             );
           },
         );
@@ -387,12 +391,12 @@ class _FilterSliderState extends State<FilterSlider> {
       },
     );
  }
-    
+     
   Widget _buildFilterContent(
     BuildContext context,
     String filterKey,
     ValueNotifier<Map<String, dynamic>> selectedFilters,
-  ) {
+ ) {
     switch (filterKey) {
       case 'color':
         return buildColorFilter(context, selectedFilters);

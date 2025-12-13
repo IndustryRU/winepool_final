@@ -68,64 +68,70 @@ Widget buildGrapeFilter(BuildContext context, ValueNotifier<Map<String, dynamic>
     'Алиготе',
   ];
   
-  // Получаем уже выбранные значения
-  final selectedValues = (selectedFilters.value['grape'] as List<String>?) ?? [];
-  
-  // Состояние для текста поиска
-  final searchController = useTextEditingController();
-  final filteredGrapes = useState<List<String>>(allGrapes);
-  
-  // Обработчик изменения текста поиска
-  void onSearchTextChanged(String text) {
-    if (text.isEmpty) {
-      filteredGrapes.value = allGrapes;
-    } else {
-      filteredGrapes.value = allGrapes
-          .where((grape) => grape.toLowerCase().contains(text.toLowerCase()))
-          .toList();
-    }
-  }
-  
-  // Обновляем фильтрованный список при изменении начального значения
-  useEffect(() {
-    onSearchTextChanged(searchController.text);
-    return null;
-  }, []);
-  
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      TextField(
-        controller: searchController,
-        decoration: const InputDecoration(
-          labelText: 'Поиск по сорту',
-          prefixIcon: Icon(Icons.search),
-        ),
-        onChanged: (value) {
-          onSearchTextChanged(value);
-        },
-      ),
-      const SizedBox(height: 16),
-      Expanded(
-        child: ListView(
-          children: [
-            for (String grape in filteredGrapes.value)
-              CheckboxListTile(
-                title: Text(grape),
-                value: selectedValues.contains(grape),
-                onChanged: (bool? value) {
-                  if (value == true) {
-                    selectedValues.add(grape);
-                  } else {
-                    selectedValues.remove(grape);
-                  }
-                  selectedFilters.value['grape'] = selectedValues;
-                  selectedFilters.value = Map.from(selectedFilters.value);
-                },
-              ),
-          ],
-        ),
-      ),
-    ],
+  return ValueListenableBuilder<Map<String, dynamic>>(
+    valueListenable: selectedFilters,
+    builder: (context, filters, child) {
+      // Получаем уже выбранные значения
+      final selectedValues = (filters['grape'] as List<String>?) ?? [];
+      
+      // Состояние для текста поиска
+      final searchController = useTextEditingController();
+      final filteredGrapes = useState<List<String>>(allGrapes);
+      
+      // Обработчик изменения текста поиска
+      void onSearchTextChanged(String text) {
+        if (text.isEmpty) {
+          filteredGrapes.value = allGrapes;
+        } else {
+          filteredGrapes.value = allGrapes
+              .where((grape) => grape.toLowerCase().contains(text.toLowerCase()))
+              .toList();
+        }
+      }
+      
+      // Обновляем фильтрованный список при изменении начального значения
+      useEffect(() {
+        onSearchTextChanged(searchController.text);
+        return null;
+      }, []);
+      
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          TextField(
+            controller: searchController,
+            decoration: const InputDecoration(
+              labelText: 'Поиск по сорту',
+              prefixIcon: Icon(Icons.search),
+            ),
+            onChanged: (value) {
+              onSearchTextChanged(value);
+            },
+          ),
+          const SizedBox(height: 16),
+          Expanded(
+            child: ListView(
+              children: [
+                for (String grape in filteredGrapes.value)
+                  CheckboxListTile(
+                    title: Text(grape),
+                    value: selectedValues.contains(grape),
+                    onChanged: (bool? value) {
+                      final newSelectedValues = List<String>.from(selectedValues);
+                      if (value == true) {
+                        newSelectedValues.add(grape);
+                      } else {
+                        newSelectedValues.remove(grape);
+                      }
+                      selectedFilters.value['grape'] = newSelectedValues;
+                      selectedFilters.value = Map.from(selectedFilters.value);
+                    },
+                  ),
+              ],
+            ),
+          ),
+        ],
+      );
+    },
   );
 }

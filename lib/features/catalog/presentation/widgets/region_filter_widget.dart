@@ -282,6 +282,58 @@ Widget buildRegionFilter(BuildContext context, ValueNotifier<Map<String, dynamic
     {'code': 'CDX', 'name': 'Кот-де-Шарм-ле-Вин', 'country_code': 'FR'},
     {'code': 'CDY', 'name': 'Кот-де-Йер-ле-Вин', 'country_code': 'FR'},
     {'code': 'CDZ', 'name': 'Кот-де-Зуа-ле-Вин', 'country_code': 'FR'},
+    {'code': 'CDA', 'name': 'Кот-де-Авиньон', 'country_code': 'FR'},
+    {'code': 'CDB', 'name': 'Кот-де-Безансон', 'country_code': 'FR'},
+    {'code': 'CDC', 'name': 'Кот-де-Шамберти', 'country_code': 'FR'},
+    {'code': 'CDD', 'name': 'Кот-де-Дижон-ле-Вин', 'country_code': 'FR'},
+    {'code': 'CDE', 'name': 'Кот-де-Экс-ле-Бен', 'country_code': 'FR'},
+    {'code': 'CDF', 'name': 'Кот-де-Фонтенбло', 'country_code': 'FR'},
+    {'code': 'CDG', 'name': 'Кот-де-Гренобль-ле-Вин', 'country_code': 'FR'},
+    {'code': 'CDH', 'name': 'Кот-де-Иль-де-ла-Реюньон', 'country_code': 'FR'},
+    {'code': 'CDI', 'name': 'Кот-де-Изёр-ле-Вин', 'country_code': 'FR'},
+    {'code': 'CDJ', 'name': 'Кот-де-Жарден-ле-Вин', 'country_code': 'FR'},
+    {'code': 'CDK', 'name': 'Кот-де-Клермон-Ферран-ле-Вин', 'country_code': 'FR'},
+    {'code': 'CDL', 'name': 'Кот-де-Лион-ле-Вин', 'country_code': 'FR'},
+    {'code': 'CDM', 'name': 'Кот-де-Марсель-ле-Вин', 'country_code': 'FR'},
+    {'code': 'CDN', 'name': 'Кот-де-Ницца-ле-Вин', 'country_code': 'FR'},
+    {'code': 'CDO', 'name': 'Кот-де-Орлеан-ле-Вин', 'country_code': 'FR'},
+    {'code': 'CDP', 'name': 'Кот-де-Париж-ле-Вин', 'country_code': 'FR'},
+    {'code': 'CDQ', 'name': 'Кот-де-Квин-ле-Вин', 'country_code': 'FR'},
+    {'code': 'CDR', 'name': 'Кот-де-Реймс-ле-Вин', 'country_code': 'FR'},
+    {'code': 'CDS', 'name': 'Кот-де-Сен-Дени-ле-Вин', 'country_code': 'FR'},
+    {'code': 'CDT', 'name': 'Кот-де-Труа-ле-Вин', 'country_code': 'FR'},
+    {'code': 'CDU', 'name': 'Кот-де-Уазе-ле-Вин', 'country_code': 'FR'},
+    {'code': 'CDV', 'name': 'Кот-де-Версаль-ле-Вин', 'country_code': 'FR'},
+    {'code': 'CDW', 'name': 'Кот-де-Витри-ле-Вин', 'country_code': 'FR'},
+    {'code': 'CDX', 'name': 'Кот-де-Шарм-ле-Вин', 'country_code': 'FR'},
+    {'code': 'CDY', 'name': 'Кот-де-Йер-ле-Вин', 'country_code': 'FR'},
+    {'code': 'CDZ', 'name': 'Кот-де-Зуа-ле-Вин', 'country_code': 'FR'},
+    {'code': 'CDA', 'name': 'Кот-де-Авиньон', 'country_code': 'FR'},
+    {'code': 'CDB', 'name': 'Кот-де-Безансон', 'country_code': 'FR'},
+    {'code': 'CDC', 'name': 'Кот-де-Шамберти', 'country_code': 'FR'},
+    {'code': 'CDD', 'name': 'Кот-де-Дижон-ле-Вин', 'country_code': 'FR'},
+    {'code': 'CDE', 'name': 'Кот-де-Экс-ле-Бен', 'country_code': 'FR'},
+    {'code': 'CDF', 'name': 'Кот-де-Фонтенбло', 'country_code': 'FR'},
+    {'code': 'CDG', 'name': 'Кот-де-Гренобль-ле-Вин', 'country_code': 'FR'},
+    {'code': 'CDH', 'name': 'Кот-де-Иль-де-ла-Реюньон', 'country_code': 'FR'},
+    {'code': 'CDI', 'name': 'Кот-де-Изёр-ле-Вин', 'country_code': 'FR'},
+    {'code': 'CDJ', 'name': 'Кот-де-Жарден-ле-Вин', 'country_code': 'FR'},
+    {'code': 'CDK', 'name': 'Кот-де-Клермон-Ферран-ле-Вин', 'country_code': 'FR'},
+    {'code': 'CDL', 'name': 'Кот-де-Лион-ле-Вин', 'country_code': 'FR'},
+    {'code': 'CDM', 'name': 'Кот-де-Марсель-ле-Вин', 'country_code': 'FR'},
+    {'code': 'CDN', 'name': 'Кот-де-Ницца-ле-Вин', 'country_code': 'FR'},
+    {'code': 'CDO', 'name': 'Кот-де-Орлеан-ле-Вин', 'country_code': 'FR'},
+    {'code': 'CDP', 'name': 'Кот-де-Париж-ле-Вин', 'country_code': 'FR'},
+    {'code': 'CDQ', 'name': 'Кот-де-Квин-ле-Вин', 'country_code': 'FR'},
+    {'code': 'CDR', 'name': 'Кот-де-Реймс-ле-Вин', 'country_code': 'FR'},
+    {'code': 'CDS', 'name': 'Кот-де-Сен-Дени-ле-Вин', 'country_code': 'FR'},
+    {'code': 'CDT', 'name': 'Кот-де-Труа-ле-Вин', 'country_code': 'FR'},
+    {'code': 'CDU', 'name': 'Кот-де-Уазе-ле-Вин', 'country_code': 'FR'},
+    {'code': 'CDV', 'name': 'Кот-де-Версаль-ле-Вин', 'country_code': 'FR'},
+    {'code': 'CDW', 'name': 'Кот-де-Витри-ле-Вин', 'country_code': 'FR'},
+    {'code': 'CDX', 'name': 'Кот-де-Шарм-ле-Вин', 'country_code': 'FR'},
+    {'code': 'CDY', 'name': 'Кот-де-Йер-ле-Вин', 'country_code': 'FR'},
+    {'code': 'CDZ', 'name': 'Кот-де-Зуа-ле-Вин', 'country_code': 'FR'},
     {'code': 'NAP', 'name': 'Напа', 'country_code': 'US'},
     {'code': 'SON', 'name': 'Сонома', 'country_code': 'US'},
     {'code': 'WAS', 'name': 'Вашингтон', 'country_code': 'US'},
@@ -505,64 +557,70 @@ Widget buildRegionFilter(BuildContext context, ValueNotifier<Map<String, dynamic
     {'code': 'CHZZZ', 'name': 'Шатонеф-де-Зуа-ле-Вин', 'country_code': 'FR'},
   ];
   
-  // Получаем уже выбранные значения
-  final selectedValues = (selectedFilters.value['region'] as List<String>?) ?? [];
-  
-  // Состояние для текста поиска
-  final searchController = useTextEditingController();
-  final filteredRegions = useState<List<Map<String, String>>>(allRegions);
-  
-  // Обработчик изменения текста поиска
-  void onSearchTextChanged(String text) {
-    if (text.isEmpty) {
-      filteredRegions.value = allRegions;
-    } else {
-      filteredRegions.value = allRegions
-          .where((region) => region['name']!.toLowerCase().contains(text.toLowerCase()))
-          .toList();
-    }
-  }
-  
-  // Обновляем фильтрованный список при изменении начального значения
-  useEffect(() {
-    onSearchTextChanged(searchController.text);
-    return null;
-  }, []);
-  
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      TextField(
-        controller: searchController,
-        decoration: const InputDecoration(
-          labelText: 'Поиск по региону',
-          prefixIcon: Icon(Icons.search),
-        ),
-        onChanged: (value) {
-          onSearchTextChanged(value);
-        },
-      ),
-      const SizedBox(height: 16),
-      Expanded(
-        child: ListView(
-          children: [
-            for (Map<String, String> region in filteredRegions.value)
-              CheckboxListTile(
-                title: Text(region['name']!),
-                value: selectedValues.contains(region['code']),
-                onChanged: (bool? value) {
-                  if (value == true) {
-                    selectedValues.add(region['code']!);
-                  } else {
-                    selectedValues.remove(region['code']!);
-                  }
-                  selectedFilters.value['region'] = selectedValues;
-                  selectedFilters.value = Map.from(selectedFilters.value);
-                },
-              ),
-          ],
-        ),
-      ),
-    ],
+  return ValueListenableBuilder<Map<String, dynamic>>(
+    valueListenable: selectedFilters,
+    builder: (context, filters, child) {
+      // Получаем уже выбранные значения
+      final selectedValues = (filters['region'] as List<String>?) ?? [];
+      
+      // Состояние для текста поиска
+      final searchController = useTextEditingController();
+      final filteredRegions = useState<List<Map<String, String>>>(allRegions);
+      
+      // Обработчик изменения текста поиска
+      void onSearchTextChanged(String text) {
+        if (text.isEmpty) {
+          filteredRegions.value = allRegions;
+        } else {
+          filteredRegions.value = allRegions
+              .where((region) => region['name']!.toLowerCase().contains(text.toLowerCase()))
+              .toList();
+        }
+      }
+      
+      // Обновляем фильтрованный список при изменении начального значения
+      useEffect(() {
+        onSearchTextChanged(searchController.text);
+        return null;
+      }, []);
+      
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          TextField(
+            controller: searchController,
+            decoration: const InputDecoration(
+              labelText: 'Поиск по региону',
+              prefixIcon: Icon(Icons.search),
+            ),
+            onChanged: (value) {
+              onSearchTextChanged(value);
+            },
+          ),
+          const SizedBox(height: 16),
+          Expanded(
+            child: ListView(
+              children: [
+                for (Map<String, String> region in filteredRegions.value)
+                  CheckboxListTile(
+                    title: Text(region['name']!),
+                    value: selectedValues.contains(region['code']),
+                    onChanged: (bool? value) {
+                      final newSelectedValues = List<String>.from(selectedValues);
+                      if (value == true) {
+                        newSelectedValues.add(region['code']!);
+                      } else {
+                        newSelectedValues.remove(region['code']!);
+                      }
+                      selectedFilters.value['region'] = newSelectedValues;
+                      selectedFilters.value = Map.from(selectedFilters.value);
+                    },
+                  ),
+              ],
+            ),
+          ),
+        ],
+      );
+    },
   );
 }
