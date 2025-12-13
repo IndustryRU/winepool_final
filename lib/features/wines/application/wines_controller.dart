@@ -45,7 +45,8 @@ Future<List<Wine>> newWines(Ref ref) async {
 @riverpod
 Future<List<Wine>> winesWithFilters(Ref ref, Map<String, dynamic> filters) async {
   final winesRepository = ref.watch(winesRepositoryProvider);
-  return winesRepository.fetchWines(filters);
+  final result = await winesRepository.fetchWines(filters);
+  return result;
 }
 
 @Riverpod(keepAlive: true)

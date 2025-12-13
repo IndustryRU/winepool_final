@@ -165,7 +165,7 @@ class BuyerHomeScreen extends HookConsumerWidget {
   Widget _buildCategorySlider(BuildContext context) {
     final categories = [
       {'name': 'Винотека', 'icon': Icons.wine_bar},
-      {'name': 'WinPool', 'icon': Icons.location_on},
+      {'name': 'WinePool', 'icon': Icons.location_on},
       {'name': 'Акции', 'icon': Icons.local_offer},
       {'name': 'Подборки', 'icon': Icons.collections},
       {'name': 'Винодельни', 'icon': Icons.business},

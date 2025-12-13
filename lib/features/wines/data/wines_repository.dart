@@ -110,50 +110,79 @@ class WinesRepository {
   }
 
   Future<List<Wine>> fetchWines(Map<String, dynamic> filters) async {
-    var query = _supabaseClient.from('wines').select('*, wineries:winery_id(*, country:country_code(*))');
+      var query = _supabaseClient.from('wines').select('*, wineries:winery_id(*, country:country_code(*))') as dynamic;
 
-    // Применяем фильтры
-    filters.forEach((key, value) {
-      if (value != null) {
-        switch (key) {
-          case 'color':
-            query = query.eq('color', value);
-            break;
-          case 'type':
-            query = query.eq('type', value);
-            break;
-          case 'sugar':
-            query = query.eq('sugar', value);
-            break;
-          case 'min_price':
-            query = query.gte('price', value);
-            break;
-          case 'max_price':
-            query = query.lte('price', value);
-            break;
-          case 'vintage':
-            query = query.eq('vintage', value);
-            break;
-          case 'min_rating':
-            query = query.gte('average_rating', value);
-            break;
-          case 'max_rating':
-            query = query.lte('average_rating', value);
-            break;
-          case 'winery_id':
-            query = query.eq('winery_id', value);
-            break;
-          // Можно добавить другие фильтры по мере необходимости
+      // Применяем фильтры
+      filters.forEach((key, value) {
+        if (value != null) {
+          switch (key) {
+            case 'color':
+              query = query.eq('color', value);
+              break;
+            case 'type':
+              query = query.eq('type', value);
+              break;
+            case 'sugar':
+              query = query.eq('sugar', value);
+              break;
+            case 'min_price':
+              query = query.gte('price', value);
+              break;
+            case 'max_price':
+              query = query.lte('price', value);
+              break;
+            case 'vintage':
+              query = query.eq('vintage', value);
+              break;
+            case 'min_rating':
+              query = query.gte('average_rating', value);
+              break;
+            case 'max_rating':
+              query = query.lte('average_rating', value);
+              break;
+            case 'winery_id':
+              query = query.eq('winery_id', value);
+              break;
+            case 'sort_option':
+              // Обработка параметров сортировки
+              switch (value) {
+                case 'price_asc':
+                  query = query.order('price', ascending: true);
+                  break;
+                case 'price_desc':
+                  query = query.order('price', ascending: false);
+                  break;
+                case 'rating_asc':
+                  query = query.order('average_rating', ascending: true);
+                  break;
+                case 'rating_desc':
+                  query = query.order('average_rating', ascending: false);
+                  break;
+                case 'name_asc':
+                  query = query.order('name', ascending: true);
+                  break;
+                case 'name_desc':
+                  query = query.order('name', ascending: false);
+                  break;
+                case 'year_asc':
+                  query = query.order('vintage', ascending: true);
+                  break;
+                case 'year_desc':
+                  query = query.order('vintage', ascending: false);
+                  break;
+              }
+              break;
+            // Можно добавить другие фильтры по мере необходимости
+          }
         }
-      }
-    });
+      });
 
-    final response = await query;
-    print('--- FETCH WINES WITH FILTERS RESPONSE ---');
-    print(response);
-    print('--- END FETCH WINES WITH FILTERS RESPONSE ---');
-    return response.map((json) => Wine.fromJson(json)).toList();
-  }
+      final List<dynamic> response = await query;
+      print('--- FETCH WINES WITH FILTERS RESPONSE ---');
+      print(response);
+      print('--- END FETCH WINES WITH FILTERS RESPONSE ---');
+      return response.map((json) => Wine.fromJson(json)).toList();
+    }
 
   Future<Map<String, dynamic>> searchAll(String query, [Set<String> categories = const {}]) async {
     final searchCategories = categories.isEmpty

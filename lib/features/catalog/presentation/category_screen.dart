@@ -33,11 +33,22 @@ class CategoryScreen extends StatelessWidget {
       },
     ];
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Категории'),
-      ),
-      body: Padding(
+    return WillPopScope(
+      onWillPop: () async {
+        context.go('/buyer-home');
+        return false;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Категории'),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {
+              context.go('/buyer-home');
+            },
+          ),
+        ),
+        body: Padding(
         padding: const EdgeInsets.all(10.0),
         child: GridView.builder(
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -49,21 +60,27 @@ class CategoryScreen extends StatelessWidget {
           itemCount: categories.length,
           itemBuilder: (context, index) {
             final category = categories[index];
+            final route = category['route'] as String;
+            
+            VoidCallback? onPressed;
+            if (route == '/accessories-catalog' ||
+                route == '/brandy-catalog' ||
+                route == '/wineries-catalog') {
+              onPressed = () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Раздел в разработке'),
+                  ),
+                );
+              };
+            } else {
+              onPressed = () {
+                context.go(route);
+              };
+            }
+
             return ElevatedButton(
-              onPressed: () {
-                if (category['route'] == '/accessories-catalog') {
-                  // TODO: Реализовать переход на экран аксессуаров
-                  // context.go('/accessories-catalog');
-                  // Пока что оставим пустую функцию или покажем сообщение
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Раздел в разработке'),
-                    ),
-                  );
-                } else {
-                  context.go(category['route'] as String);
-                }
-              },
+              onPressed: onPressed,
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.grey[200], // Изменяем цвет фона
                 shape: RoundedRectangleBorder(
@@ -102,6 +119,7 @@ class CategoryScreen extends StatelessWidget {
           },
         ),
       ),
-    );
+    ),
+  );
   }
 }
