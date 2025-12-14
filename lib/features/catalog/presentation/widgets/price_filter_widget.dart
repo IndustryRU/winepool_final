@@ -9,60 +9,45 @@ import '../../../catalog/application/catalog_controller.dart';
 class PriceFilterWidget extends HookConsumerWidget {
   final ValueNotifier<Map<String, dynamic>> selectedFilters;
   final Function(RangeValues)? onRangeChanged;
+  final Function(bool)? onShowUnavailableChanged;
   final double? initialMinPrice;
   final double? initialMaxPrice;
+  final bool? initialShowUnavailable;
 
    const PriceFilterWidget({
      super.key,
      required this.selectedFilters,
      this.onRangeChanged,
+     this.onShowUnavailableChanged,
      this.initialMinPrice,
      this.initialMaxPrice,
+     this.initialShowUnavailable,
    });
 
    @override
    Widget build(BuildContext context, WidgetRef ref) {
-     final supabaseClient = ref.watch(supabaseClientProvider);
+     // Получаем диапазон цен из нового провайдера, который игнорирует фильтр show_unavailable
+     final priceRangeAsync = ref.watch(priceRangeProvider);
      
-     // Подготовим фильтры без ценовых параметров, чтобы получить актуальный диапазон
-     final filtersWithoutPrice = useMemoized(() {
-       final filters = Map<String, dynamic>.from(selectedFilters.value);
-       filters.remove('min_price');
-       filters.remove('max_price');
-       return filters;
-     }, [selectedFilters.value]);
-
-     // Получаем диапазон цен из Supabase с учетом других фильтров
-     final priceRangeAsync = useMemoized(
-       () => supabaseClient.rpc('get_price_range', params: {'filters': filtersWithoutPrice}),
-       [supabaseClient, filtersWithoutPrice],
-     );
-     
-     final priceRange = useFuture(priceRangeAsync);
-
-     // Обработка состояний AsyncSnapshot
-     if (priceRange.connectionState == ConnectionState.waiting) {
+     // Обработка состояний AsyncValue
+     if (priceRangeAsync.isLoading) {
        return const Center(child: CircularProgressIndicator());
      }
      
-     if (priceRange.hasError) {
+     if (priceRangeAsync.hasError) {
        return Center(
-         child: Text('Ошибка загрузки диапазона цен: ${priceRange.error.toString()}'),
+         child: Text('Ошибка загрузки диапазона цен: ${priceRangeAsync.error.toString()}'),
        );
      }
-
-     if (!priceRange.hasData || priceRange.data!.isEmpty) {
+     
+     if (!priceRangeAsync.hasValue || priceRangeAsync.value == null) {
        return const Center(child: Text('Нет данных о диапазоне цен'));
      }
 
      // Устанавливаем начальные значения диапазона цен только в состоянии data
-     final data = priceRange.data!;
-     final minPossiblePrice = data.isNotEmpty 
-         ? (data[0]['min_price'] as num?)?.toDouble() ?? 0 
-         : 0;
-     final maxPossiblePrice = data.isNotEmpty 
-         ? (data[0]['max_price'] as num?)?.toDouble() ?? 10000 
-         : 10000;
+     final data = priceRangeAsync.value!;
+     final minPossiblePrice = (data['min_price'] as num?)?.toDouble() ?? 0.0;
+     final maxPossiblePrice = (data['max_price'] as num?)?.toDouble() ?? 10000000.0;
      
      // Округляем до ближайших сотен
      final roundedMinPrice = ((minPossiblePrice / 100).floor()) * 100;
@@ -79,8 +64,9 @@ class PriceFilterWidget extends HookConsumerWidget {
      final clampedMaxPrice = maxPriceToUse.clamp(roundedMinPrice.toDouble(), roundedMaxPrice.toDouble());
 
      final currentRange = useState(RangeValues(clampedMinPrice, clampedMaxPrice));
-     final currentShowUnavailable = useState(selectedFilters.value['show_unavailable'] ?? false);
-     
+     // Используем initialShowUnavailable для инициализации состояния, если он передан
+     final currentShowUnavailable = useState(initialShowUnavailable ?? selectedFilters.value['show_unavailable'] ?? false);
+
      // Сохраняем предыдущие значения для сравнения
      final prevRange = useRef<RangeValues>(RangeValues(clampedMinPrice, clampedMaxPrice));
      final prevShowUnavailable = useRef<bool?>(null);
@@ -126,12 +112,16 @@ class PriceFilterWidget extends HookConsumerWidget {
        final newMin = roundedMinPrice.toDouble();
        final newMax = roundedMaxPrice.toDouble();
 
-       double clampedStart = currentRange.value.start.clamp(newMin, newMax);
-       double clampedEnd = currentRange.value.end.clamp(newMin, newMax);
+       final currentStart = currentRange.value.start;
+       final currentEnd = currentRange.value.end;
 
-       if (clampedStart != currentRange.value.start || clampedEnd != currentRange.value.end) {
-         currentRange.value = RangeValues(clampedStart, clampedEnd);
-         onRangeChanged?.call(RangeValues(clampedStart, clampedEnd));
+       // Проверяем, выходят ли текущие значения за новый диапазон
+       if (currentStart < newMin || currentEnd > newMax) {
+         // Только в этом случае "прижимаем" значения
+         final clampedStart = currentStart.clamp(newMin, newMax);
+         final clampedEnd = currentEnd.clamp(newMin, newMax);
+         currentRange.value = RangeValues(clampedStart.toDouble(), clampedEnd.toDouble());
+         onRangeChanged?.call(RangeValues(clampedStart.toDouble(), clampedEnd.toDouble()));
        }
 
        return null;
@@ -158,8 +148,15 @@ class PriceFilterWidget extends HookConsumerWidget {
      }
      
      // Создаем контроллеры для текстовых полей
-     final minPriceController = useTextEditingController(text: currentRange.value.start.toString());
-     final maxPriceController = useTextEditingController(text: currentRange.value.end.toString());
+     final minPriceController = useTextEditingController(text: currentRange.value.start.toInt().toString());
+     final maxPriceController = useTextEditingController(text: currentRange.value.end.toInt().toString());
+
+     // useEffect для синхронизации значений RangeSlider с текстовыми полями
+     useEffect(() {
+       minPriceController.text = currentRange.value.start.toInt().toString();
+       maxPriceController.text = currentRange.value.end.toInt().toString();
+       return null;
+     }, [currentRange.value]);
 
      // Обработчик для RangeSlider (только для визуального обновления)
      void onPriceRangeChanged(RangeValues values) {
@@ -186,8 +183,8 @@ class PriceFilterWidget extends HookConsumerWidget {
        if (currentRange.value != finalValues) {
          currentRange.value = finalValues;
          // Обновляем только локальное состояние, не вызывая перерисовку всего экрана
-         minPriceController.text = finalStart.toString();
-         maxPriceController.text = finalEnd.toString();
+         minPriceController.text = finalStart.toInt().toString();
+         maxPriceController.text = finalEnd.toInt().toString();
          
          // Вызываем коллбэк при изменении значений
          onRangeChanged?.call(finalValues);
@@ -250,26 +247,43 @@ class PriceFilterWidget extends HookConsumerWidget {
                  controller: minPriceController,
                  onChanged: (value) {
                    if (value.isNotEmpty) {
-                     final val = double.tryParse(value) ?? currentRange.value.start;
-                     // Округляем до ближайшей сотни
-                     final roundedVal = ((val / 100).round()) * 100;
-                     final clampedVal = roundedVal.clamp(roundedMinPrice.toInt(), currentRange.value.end.toInt() - 10).toDouble();
-                     
-                     // Проверяем, действительно ли значение изменилось
-                     if (currentRange.value.start != clampedVal) {
-                       // Гарантируем, что новое значение start не превышает end
-                       final newStart = clampedVal <= currentRange.value.end ? clampedVal : currentRange.value.end;
-                       final newRange = RangeValues(newStart, currentRange.value.end);
+                     final newMin = double.tryParse(value) ?? currentRange.value.start;
+                     final currentMax = currentRange.value.end;
+
+                     if (newMin > currentMax) {
+                       // Если новое мин. значение больше текущего макс.,
+                       // устанавливаем оба значения равными новому мин.
+                       final newRange = RangeValues(newMin, newMin);
                        currentRange.value = newRange;
                        
-                       // Обновляем фильтры только если они действительно изменились
-                       if (selectedFilters.value['min_price'] != newStart) {
-                         selectedFilters.value['min_price'] = newStart;
-                         selectedFilters.value = Map.from(selectedFilters.value);
-                       }
+                       // Обновляем фильтры
+                       selectedFilters.value['min_price'] = newMin;
+                       selectedFilters.value['max_price'] = newMin;
+                       selectedFilters.value = Map.from(selectedFilters.value);
                        
                        // Вызываем коллбэк при изменении значения
                        onRangeChanged?.call(newRange);
+                     } else {
+                       // Округляем до ближайшей сотни
+                       final roundedVal = ((newMin / 100).round()) * 100;
+                       final clampedVal = roundedVal.clamp(roundedMinPrice.toInt(), currentMax.toInt()).toDouble();
+                       
+                       // Проверяем, действительно ли значение изменилось
+                       if (currentRange.value.start != clampedVal) {
+                         // Гарантируем, что новое значение start не превышает end
+                         final newStart = clampedVal <= currentMax ? clampedVal : currentMax;
+                         final newRange = RangeValues(newStart, currentMax);
+                         currentRange.value = newRange;
+                         
+                         // Обновляем фильтры только если они действительно изменились
+                         if (selectedFilters.value['min_price'] != newStart) {
+                           selectedFilters.value['min_price'] = newStart;
+                           selectedFilters.value = Map.from(selectedFilters.value);
+                         }
+                         
+                         // Вызываем коллбэк при изменении значения
+                         onRangeChanged?.call(newRange);
+                       }
                      }
                    }
                  },
@@ -283,26 +297,43 @@ class PriceFilterWidget extends HookConsumerWidget {
                  controller: maxPriceController,
                  onChanged: (value) {
                    if (value.isNotEmpty) {
-                     final val = double.tryParse(value) ?? currentRange.value.end;
-                     // Округляем до ближайшей сотни
-                     final roundedVal = ((val / 100).round()) * 100;
-                     final clampedVal = roundedVal.clamp(currentRange.value.start.toInt() + 10, roundedMaxPrice.toInt()).toDouble();
-                     
-                     // Проверяем, действительно ли значение изменилось
-                     if (currentRange.value.end != clampedVal) {
-                       // Гарантируем, что новое значение end не меньше start
-                       final newEnd = clampedVal >= currentRange.value.start ? clampedVal : currentRange.value.start;
-                       final newRange = RangeValues(currentRange.value.start, newEnd);
+                     final newMax = double.tryParse(value) ?? currentRange.value.end;
+                     final currentMin = currentRange.value.start;
+
+                     if (newMax < currentMin) {
+                       // Если новое макс. значение меньше текущего мин.,
+                       // устанавливаем оба значения равными новому макс.
+                       final newRange = RangeValues(newMax, newMax);
                        currentRange.value = newRange;
                        
-                       // Обновляем фильтры только если они действительно изменились
-                       if (selectedFilters.value['max_price'] != newEnd) {
-                         selectedFilters.value['max_price'] = newEnd;
-                         selectedFilters.value = Map.from(selectedFilters.value);
-                       }
+                       // Обновляем фильтры
+                       selectedFilters.value['min_price'] = newMax;
+                       selectedFilters.value['max_price'] = newMax;
+                       selectedFilters.value = Map.from(selectedFilters.value);
                        
                        // Вызываем коллбэк при изменении значения
                        onRangeChanged?.call(newRange);
+                     } else {
+                       // Округляем до ближайшей сотни
+                       final roundedVal = ((newMax / 100).round()) * 100;
+                       final clampedVal = roundedVal.clamp(currentMin.toInt(), roundedMaxPrice.toInt()).toDouble();
+                       
+                       // Проверяем, действительно ли значение изменилось
+                       if (currentRange.value.end != clampedVal) {
+                         // Гарантируем, что новое значение end не меньше start
+                         final newEnd = clampedVal >= currentMin ? clampedVal : currentMin;
+                         final newRange = RangeValues(currentMin, newEnd);
+                         currentRange.value = newRange;
+                         
+                         // Обновляем фильтры только если они действительно изменились
+                         if (selectedFilters.value['max_price'] != newEnd) {
+                           selectedFilters.value['max_price'] = newEnd;
+                           selectedFilters.value = Map.from(selectedFilters.value);
+                         }
+                         
+                         // Вызываем коллбэк при изменении значения
+                         onRangeChanged?.call(newRange);
+                       }
                      }
                    }
                  },
@@ -319,11 +350,8 @@ class PriceFilterWidget extends HookConsumerWidget {
                if (currentShowUnavailable.value != value) {
                  currentShowUnavailable.value = value;
                  
-                 // Обновляем фильтры только если они действительно изменились
-                 if (selectedFilters.value['show_unavailable'] != value) {
-                   selectedFilters.value['show_unavailable'] = value;
-                   selectedFilters.value = Map.from(selectedFilters.value);
-                 }
+                 // Вызываем колбэк при изменении значения
+                 onShowUnavailableChanged?.call(value);
                }
              }
            },

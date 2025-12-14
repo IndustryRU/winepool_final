@@ -41,7 +41,7 @@ final class CatalogFiltersProvider
   }
 }
 
-String _$catalogFiltersHash() => r'9514104081a12009a41694cd28cbadcedb9a876c';
+String _$catalogFiltersHash() => r'1d66be0e46b05047539478a1ebc7f82e83184d1b';
 
 abstract class _$CatalogFilters extends $Notifier<Map<String, dynamic>> {
   Map<String, dynamic> build();
@@ -61,3 +61,44 @@ abstract class _$CatalogFilters extends $Notifier<Map<String, dynamic>> {
     element.handleValue(ref, created);
   }
 }
+
+@ProviderFor(priceRange)
+const priceRangeProvider = PriceRangeProvider._();
+
+final class PriceRangeProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<Map<String, double>>,
+          Map<String, double>,
+          FutureOr<Map<String, double>>
+        >
+    with
+        $FutureModifier<Map<String, double>>,
+        $FutureProvider<Map<String, double>> {
+  const PriceRangeProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'priceRangeProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$priceRangeHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<Map<String, double>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<Map<String, double>> create(Ref ref) {
+    return priceRange(ref);
+  }
+}
+
+String _$priceRangeHash() => r'9f8a6b0f83b39ddb3da7fa2d272e9955728f93f0';

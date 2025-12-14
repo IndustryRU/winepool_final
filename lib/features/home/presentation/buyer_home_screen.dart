@@ -288,7 +288,7 @@ class BuyerHomeScreen extends HookConsumerWidget {
                   textAlign: TextAlign.center,
                 ),
                 Text(
-                  '1000 ₽',
+                  '10000000 ₽',
                   style: TextStyle(fontWeight: FontWeight.bold),
                   textAlign: TextAlign.center,
                 ),
