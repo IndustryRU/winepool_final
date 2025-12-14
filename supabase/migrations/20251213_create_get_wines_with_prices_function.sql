@@ -50,8 +50,7 @@ BEGIN
         INNER JOIN offers o ON w.id = o.wine_id
         LEFT JOIN wineries wn ON w.winery_id = wn.id
         LEFT JOIN countries c ON wn.country_code = c.code
-        WHERE TRUE
-        GROUP BY w.id, wn.id, c.code';
+        WHERE TRUE';
 
     -- Добавляем условия фильтрации по цене, если они указаны
     IF filters ? 'min_price' THEN
@@ -65,26 +64,25 @@ BEGIN
     -- Добавляем другие возможные фильтры
     IF filters ? 'color' THEN
         IF jsonb_typeof(filters->'color') = 'array' THEN
-            query_text := query_text || ' AND w.color = ANY(ARRAY(SELECT jsonb_array_elements_text($1->''color'')))';
+            query_text := query_text || ' AND w.color::text = ANY(ARRAY(SELECT jsonb_array_elements_text($1->''color'')))';
         ELSE
-            query_text := query_text || ' AND w.color = ($1->>''color'')';
+            query_text := query_text || ' AND w.color::text = ($1->>''color'')';
         END IF;
     END IF;
 
     IF filters ? 'type' THEN
         IF jsonb_typeof(filters->'type') = 'array' THEN
-            query_text := query_text || ' AND w.type = ANY(ARRAY(SELECT jsonb_array_elements_text($1->''type'')))';
+            query_text := query_text || ' AND w.type::text = ANY(ARRAY(SELECT jsonb_array_elements_text($1->''type'')))';
         ELSE
-            query_text := query_text || ' AND w.type = ($1->>''type'')';
+            query_text := query_text || ' AND w.type::text = ($1->>''type'')';
         END IF;
     END IF;
 
     IF filters ? 'sugar' THEN
         IF jsonb_typeof(filters->'sugar') = 'array' THEN
-            query_text := query_text || ' AND w.sugar = ANY(ARRAY(SELECT jsonb_array_elements_text($1->''sugar'')))';
-
+            query_text := query_text || ' AND w.sugar::text = ANY(ARRAY(SELECT jsonb_array_elements_text($1->''sugar'')))';
         ELSE
-            query_text := query_text || ' AND w.sugar = ($1->>''sugar'')';
+            query_text := query_text || ' AND w.sugar::text = ($1->>''sugar'')';
         END IF;
     END IF;
 
@@ -109,7 +107,7 @@ BEGIN
     END IF;
 
     IF filters ? 'winery_id' THEN
-        query_text := query_text || ' AND w.winery_id = ($1->>''winery_id'')';
+        query_text := query_text || ' AND w.winery_id = ($1->>''winery_id'')::uuid';
     END IF;
 
     IF filters ? 'country' THEN
@@ -143,6 +141,10 @@ BEGIN
             query_text := query_text || ' AND o.bottle_size = ($1->>''volume'')';
         END IF;
     END IF;
+
+    -- Добавляем GROUP BY после всех условий
+    query_text := query_text || '
+        GROUP BY w.id, wn.id, c.code';
 
     -- Выполняем динамический запрос
     RETURN QUERY EXECUTE query_text USING filters;
