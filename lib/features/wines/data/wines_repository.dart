@@ -111,6 +111,17 @@ class WinesRepository {
 
   Future<List<Wine>> fetchWines(Map<String, dynamic> filters) async {
     try {
+      print('--- FETCH WINES CALLED WITH FILTERS ---');
+      print('Filters: $filters');
+      
+      // Проверяем, есть ли в фильтрах параметры цены
+      if (filters.containsKey('min_price')) {
+        print('Min price: ${filters['min_price']}');
+      }
+      if (filters.containsKey('max_price')) {
+        print('Max price: ${filters['max_price']}');
+      }
+      
       // Вызываем RPC-функцию с фильтрами
       final response = await _supabaseClient.rpc('get_wines_with_prices', params: {
         'filters': filters,

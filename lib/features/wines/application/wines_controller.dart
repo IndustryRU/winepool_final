@@ -1,4 +1,5 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:winepool_final/features/catalog/application/catalog_controller.dart';
 import 'package:winepool_final/features/offers/application/offers_controller.dart';
 import 'package:winepool_final/features/wines/data/wines_repository.dart';
 import 'package:winepool_final/features/wines/domain/wine.dart';
@@ -9,7 +10,7 @@ part 'wines_controller.g.dart';
 Future<List<Wine>> winesController(Ref ref) async {
   print('--- BUILDING WINES CONTROLLER ---');
   final winesRepository = ref.watch(winesRepositoryProvider);
-  final wines = await winesRepository.fetchAllWines();
+ final wines = await winesRepository.fetchAllWines();
   print('--- FETCHED WINES ---');
   print(wines);
   print('--- END OF FETCHED WINES ---');
@@ -47,6 +48,17 @@ Future<List<Wine>> winesWithFilters(Ref ref, Map<String, dynamic> filters) async
   final winesRepository = ref.watch(winesRepositoryProvider);
   final result = await winesRepository.fetchWines(filters);
   return result;
+}
+
+// Новый провайдер, который наблюдает за catalogFiltersProvider
+@riverpod
+Future<List<Wine>> winesWithActiveFilters(Ref ref) async {
+  final filters = ref.watch(catalogFiltersProvider);
+  print('--- WINES WITH ACTIVE FILTERS PROVIDER REFRESHED ---');
+  print('Filters: $filters');
+  final winesRepository = ref.watch(winesRepositoryProvider);
+  final result = await winesRepository.fetchWines(filters);
+ return result;
 }
 
 @Riverpod(keepAlive: true)

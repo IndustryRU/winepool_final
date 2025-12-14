@@ -30,9 +30,9 @@ class CatalogScreen extends HookConsumerWidget {
   const CatalogScreen({super.key});
 
   @override
- Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final filters = ref.watch(catalogFiltersProvider);
-    final winesAsync = ref.watch(winesWithFiltersProvider(filters));
+    final winesAsync = ref.watch(winesWithActiveFiltersProvider);
     final scale = useState<double>(1.0);
     final alignment = useState<Alignment>(Alignment.center);
     final controller = useAnimationController(duration: const Duration(milliseconds: 100));
@@ -71,9 +71,16 @@ class CatalogScreen extends HookConsumerWidget {
           controller.forward();
         },
         onLongPressEnd: (LongPressEndDetails details) {
-          controller
-            ..duration = const Duration(milliseconds: 10);
-          controller.reverse();
+          // Проверяем, что контроллер все еще активен и не завершил анимацию в обратном направлении
+          if (controller.status != AnimationStatus.dismissed) {
+            controller
+              ..duration = const Duration(milliseconds: 10);
+            try {
+              controller.reverse();
+            } catch (e) {
+              // Игнорируем ошибку, если контроллер уже уничтожен
+            }
+          }
         },
         child: Transform.scale(
           scale: scale.value,
@@ -126,9 +133,9 @@ class CatalogScreen extends HookConsumerWidget {
         ),
       ), // Закрывающая скобка для Scaffold
     ), // Закрывающая скобка для Transform.scale
-  ), // Закрывающая скобка для GestureDetector
+ ), // Закрывающая скобка для GestureDetector
 ); // Закрывающая скобка для WillPopScope
- }
+  }
 }
 
 // Фильтры
@@ -145,7 +152,7 @@ const List<String> filterKeys = [
  'volume',
 ];
 
-class FilterSlider extends StatefulWidget {
+class FilterSlider extends HookConsumerWidget {
   final Map<String, dynamic> filters;
    final Function(Map<String, dynamic>) onFiltersChanged;
 
@@ -156,20 +163,9 @@ class FilterSlider extends StatefulWidget {
   });
 
   @override
- State<FilterSlider> createState() => _FilterSliderState();
-}
+ Widget build(BuildContext context, WidgetRef ref) {
+    final selectedFilters = useState<Map<String, dynamic>>(Map.from(filters));
 
-class _FilterSliderState extends State<FilterSlider> {
- late ValueNotifier<Map<String, dynamic>> selectedFilters;
-
-  @override
- void initState() {
-    super.initState();
-    selectedFilters = ValueNotifier<Map<String, dynamic>>(Map.from(widget.filters));
-  }
-
- @override
- Widget build(BuildContext context) {
     final sortOption = selectedFilters.value['sort_option'] ?? '';
 
     return Container(
@@ -184,7 +180,7 @@ class _FilterSliderState extends State<FilterSlider> {
             child: FilterButton(
               filterKey: 'sort',
               isActive: sortOption.isNotEmpty,
-              onPressed: () => _showSortModal(context, selectedFilters, widget.onFiltersChanged),
+              onPressed: () => _showSortModal(context, selectedFilters, ref, onFiltersChanged),
             ),
           ),
           for (String filterKey in filterKeys)
@@ -193,7 +189,7 @@ class _FilterSliderState extends State<FilterSlider> {
               child: FilterButton(
                 filterKey: filterKey,
                 isActive: selectedFilters.value.containsKey(filterKey),
-                onPressed: () => _showFilterModal(context, filterKey, selectedFilters, widget.onFiltersChanged),
+                onPressed: () => _showFilterModal(context, filterKey, selectedFilters, ref, onFiltersChanged),
               ),
             ),
         ],
@@ -205,70 +201,153 @@ class _FilterSliderState extends State<FilterSlider> {
     BuildContext context,
     String filterKey,
     ValueNotifier<Map<String, dynamic>> selectedFilters,
+    WidgetRef ref,
     Function(Map<String, dynamic>) onFiltersChanged,
- ) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (BuildContext context) {
-        return StatefulBuilder(
-          builder: (BuildContext context, StateSetter setState) {
-            return DraggableScrollableSheet(
-              expand: false,
-              builder: (BuildContext context, ScrollController scrollController) {
-                return Container(
-                  padding: EdgeInsets.all(16),
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            getFilterTitle(filterKey),
-                            style: Theme.of(context).textTheme.titleLarge,
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              // Сбросить фильтр
-                              selectedFilters.value.remove(filterKey);
-                              selectedFilters.value = Map.from(selectedFilters.value);
-                              onFiltersChanged(selectedFilters.value);
-                              Navigator.of(context).pop();
-                            },
-                            child: Text('Сбросить'),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              // Применить фильтр
-                              onFiltersChanged(selectedFilters.value);
-                              Navigator.of(context).pop();
-                            },
-                            child: Text('Применить'),
-                          ),
-                        ],
-                      ),
-                      Expanded(
-                        child: SingleChildScrollView(
-                          controller: scrollController,
-                          child: _buildFilterContent(context, filterKey, selectedFilters),
+ ) async {
+    if (filterKey == 'price') {
+      // Для ценного фильтра открываем модальное окно и ждем возвращаемого значения
+      RangeValues? currentPriceRange;
+      
+      // Читаем текущие значения цен из провайдера
+      final currentFilters = ref.read(catalogFiltersProvider);
+      final currentMinPrice = currentFilters['min_price']?.toDouble() ?? 0.0;
+      final currentMaxPrice = currentFilters['max_price']?.toDouble() ?? 10000.0;
+      
+      final returnedValues = await showModalBottomSheet<RangeValues>(
+        context: context,
+        isScrollControlled: true,
+        builder: (BuildContext context) {
+          return StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+              return DraggableScrollableSheet(
+                expand: false,
+                builder: (BuildContext context, ScrollController scrollController) {
+                  return Container(
+                    padding: EdgeInsets.all(16),
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              getFilterTitle(filterKey),
+                              style: Theme.of(context).textTheme.titleLarge,
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                // Сбросить фильтр к начальному состоянию
+                                selectedFilters.value.remove(filterKey);
+                                selectedFilters.value = Map.from(selectedFilters.value);
+                                onFiltersChanged(selectedFilters.value);
+                                Navigator.of(context).pop(); // Не возвращаем значения при сбросе
+                              },
+                              child: Text('Сбросить'),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                // Закрыть модальное окно, вернув текущие значения из виджета
+                                if (currentPriceRange != null) {
+                                  Navigator.of(context).pop(currentPriceRange);
+                                } else {
+                                  // Если currentPriceRange не был установлен, используем текущие значения из selectedFilters
+                                  final currentMinPrice = selectedFilters.value['min_price']?.toDouble() ?? 0.0;
+                                  final currentMaxPrice = selectedFilters.value['max_price']?.toDouble() ?? 10000.0;
+                                  Navigator.of(context).pop(RangeValues(currentMinPrice, currentMaxPrice));
+                                }
+                              },
+                              child: Text('Применить'),
+                            ),
+                          ],
                         ),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            );
-          },
-        );
-      },
-    );
+                        Expanded(
+                          child: SingleChildScrollView(
+                            controller: scrollController,
+                            child: _buildFilterContent(context, filterKey, selectedFilters, ref, (range) {
+                              // Коллбэк для обновления currentPriceRange
+                              currentPriceRange = range;
+                            }),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              );
+            },
+          );
+        },
+      );
+
+      // Если возвращаемое значение не null (пользователь не просто закрыл окно), обновляем фильтры
+      if (returnedValues != null) {
+        ref.read(catalogFiltersProvider.notifier).setPriceRange(returnedValues.start, returnedValues.end);
+      }
+    } else {
+      // Для остальных фильтров оставляем старую логику
+      showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        builder: (BuildContext context) {
+          return StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+              return DraggableScrollableSheet(
+                expand: false,
+                builder: (BuildContext context, ScrollController scrollController) {
+                  return Container(
+                    padding: EdgeInsets.all(16),
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              getFilterTitle(filterKey),
+                              style: Theme.of(context).textTheme.titleLarge,
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                // Сбросить фильтр к начальному состоянию
+                                selectedFilters.value.remove(filterKey);
+                                selectedFilters.value = Map.from(selectedFilters.value);
+                                onFiltersChanged(selectedFilters.value);
+                                Navigator.of(context).pop();
+                              },
+                              child: Text('Сбросить'),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                // Применить фильтр - сохраняем временные значения в основной провайдер
+                                ref.read(catalogFiltersProvider.notifier).updateFilters(selectedFilters.value);
+                                Navigator.of(context).pop();
+                              },
+                              child: Text('Применить'),
+                            ),
+                          ],
+                        ),
+                        Expanded(
+                          child: SingleChildScrollView(
+                            controller: scrollController,
+                            child: _buildFilterContent(context, filterKey, selectedFilters, ref),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              );
+            },
+          );
+        },
+      );
+    }
   }
 
  void _showSortModal(
     BuildContext context,
     ValueNotifier<Map<String, dynamic>> selectedFilters,
+    WidgetRef ref,
     Function(Map<String, dynamic>) onFiltersChanged,
-  ) {
+ ) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -303,8 +382,8 @@ class _FilterSliderState extends State<FilterSlider> {
                           ),
                           TextButton(
                             onPressed: () {
-                              // Применить сортировку
-                              onFiltersChanged(selectedFilters.value);
+                              // Применить сортировку - сохраняем временные значения в основной провайдер
+                              ref.read(catalogFiltersProvider.notifier).updateFilters(selectedFilters.value);
                               Navigator.of(context).pop();
                             },
                             child: Text('Применить'),
@@ -391,11 +470,12 @@ class _FilterSliderState extends State<FilterSlider> {
       },
     );
  }
-     
+
   Widget _buildFilterContent(
     BuildContext context,
     String filterKey,
     ValueNotifier<Map<String, dynamic>> selectedFilters,
+    WidgetRef ref, [Function(RangeValues)? onPriceRangeChanged]
  ) {
     switch (filterKey) {
       case 'color':
@@ -405,7 +485,27 @@ class _FilterSliderState extends State<FilterSlider> {
       case 'sugar':
         return buildSugarFilter(context, selectedFilters);
       case 'price':
-        return PriceFilterWidget(selectedFilters: selectedFilters);
+        if (onPriceRangeChanged != null) {
+          // Передаем текущие значения из провайдера в PriceFilterWidget
+          final currentFilters = ref.read(catalogFiltersProvider);
+          final currentMinPrice = currentFilters['min_price']?.toDouble();
+          final currentMaxPrice = currentFilters['max_price']?.toDouble();
+          return PriceFilterWidget(
+            selectedFilters: selectedFilters,
+            onRangeChanged: onPriceRangeChanged,
+            initialMinPrice: currentMinPrice,
+            initialMaxPrice: currentMaxPrice,
+          );
+        } else {
+          final currentFilters = ref.read(catalogFiltersProvider);
+          final currentMinPrice = currentFilters['min_price']?.toDouble();
+          final currentMaxPrice = currentFilters['max_price']?.toDouble();
+          return PriceFilterWidget(
+            selectedFilters: selectedFilters,
+            initialMinPrice: currentMinPrice,
+            initialMaxPrice: currentMaxPrice,
+          );
+        }
       case 'country':
         return buildCountryFilter(context, selectedFilters);
       case 'region':
@@ -426,7 +526,7 @@ class _FilterSliderState extends State<FilterSlider> {
 }
 
 class FilterButton extends StatelessWidget {
-  final String filterKey;
+ final String filterKey;
  final bool isActive;
   final VoidCallback onPressed;
 
@@ -437,12 +537,12 @@ class FilterButton extends StatelessWidget {
     required this.onPressed,
   });
 
-  @override
+ @override
  Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
-        backgroundColor: isActive ? Colors.grey[40] : Colors.grey[200],
+        backgroundColor: isActive ? Colors.grey[400] : Colors.grey[200],
         foregroundColor: Colors.black87,
       ),
       child: Row(

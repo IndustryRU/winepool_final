@@ -309,6 +309,45 @@ final class WinesWithFiltersFamily extends $Family
   String toString() => r'winesWithFiltersProvider';
 }
 
+@ProviderFor(winesWithActiveFilters)
+const winesWithActiveFiltersProvider = WinesWithActiveFiltersProvider._();
+
+final class WinesWithActiveFiltersProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<Wine>>,
+          List<Wine>,
+          FutureOr<List<Wine>>
+        >
+    with $FutureModifier<List<Wine>>, $FutureProvider<List<Wine>> {
+  const WinesWithActiveFiltersProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'winesWithActiveFiltersProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$winesWithActiveFiltersHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<List<Wine>> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<Wine>> create(Ref ref) {
+    return winesWithActiveFilters(ref);
+  }
+}
+
+String _$winesWithActiveFiltersHash() =>
+    r'4e35cea32b5f04dd9f62e6ad5002be57534a1c24';
+
 @ProviderFor(WineMutation)
 const wineMutationProvider = WineMutationProvider._();
 

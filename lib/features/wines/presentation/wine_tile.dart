@@ -9,7 +9,7 @@ class WineTile extends StatelessWidget {
   const WineTile({super.key, required this.wine, this.isSearch = false});
 
   @override
- Widget build(BuildContext context) {
+  Widget build(BuildContext context) {
     print(wine.winery);
     
     // Вычисляем минимальную и максимальную цену из предложений
@@ -34,81 +34,86 @@ class WineTile extends StatelessWidget {
       priceInfo = 'Цена не указана';
     }
 
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Row(
-          children: [
-            if (wine.imageUrl != null && wine.imageUrl!.isNotEmpty)
-              Container(
-                width: 60,
-                height: 60,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  image: DecorationImage(
-                    fit: BoxFit.cover,
-                    image: NetworkImage(wine.imageUrl!),
-                  ),
-                ),
-              )
-            else
-              Container(
-                width: 60,
-                height: 60,
-                decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: const Icon(
-                  Icons.wine_bar,
-                  color: Colors.grey,
-                ),
-              ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    wine.name,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+    return SizedBox(
+      height: 150, // Увеличиваем высоту всего виджета
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            children: [
+              if (wine.imageUrl != null && wine.imageUrl!.isNotEmpty)
+                Container(
+                  width: 60,
+                  height: 140, // Возвращаем высоту фото к 90
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8),
+                    image: DecorationImage(
+                      fit: BoxFit.contain,
+                      image: NetworkImage(wine.imageUrl!),
                     ),
                   ),
-                  Text(
-                    wine.winery?.name ?? (wine.wineryId != null ? wine.wineryId! : 'Без винодельни'), // Здесь должно быть название винодельни, а не ID
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey[600],
-                    ),
+                )
+              else
+                Container(
+                  width: 60,
+                  height: 140, // Возвращаем высоту фото к 90
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8),
                   ),
-                  WineCharacteristicIconsColumn(wine: wine, iconSize: 16.0, isSearch: isSearch),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          priceInfo,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
+                  child: const Icon(
+                    Icons.wine_bar,
+                    color: Colors.grey,
+                  ),
+                ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center, // Центрируем содержимое по вертикали
+                  children: [
+                    Text(
+                      wine.name,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
                       ),
-                      if (wine.averageRating != null)
-                        Text(
-                          '${wine.averageRating} ★',
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
+                    ),
+                    Text(
+                      wine.winery?.name ?? (wine.wineryId != null ? wine.wineryId! : 'Без винодельни'), // Здесь должно быть название винодельни, а не ID
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                    WineCharacteristicIconsColumn(wine: wine, iconSize: 16.0, isSearch: isSearch),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            priceInfo,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                         ),
-                    ],
-                  ),
-                ],
+                        if (wine.averageRating != null)
+                          Text(
+                            '${wine.averageRating} ★',
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
