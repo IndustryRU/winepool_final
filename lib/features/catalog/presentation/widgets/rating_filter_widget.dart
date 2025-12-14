@@ -1,51 +1,93 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-Widget buildRatingFilter(BuildContext context, ValueNotifier<Map<String, dynamic>> selectedFilters) {
-  return ValueListenableBuilder<Map<String, dynamic>>(
-    valueListenable: selectedFilters,
-    builder: (context, filters, child) {
-      final rating = filters['min_rating'] ?? 0.0;
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('От ${rating.toStringAsFixed(1)} звезд'),
-          Slider(
-            min: 0,
-            max: 5,
-            divisions: 10, // 0.5 шаги (10 делений между 0 и 5)
-            label: rating.toStringAsFixed(1),
-            value: rating,
-            onChanged: (double value) {
-              selectedFilters.value['min_rating'] = value;
-              selectedFilters.value = Map.from(selectedFilters.value);
-            },
+class RatingFilterWidget extends HookConsumerWidget {
+  const RatingFilterWidget({
+    super.key,
+    required this.initialRating,
+    required this.onRatingChanged,
+  });
+
+  final double initialRating;
+  final void Function(double rating) onRatingChanged;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final selectedRating = useState(initialRating);
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        StarRatingSelector(
+          initialRating: selectedRating.value,
+          onRatingChanged: (rating) {
+            selectedRating.value = rating;
+            onRatingChanged(selectedRating.value);
+          },
+        ),
+        const SizedBox(height: 8),
+        Text(
+          'Выберите минимальный рейтинг',
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
+      ],
+    );
+  }
+}
+
+class StarRatingSelector extends HookConsumerWidget {
+  const StarRatingSelector({
+    super.key,
+    required this.initialRating,
+    required this.onRatingChanged,
+  });
+
+  final double initialRating;
+  final void Function(double rating) onRatingChanged;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final selectedRating = useState(initialRating);
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: List.generate(5, (index) {
+        return IconButton(
+          icon: Icon(
+            Icons.star,
+            color: index < selectedRating.value ? Colors.amber : Colors.grey,
           ),
-          // Визуальное отображение звезд
-          Row(
-            children: [
-              for (int i = 0; i <= 5; i++)
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      selectedFilters.value['min_rating'] = i.toDouble();
-                      selectedFilters.value = Map.from(selectedFilters.value);
-                    },
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        if (i > 0) ...[
-                          Icon(Icons.star, size: 16, color: i <= rating ? Colors.amber : Colors.grey),
-                          const SizedBox(width: 4),
-                        ],
-                        Text(i.toString()),
-                      ],
-                    ),
-                  ),
-                ),
-            ],
-          ),
-        ],
-      );
-    },
-  );
+          onPressed: () {
+            double newRating = (index + 1).toDouble();
+            if (selectedRating.value == newRating) {
+              // Повторное нажатие на выбранную звезду - сброс до 0
+              selectedRating.value = 0.0;
+            } else {
+              selectedRating.value = newRating;
+            }
+            onRatingChanged(selectedRating.value);
+          },
+          tooltip: '${index + 1} звёзд${_getStarSuffix(index + 1)}',
+        );
+      }),
+    );
+  }
+
+  String _getStarSuffix(int rating) {
+    if (rating >= 11 && rating <= 14) {
+      return 'очек';
+    }
+    switch (rating % 10) {
+      case 1:
+        return 'очка';
+      case 2:
+      case 3:
+      case 4:
+        return 'очки';
+      default:
+        return 'очек';
+    }
+ }
 }

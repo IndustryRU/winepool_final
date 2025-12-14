@@ -110,7 +110,7 @@ class CatalogScreen extends HookConsumerWidget {
               child: winesAsync.when(
                 data: (wines) => wines.isEmpty
                     ? const Center(
-                        child: Text('Ничего не foundено'),
+                        child: Text('Ничего не найдено'),
                       )
                     : ListView.builder(
                         itemCount: wines.length,
@@ -135,7 +135,8 @@ class CatalogScreen extends HookConsumerWidget {
     ), // Закрывающая скобка для Transform.scale
  ), // Закрывающая скобка для GestureDetector
 ); // Закрывающая скобка для WillPopScope
-  }
+ }
+
 }
 
 // Фильтры
@@ -147,7 +148,7 @@ const List<String> filterKeys = [
   'country',
   'region',
   'grape',
-  'rating',
+  'min_rating',
  'year',
  'volume',
 ];
@@ -177,7 +178,7 @@ class FilterSlider extends HookConsumerWidget {
     final tempCountries = useState<List<String>>([]);
     final tempRegions = useState<List<String>>([]);
     final tempGrapes = useState<List<String>>([]);
-    final tempRating = useState<double>(0.0);
+    final tempRating = useState<double>(selectedFilters.value['min_rating']?.toDouble() ?? 0.0);
     final tempMinYear = useState<int>(1900);
     final tempMaxYear = useState<int>(DateTime.now().year);
     final tempVolumes = useState<List<String>>([]);
@@ -202,7 +203,7 @@ class FilterSlider extends HookConsumerWidget {
               padding: const EdgeInsets.symmetric(horizontal: 4),
               child: FilterButton(
                 filterKey: filterKey,
-                isActive: selectedFilters.value.containsKey(filterKey),
+                isActive: _isFilterActive(filters, filterKey),
                 onPressed: () => _showFilterModal(
                   context, 
                   filterKey, 
@@ -227,6 +228,39 @@ class FilterSlider extends HookConsumerWidget {
         ],
       ),
     );
+  }
+
+  // Метод для проверки активности фильтра
+  bool _isFilterActive(Map<String, dynamic> currentFilters, String filterKey) {
+    switch (filterKey) {
+      case 'color':
+      case 'type':
+      case 'sugar':
+      case 'country':
+      case 'region':
+      case 'grape':
+      case 'volume':
+        // Для списков проверяем, есть ли элементы
+        return currentFilters[filterKey]?.isNotEmpty ?? false;
+      case 'price':
+        // Для цены проверяем, есть ли установленные минимальная или максимальная цена
+        return currentFilters['min_price'] != null || currentFilters['max_price'] != null;
+      case 'min_rating':
+        // Для рейтинга проверяем, больше ли значение 0
+        return currentFilters['min_rating'] != null && currentFilters['min_rating'] > 0;
+      case 'year':
+        // Для года проверяем, заданы ли конкретные годы (отличные от стандартных)
+        final minYear = currentFilters['min_year'];
+        final maxYear = currentFilters['max_year'];
+        final defaultMinYear = 1900;
+        final defaultMaxYear = DateTime.now().year;
+        
+        return (minYear != null && minYear != defaultMinYear) || 
+               (maxYear != null && maxYear != defaultMaxYear);
+      default:
+        // Для остальных фильтров проверяем наличие ключа
+        return currentFilters.containsKey(filterKey);
+    }
   }
 
   void _showFilterModal(
@@ -254,7 +288,7 @@ class FilterSlider extends HookConsumerWidget {
     // Обновляем временные переменные текущими значениями фильтров
     tempPriceRange.value = RangeValues(
       (currentFilters['min_price']?.toDouble() ?? 0.0),
-      (currentFilters['max_price']?.toDouble() ?? 10000000.0)
+      (currentFilters['max_price']?.toDouble() ?? 100000000.0)
     );
     tempShowUnavailable.value = currentFilters['show_unavailable'] ?? false;
     tempColors.value = (currentFilters['color'] as List<dynamic>?)?.cast<String>() ?? [];
@@ -273,7 +307,7 @@ class FilterSlider extends HookConsumerWidget {
       // Читаем текущие значения цен из провайдера
       final currentGlobalFilters = ref.read(catalogFiltersProvider);
       final currentMinPrice = currentGlobalFilters['min_price']?.toDouble() ?? 0.0;
-      final currentMaxPrice = currentGlobalFilters['max_price']?.toDouble() ?? 10000000.0;
+      final currentMaxPrice = currentGlobalFilters['max_price']?.toDouble() ?? 100000000.0;
       
       // СРАЗУ ИНИЦИАЛИЗИРУЕМ временную переменную актуальными значениями
       RangeValues currentPriceRange = RangeValues(currentMinPrice, currentMaxPrice);
@@ -293,13 +327,10 @@ class FilterSlider extends HookConsumerWidget {
                     child: Column(
                       children: [
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
-                              getFilterTitle(filterKey),
-                              style: Theme.of(context).textTheme.titleLarge,
-                            ),
-                            TextButton(
+                            Text(getFilterTitle(filterKey), style: Theme.of(context).textTheme.titleLarge),
+                            const Spacer(),
+                            IconButton(
                               onPressed: () {
                                 // Логика "Сбросить и Применить" для ценового фильтра
                                 // СБРОСИТЬ ВСЕ ЛОКАЛЬНЫЕ TEMP ПЕРЕМЕННЫЕ ДО ИХ НАЧАЛЬНЫХ/ДЕФОЛТНЫХ ЗНАЧЕНИЙ
@@ -343,14 +374,15 @@ class FilterSlider extends HookConsumerWidget {
                                 // ЗАКРЫТЬ МОДАЛЬНОЕ ОКНО Navigator.of(context).pop()
                                 Navigator.of(context).pop();
                               },
-                              child: Text('Сбросить'),
+                              icon: Icon(Icons.refresh),
                             ),
-                            TextButton(
+                            SizedBox(width: 16),
+                            IconButton(
                               onPressed: () {
                                 // Закрыть модальное окно, вернув текущие значения из виджета
                                 Navigator.of(context).pop(currentPriceRange);
                               },
-                              child: Text('Применить'),
+                              icon: Icon(Icons.check),
                             ),
                           ],
                         ),
@@ -418,13 +450,10 @@ class FilterSlider extends HookConsumerWidget {
                     child: Column(
                       children: [
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
-                              getFilterTitle(filterKey),
-                              style: Theme.of(context).textTheme.titleLarge,
-                            ),
-                            TextButton(
+                            Text(getFilterTitle(filterKey), style: Theme.of(context).textTheme.titleLarge),
+                            const Spacer(),
+                            IconButton(
                               onPressed: () {
                                 // Остальная логика сброса для других фильтров
                                 // СБРОСИТЬ ВСЕ ЛОКАЛЬНЫЕ TEMP ПЕРЕМЕННЫЕ ДО ИХ НАЧАЛЬНЫХ/ДЕФОЛТНЫХ ЗНАЧЕНИЙ
@@ -443,6 +472,7 @@ class FilterSlider extends HookConsumerWidget {
                                 
                                 // СОБРАТЬ НОВЫЙ ОБЪЕКТ newFilters ИЗ ЭТИХ ТОЛЬКО ЧТО СБРОШЕННЫХ ЛОКАЛЬНЫХ ПЕРЕМЕННЫХ
                                 final newFilters = <String, dynamic>{
+
                                   'min_price': tempPriceRange.value.start,
                                   'max_price': tempPriceRange.value.end,
                                   'show_unavailable': tempShowUnavailable.value,
@@ -492,8 +522,9 @@ class FilterSlider extends HookConsumerWidget {
                                   case 'grape':
                                     ref.read(catalogFiltersProvider.notifier).resetGrapeFilter();
                                     break;
-                                  case 'rating':
+                                  case 'min_rating':
                                     ref.read(catalogFiltersProvider.notifier).resetRatingFilter();
+                                    tempRating.value = 0.0;
                                     break;
                                   case 'year':
                                     ref.read(catalogFiltersProvider.notifier).resetYearFilter();
@@ -509,19 +540,21 @@ class FilterSlider extends HookConsumerWidget {
                                 // ЗАКРЫТЬ МОДАЛЬНОЕ ОКНО Navigator.of(context).pop()
                                 Navigator.of(context).pop();
                               },
-                              child: Text('Сбросить'),
+                              icon: Icon(Icons.refresh),
                             ),
-                            TextButton(
+                            SizedBox(width: 16),
+                            IconButton(
                               onPressed: () {
                                 // Применить фильтр - собираем полный набор фильтров из временных переменных
                                 // Обновляем tempPriceRange перед применением фильтров, чтобы убедиться, что значения актуальны
                                 final currentFilters = ref.read(catalogFiltersProvider);
                                 tempPriceRange.value = RangeValues(
                                   (currentFilters['min_price']?.toDouble() ?? 0.0),
-                                  (currentFilters['max_price']?.toDouble() ?? 10000000.0)
+                                  (currentFilters['max_price']?.toDouble() ?? 100000000.0)
                                 );
                                 
                                 final newFilters = <String, dynamic>{
+
                                   'min_price': tempPriceRange.value.start,
                                   'max_price': tempPriceRange.value.end,
                                   'show_unavailable': tempShowUnavailable.value,
@@ -553,7 +586,7 @@ class FilterSlider extends HookConsumerWidget {
                                 ref.read(catalogFiltersProvider.notifier).setAllFilters(newFilters);
                                 Navigator.of(context).pop();
                               },
-                              child: Text('Применить'),
+                              icon: Icon(Icons.check),
                             ),
                           ],
                         ),
@@ -574,502 +607,464 @@ class FilterSlider extends HookConsumerWidget {
       );
     }
  }
-
-  Widget _buildFilterContentWithCallbacks(
-    BuildContext context,
-    String filterKey,
-    ValueNotifier<Map<String, dynamic>> selectedFilters,
-    WidgetRef ref,
-    StateSetter setState,
-    ValueNotifier<List<String>> tempColors,
-    ValueNotifier<List<String>> tempTypes,
-    ValueNotifier<List<String>> tempSugars,
-    ValueNotifier<List<String>> tempCountries,
-    ValueNotifier<List<String>> tempRegions,
-    ValueNotifier<List<String>> tempGrapes,
-    ValueNotifier<double> tempRating,
-    ValueNotifier<int> tempMinYear,
-    ValueNotifier<int> tempMaxYear,
-    ValueNotifier<List<String>> tempVolumes,
-  ) {
-    switch (filterKey) {
-      case 'color':
-        return ValueListenableBuilder<List<String>>(
-          valueListenable: tempColors,
-          builder: (context, colors, child) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                for (WineColor color in [WineColor.red, WineColor.white, WineColor.rose])
-                  CheckboxListTile(
-                    title: Text(color.nameRu),
-                    value: colors.contains(color.name),
-                    onChanged: (bool? value) {
-                      setState(() {
-                        final newColors = List<String>.from(colors);
-                        if (value == true) {
-                          newColors.add(color.name);
-                        } else {
-                          newColors.remove(color.name);
-                        }
-                        tempColors.value = newColors;
-                      });
-                    },
-                  ),
-              ],
-            );
-          },
-        );
-      case 'type':
-        return ValueListenableBuilder<List<String>>(
-          valueListenable: tempTypes,
-          builder: (context, types, child) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                for (WineType type in WineType.values.where((t) => t != WineType.unknown))
-                  CheckboxListTile(
-                    title: Text(type.nameRu),
-                    value: types.contains(type.name),
-                    onChanged: (bool? value) {
-                      setState(() {
-                        final newTypes = List<String>.from(types);
-                        if (value == true) {
-                          newTypes.add(type.name);
-                        } else {
-                          newTypes.remove(type.name);
-                        }
-                        tempTypes.value = newTypes;
-                      });
-                    },
-                  ),
-              ],
-            );
-          },
-        );
-      case 'sugar':
-        return ValueListenableBuilder<List<String>>(
-          valueListenable: tempSugars,
-          builder: (context, sugars, child) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                for (WineSugar sugar in WineSugar.values.where((s) => s != WineSugar.unknown))
-                  CheckboxListTile(
-                    title: Text(sugar.nameRu),
-                    value: sugars.contains(sugar.name),
-                    onChanged: (bool? value) {
-                      setState(() {
-                        final newSugars = List<String>.from(sugars);
-                        if (value == true) {
-                          newSugars.add(sugar.name);
-                        } else {
-                          newSugars.remove(sugar.name);
-                        }
-                        tempSugars.value = newSugars;
-                      });
-                    },
-                  ),
-              ],
-            );
-          },
-        );
-      case 'price':
-        final currentFilters = ref.read(catalogFiltersProvider);
-        final currentMinPrice = currentFilters['min_price']?.toDouble();
-        final currentMaxPrice = currentFilters['max_price']?.toDouble();
-        final initialShowUnavailable = currentFilters['show_unavailable'] ?? false;
-        return PriceFilterWidget(
-          selectedFilters: selectedFilters,
-          initialMinPrice: currentMinPrice,
-          initialMaxPrice: currentMaxPrice,
-          initialShowUnavailable: initialShowUnavailable,
-        );
-      case 'country':
-        return ValueListenableBuilder<List<String>>(
-          valueListenable: tempCountries,
-          builder: (context, countries, child) {
-            return buildCountryFilter(context, selectedFilters);
-          },
-        );
-      case 'region':
-        return ValueListenableBuilder<List<String>>(
-          valueListenable: tempRegions,
-          builder: (context, regions, child) {
-            return buildRegionFilter(context, selectedFilters);
-          },
-        );
-      case 'grape':
-        return ValueListenableBuilder<List<String>>(
-          valueListenable: tempGrapes,
-          builder: (context, grapes, child) {
-            return buildGrapeFilter(context, selectedFilters);
-          },
-        );
-      case 'rating':
-        return ValueListenableBuilder<double>(
-          valueListenable: tempRating,
-          builder: (context, rating, child) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Минимальный рейтинг: ${rating.toStringAsFixed(1)}'),
-                Slider(
-                  value: rating,
-                  min: 0.0,
-                  max: 5.0,
-                  divisions: 10,
-                  label: rating.toStringAsFixed(1),
-                  onChanged: (double value) {
-                    setState(() {
-                      tempRating.value = value;
-                    });
-                  },
-                ),
-                // Визуальное отображение звезд
-                Row(
-                  children: [
-                    for (int i = 0; i <= 5; i++)
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed: () {
-                            setState(() {
-                              tempRating.value = i.toDouble();
-                            });
-                          },
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              if (i > 0) ...[
-                                Icon(Icons.star, size: 16, color: i <= rating ? Colors.amber : Colors.grey),
-                                const SizedBox(width: 4),
-                              ],
-                              Text(i.toString()),
-                            ],
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-              ],
-            );
-          },
-        );
-      case 'year':
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: DropdownButtonFormField<int>(
-                    value: tempMinYear.value,
-                    items: [
-                      for (int year = 190; year <= DateTime.now().year; year++)
-                        DropdownMenuItem(value: year, child: Text(year.toString())),
-                    ],
-                    onChanged: (int? value) {
-                      if (value != null) {
-                        setState(() {
-                          tempMinYear.value = value;
-                        });
-                      }
-                    },
-                  ),
-                ),
-                SizedBox(width: 16),
-                Text('до'),
-                SizedBox(width: 16),
-                Expanded(
-                  child: DropdownButtonFormField<int>(
-                    value: tempMaxYear.value,
-                    items: [
-                      for (int year = 190; year <= DateTime.now().year; year++)
-                        DropdownMenuItem(value: year, child: Text(year.toString())),
-                    ],
-                    onChanged: (int? value) {
-                      if (value != null) {
-                        setState(() {
-                          tempMaxYear.value = value;
-                        });
-                      }
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ],
-        );
-      case 'volume':
-        return ValueListenableBuilder<List<String>>(
-          valueListenable: tempVolumes,
-          builder: (context, volumes, child) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                for (String volume in ['0.375', '0.75', '1.5', '3', '6'])
-                  CheckboxListTile(
-                    title: Text('${volume} л'),
-                    value: volumes.contains(volume),
-                    onChanged: (bool? value) {
-                      setState(() {
-                        final newVolumes = List<String>.from(volumes);
-                        if (value == true) {
-                          newVolumes.add(volume);
-                        } else {
-                          newVolumes.remove(volume);
-                        }
-                        tempVolumes.value = newVolumes;
-                      });
-                    },
-                  ),
-              ],
-            );
-          },
-        );
-      default:
-        return Container();
-    }
-  }
-
- void _showSortModal(
-    BuildContext context,
-    ValueNotifier<Map<String, dynamic>> selectedFilters,
-    WidgetRef ref,
-    Function(Map<String, dynamic>) onFiltersChanged,
+ 
+ Widget _buildFilterContentWithCallbacks(
+   BuildContext context,
+   String filterKey,
+   ValueNotifier<Map<String, dynamic>> selectedFilters,
+   WidgetRef ref,
+   StateSetter setState,
+   ValueNotifier<List<String>> tempColors,
+   ValueNotifier<List<String>> tempTypes,
+   ValueNotifier<List<String>> tempSugars,
+   ValueNotifier<List<String>> tempCountries,
+   ValueNotifier<List<String>> tempRegions,
+   ValueNotifier<List<String>> tempGrapes,
+   ValueNotifier<double> tempRating,
+   ValueNotifier<int> tempMinYear,
+   ValueNotifier<int> tempMaxYear,
+   ValueNotifier<List<String>> tempVolumes,
  ) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (BuildContext context) {
-        return DraggableScrollableSheet(
-          expand: false,
-          builder: (BuildContext context, ScrollController scrollController) {
-            return StatefulBuilder(
-              builder: (BuildContext context, StateSetter setState) {
-                final currentSortOption = selectedFilters.value['sort_option'] ?? 'popular'; // По умолчанию 'popular'
-                
-                return Container(
-                  padding: EdgeInsets.all(16),
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Сначала:',
-                            style: Theme.of(context).textTheme.titleLarge,
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              // Сбросить сортировку
-                              selectedFilters.value.remove('sort_option');
-                              selectedFilters.value = Map.from(selectedFilters.value);
-                              onFiltersChanged(selectedFilters.value);
-                              Navigator.of(context).pop();
-                            },
-                            child: Text('Сбросить'),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              // Применить сортировку - сохраняем временные значения в основной провайдер
-                              ref.read(catalogFiltersProvider.notifier).setAllFilters(selectedFilters.value);
-                              Navigator.of(context).pop();
-                            },
-                            child: Text('Применить'),
-                          ),
-                        ],
-                      ),
-                      Expanded(
-                        child: SingleChildScrollView(
-                          controller: scrollController,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              RadioListTile<String>(
-                                title: Text('Популярные'),
-                                value: 'popular',
-                                groupValue: currentSortOption,
-                                onChanged: (value) {
-                                  setState(() {
-                                    selectedFilters.value['sort_option'] = value;
-                                  });
-                                },
-                              ),
-                              RadioListTile<String>(
-                                title: Text('Новинки'),
-                                value: 'newest',
-                                groupValue: currentSortOption,
-                                onChanged: (value) {
-                                  setState(() {
-                                    selectedFilters.value['sort_option'] = value;
-                                  });
-                                },
-                              ),
-                              RadioListTile<String>(
-                                title: Text('Дешевле'),
-                                value: 'price_asc',
-                                groupValue: currentSortOption,
-                                onChanged: (value) {
-                                  setState(() {
-                                    selectedFilters.value['sort_option'] = value;
-                                  });
-                                },
-                              ),
-                              RadioListTile<String>(
-                                title: Text('Дороже'),
-                                value: 'price_desc',
-                                groupValue: currentSortOption,
-                                onChanged: (value) {
-                                  setState(() {
-                                    selectedFilters.value['sort_option'] = value;
-                                  });
-                                },
-                              ),
-                              RadioListTile<String>(
-                                title: Text('С высоким рейтингом'),
-                                value: 'rating_desc',
-                                groupValue: currentSortOption,
-                                onChanged: (value) {
-                                  setState(() {
-                                    selectedFilters.value['sort_option'] = value;
-                                  });
-                                },
-                              ),
-                              RadioListTile<String>(
-                                title: Text('С большими скидками'),
-                                value: 'discount',
-                                groupValue: currentSortOption,
-                                onChanged: (value) {
-                                  setState(() {
-                                    selectedFilters.value['sort_option'] = value;
-                                  });
-                                },
-                              ),
-                            ],
+   switch (filterKey) {
+     case 'color':
+       return ValueListenableBuilder<List<String>>(
+         valueListenable: tempColors,
+         builder: (context, colors, child) {
+           return Column(
+             crossAxisAlignment: CrossAxisAlignment.start,
+             children: [
+               for (WineColor color in [WineColor.red, WineColor.white, WineColor.rose])
+                 CheckboxListTile(
+                   title: Text(color.nameRu),
+                   value: colors.contains(color.name),
+                   onChanged: (bool? value) {
+                     setState(() {
+                       final newColors = List<String>.from(colors);
+                       if (value == true) {
+                         newColors.add(color.name);
+                       } else {
+                         newColors.remove(color.name);
+                       }
+                       tempColors.value = newColors;
+                     });
+                   },
+                 ),
+             ],
+           );
+         },
+       );
+     case 'type':
+       return ValueListenableBuilder<List<String>>(
+         valueListenable: tempTypes,
+         builder: (context, types, child) {
+           return Column(
+             crossAxisAlignment: CrossAxisAlignment.start,
+             children: [
+               for (WineType type in WineType.values.where((t) => t != WineType.unknown))
+                 CheckboxListTile(
+                   title: Text(type.nameRu),
+                   value: types.contains(type.name),
+                   onChanged: (bool? value) {
+                     setState(() {
+                       final newTypes = List<String>.from(types);
+                       if (value == true) {
+                         newTypes.add(type.name);
+                       } else {
+                         newTypes.remove(type.name);
+                       }
+                       tempTypes.value = newTypes;
+                     });
+                   },
+                 ),
+             ],
+           );
+         },
+       );
+     case 'sugar':
+       return ValueListenableBuilder<List<String>>(
+         valueListenable: tempSugars,
+         builder: (context, sugars, child) {
+           return Column(
+             crossAxisAlignment: CrossAxisAlignment.start,
+             children: [
+               for (WineSugar sugar in WineSugar.values.where((s) => s != WineSugar.unknown))
+                 CheckboxListTile(
+                   title: Text(sugar.nameRu),
+                   value: sugars.contains(sugar.name),
+                   onChanged: (bool? value) {
+                     setState(() {
+                       final newSugars = List<String>.from(sugars);
+                       if (value == true) {
+                         newSugars.add(sugar.name);
+                       } else {
+                         newSugars.remove(sugar.name);
+                       }
+                       tempSugars.value = newSugars;
+                     });
+                   },
+                 ),
+             ],
+           );
+         },
+       );
+     case 'price':
+       final currentFilters = ref.read(catalogFiltersProvider);
+       final currentMinPrice = currentFilters['min_price']?.toDouble();
+       final currentMaxPrice = currentFilters['max_price']?.toDouble();
+       final initialShowUnavailable = currentFilters['show_unavailable'] ?? false;
+       return PriceFilterWidget(
+         selectedFilters: selectedFilters,
+         initialMinPrice: currentMinPrice,
+         initialMaxPrice: currentMaxPrice,
+         initialShowUnavailable: initialShowUnavailable,
+       );
+     case 'country':
+       return ValueListenableBuilder<List<String>>(
+         valueListenable: tempCountries,
+         builder: (context, countries, child) {
+           return buildCountryFilter(context, selectedFilters);
+         },
+       );
+     case 'region':
+       return ValueListenableBuilder<List<String>>(
+         valueListenable: tempRegions,
+         builder: (context, regions, child) {
+           return buildRegionFilter(context, selectedFilters);
+         },
+       );
+     case 'grape':
+       return ValueListenableBuilder<List<String>>(
+         valueListenable: tempGrapes,
+         builder: (context, grapes, child) {
+           return buildGrapeFilter(context, selectedFilters);
+         },
+       );
+     case 'min_rating':
+       return RatingFilterWidget(
+         initialRating: tempRating.value,
+         onRatingChanged: (rating) {
+           tempRating.value = rating;
+         },
+       );
+     case 'year':
+       return Column(
+         crossAxisAlignment: CrossAxisAlignment.start,
+         children: [
+           Row(
+             children: [
+               Expanded(
+                 child: DropdownButtonFormField<int>(
+                   value: tempMinYear.value,
+                   items: [
+                     for (int year = 190; year <= DateTime.now().year; year++)
+                       DropdownMenuItem(value: year, child: Text(year.toString())),
+                   ],
+                   onChanged: (int? value) {
+                     if (value != null) {
+                       setState(() {
+                         tempMinYear.value = value;
+                       });
+                     }
+                   },
+                 ),
+               ),
+               SizedBox(width: 16),
+               Text('до'),
+               SizedBox(width: 16),
+               Expanded(
+                 child: DropdownButtonFormField<int>(
+                   value: tempMaxYear.value,
+                   items: [
+                     for (int year = 190; year <= DateTime.now().year; year++)
+                       DropdownMenuItem(value: year, child: Text(year.toString())),
+                   ],
+                   onChanged: (int? value) {
+                     if (value != null) {
+                       setState(() {
+                         tempMaxYear.value = value;
+                       });
+                     }
+                   },
+                 ),
+               ),
+             ],
+           ),
+         ],
+       );
+     case 'volume':
+       return ValueListenableBuilder<List<String>>(
+         valueListenable: tempVolumes,
+         builder: (context, volumes, child) {
+           return Column(
+             crossAxisAlignment: CrossAxisAlignment.start,
+             children: [
+               for (String volume in ['0.375', '0.75', '1.5', '3', '6'])
+                 CheckboxListTile(
+                   title: Text('${volume} л'),
+                   value: volumes.contains(volume),
+                   onChanged: (bool? value) {
+                     setState(() {
+                       final newVolumes = List<String>.from(volumes);
+                       if (value == true) {
+                         newVolumes.add(volume);
+                       } else {
+                         newVolumes.remove(volume);
+                       }
+                       tempVolumes.value = newVolumes;
+                     });
+                   },
+                 ),
+               ],
+             
+           );
+         },
+       );
+     default:
+       return Container();
+   }
+ }
+
+void _showSortModal(
+      BuildContext context,
+      ValueNotifier<Map<String, dynamic>> selectedFilters,
+      WidgetRef ref,
+      Function(Map<String, dynamic>) onFiltersChanged,
+ ) {
+      showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        builder: (BuildContext context) {
+          return DraggableScrollableSheet(
+            expand: false,
+            builder: (BuildContext context, ScrollController scrollController) {
+              return StatefulBuilder(
+                builder: (BuildContext context, StateSetter setState) {
+                  final currentSortOption = selectedFilters.value['sort_option'] ?? 'popular'; // По умолчанию 'popular'
+                  
+                  return Container(
+                    padding: EdgeInsets.all(16),
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            Text('Порядок', style: Theme.of(context).textTheme.titleLarge),
+                            const Spacer(),
+                            IconButton(
+                              onPressed: () {
+                                // Сбросить сортировку
+                                selectedFilters.value.remove('sort_option');
+                                selectedFilters.value = Map.from(selectedFilters.value);
+                                onFiltersChanged(selectedFilters.value);
+                                Navigator.of(context).pop();
+                              },
+                              icon: Icon(Icons.refresh),
+                            ),
+                            SizedBox(width: 16),
+                            IconButton(
+                              onPressed: () {
+                                // Применить сортировку - сохраняем временные значения в основной провайдер
+                                ref.read(catalogFiltersProvider.notifier).setAllFilters(selectedFilters.value);
+                                Navigator.of(context).pop();
+                              },
+                              icon: Icon(Icons.check),
+                            ),
+                          ],
+                        ),
+                        Expanded(
+                          child: SingleChildScrollView(
+                            controller: scrollController,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                RadioListTile<String>(
+                                  title: Text('Популярные'),
+                                  value: 'popular',
+                                  groupValue: currentSortOption,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      selectedFilters.value['sort_option'] = value;
+                                    });
+                                  },
+                                ),
+                                RadioListTile<String>(
+                                  title: Text('Новинки'),
+                                  value: 'newest',
+                                  groupValue: currentSortOption,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      selectedFilters.value['sort_option'] = value;
+                                    });
+                                  },
+                                ),
+                                RadioListTile<String>(
+                                  title: Text('Дешевле'),
+                                  value: 'price_asc',
+                                  groupValue: currentSortOption,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      selectedFilters.value['sort_option'] = value;
+                                    });
+                                  },
+                                ),
+                                RadioListTile<String>(
+                                  title: Text('Дороже'),
+                                  value: 'price_desc',
+                                  groupValue: currentSortOption,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      selectedFilters.value['sort_option'] = value;
+                                    });
+                                  },
+                                ),
+                                RadioListTile<String>(
+                                  title: Text('С высоким рейтингом'),
+                                  value: 'rating_desc',
+                                  groupValue: currentSortOption,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      selectedFilters.value['sort_option'] = value;
+                                    });
+                                  },
+                                ),
+                                RadioListTile<String>(
+                                  title: Text('С большими скидками'),
+                                  value: 'discount',
+                                  groupValue: currentSortOption,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      selectedFilters.value['sort_option'] = value;
+                                    });
+                                  },
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            );
-          },
-        );
-      },
-    );
- }
+                      ],
+                    ),
+                  );
+                },
+              );
+            },
+          );
+        },
+      );
+   }
 
  Widget _buildFilterContent(
-    BuildContext context,
-    String filterKey,
-    ValueNotifier<Map<String, dynamic>> selectedFilters,
-    WidgetRef ref, [Function(RangeValues)? onPriceRangeChanged, Function(bool)? onShowUnavailableChanged]
- ) {
-    switch (filterKey) {
-      case 'color':
-        return buildColorFilter(context, selectedFilters);
-      case 'type':
-        return buildTypeFilter(context, selectedFilters);
-      case 'sugar':
-        return buildSugarFilter(context, selectedFilters);
-      case 'price':
-        if (onPriceRangeChanged != null) {
-          // Передаем текущие значения из провайдера в PriceFilterWidget
-          final currentFilters = ref.read(catalogFiltersProvider);
-          final currentMinPrice = currentFilters['min_price']?.toDouble();
-          final currentMaxPrice = currentFilters['max_price']?.toDouble();
-          final initialShowUnavailable = currentFilters['show_unavailable'] ?? false;
-          return PriceFilterWidget(
-            selectedFilters: selectedFilters,
-            onRangeChanged: (newValues) {
-              Future.microtask(() {
-                onPriceRangeChanged(newValues);
-              });
-            },
-            onShowUnavailableChanged: (showUnavailable) {
-              Future.microtask(() {
-                onShowUnavailableChanged?.call(showUnavailable);
-              });
-            },
-            initialMinPrice: currentMinPrice,
-            initialMaxPrice: currentMaxPrice,
-            initialShowUnavailable: initialShowUnavailable,
-          );
-        } else {
-          final currentFilters = ref.read(catalogFiltersProvider);
-          final currentMinPrice = currentFilters['min_price']?.toDouble();
-          final currentMaxPrice = currentFilters['max_price']?.toDouble();
-          final initialShowUnavailable = currentFilters['show_unavailable'] ?? false;
-          return PriceFilterWidget(
-            selectedFilters: selectedFilters,
-            initialMinPrice: currentMinPrice,
-            initialMaxPrice: currentMaxPrice,
-            initialShowUnavailable: initialShowUnavailable,
-          );
-        }
-      case 'country':
-        return buildCountryFilter(context, selectedFilters);
-      case 'region':
-        return buildRegionFilter(context, selectedFilters);
-      case 'grape':
-        return buildGrapeFilter(context, selectedFilters);
-      case 'rating':
-        return buildRatingFilter(context, selectedFilters);
-      case 'year':
-        return buildYearFilter(context, selectedFilters);
-      case 'volume':
-        return buildVolumeFilter(context, selectedFilters);
-      default:
-        return Container();
-    }
+     BuildContext context,
+     String filterKey,
+     ValueNotifier<Map<String, dynamic>> selectedFilters,
+     WidgetRef ref, [Function(RangeValues)? onPriceRangeChanged, Function(bool)? onShowUnavailableChanged]
+  ) {
+     switch (filterKey) {
+       case 'color':
+         return buildColorFilter(context, selectedFilters);
+       case 'type':
+         return buildTypeFilter(context, selectedFilters);
+       case 'sugar':
+         return buildSugarFilter(context, selectedFilters);
+       case 'price':
+         if (onPriceRangeChanged != null) {
+           // Передаем текущие значения из провайдера в PriceFilterWidget
+           final currentFilters = ref.read(catalogFiltersProvider);
+           final currentMinPrice = currentFilters['min_price']?.toDouble();
+           final currentMaxPrice = currentFilters['max_price']?.toDouble();
+           final initialShowUnavailable = currentFilters['show_unavailable'] ?? false;
+           return PriceFilterWidget(
+             selectedFilters: selectedFilters,
+             onRangeChanged: (newValues) {
+               Future.microtask(() {
+                 onPriceRangeChanged(newValues);
+               });
+             },
+             onShowUnavailableChanged: (showUnavailable) {
+               Future.microtask(() {
+                 onShowUnavailableChanged?.call(showUnavailable);
+               });
+             },
+             initialMinPrice: currentMinPrice,
+             initialMaxPrice: currentMaxPrice,
+             initialShowUnavailable: initialShowUnavailable,
+           );
+         } else {
+           final currentFilters = ref.read(catalogFiltersProvider);
+           final currentMinPrice = currentFilters['min_price']?.toDouble();
+           final currentMaxPrice = currentFilters['max_price']?.toDouble();
+           final initialShowUnavailable = currentFilters['show_unavailable'] ?? false;
+           return PriceFilterWidget(
+             selectedFilters: selectedFilters,
+             initialMinPrice: currentMinPrice,
+             initialMaxPrice: currentMaxPrice,
+             initialShowUnavailable: initialShowUnavailable,
+           );
+         }
+       case 'country':
+         return buildCountryFilter(context, selectedFilters);
+       case 'region':
+         return buildRegionFilter(context, selectedFilters);
+       case 'grape':
+         return buildGrapeFilter(context, selectedFilters);
+       case 'min_rating':
+         return RatingFilterWidget(
+           initialRating: 0.0,
+           onRatingChanged: (rating) {
+             selectedFilters.value['min_rating'] = rating;
+             selectedFilters.value = Map.from(selectedFilters.value);
+           },
+         );
+       case 'year':
+         return buildYearFilter(context, selectedFilters);
+       case 'volume':
+         return buildVolumeFilter(context, selectedFilters);
+       default:
+         return Container();
+     }
  }
 
 }
 
-   
-   
-    class FilterButton extends StatelessWidget {
-  final String filterKey;
- final bool isActive;
-  final VoidCallback onPressed;
+class FilterButton extends StatelessWidget {
+     final String filterKey;
+    final bool isActive;
+     final VoidCallback onPressed;
 
-   const FilterButton({
-    super.key,
-    required this.filterKey,
-    required this.isActive,
-    required this.onPressed,
-  });
+     const FilterButton({
+      super.key,
+      required this.filterKey,
+      required this.isActive,
+      required this.onPressed,
+    });
 
- @override
-  Widget build(BuildContext context) {
-     return ElevatedButton(
-      onPressed: onPressed,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: isActive ? Colors.grey[400] : Colors.grey[200],
-        foregroundColor: Colors.black87,
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (filterKey == 'price') ...[
-            Icon(Icons.monetization_on_outlined, size: 16),
-            const SizedBox(width: 4),
-          ] else if (filterKey == 'rating') ...[
-            Icon(Icons.star_border_outlined, size: 16),
-            const SizedBox(width: 4),
-          ] else if (filterKey == 'sort') ...[
-            Icon(Icons.sort, size: 16),
-            const SizedBox(width: 4),
+   @override
+   Widget build(BuildContext context) {
+       return ElevatedButton(
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: isActive ? Colors.green[300] : Colors.grey[200],
+          foregroundColor: Colors.black87,
+          elevation: 0, // Убираем тень у кнопки фильтра
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (filterKey == 'price') ...[
+              Icon(Icons.monetization_on_outlined, size: 16),
+              const SizedBox(width: 4),
+            ] else if (filterKey == 'min_rating') ...[
+              Icon(Icons.star_border_outlined, size: 16),
+              const SizedBox(width: 4),
+            ] else if (filterKey == 'sort') ...[
+              Icon(Icons.sort, size: 16),
+              const SizedBox(width: 4),
+            ],
+            Text(getFilterTitle(filterKey)),
           ],
-          Text(getFilterTitle(filterKey)),
-        ],
-      ),
-    );
-  }
+        ),
+      );
+    }
 
-}
+ }
 
 // Вспомогательная функция для получения заголовка фильтра
 String getFilterTitle(String filterKey) {
@@ -1090,10 +1085,10 @@ String getFilterTitle(String filterKey) {
       return 'Регион';
     case 'grape':
       return 'Сорт';
-    case 'rating':
+    case 'min_rating':
       return 'Рейтинг';
     case 'year':
-      return 'Год';
+      return 'Винтаж';
     case 'volume':
       return 'Объем';
     default:

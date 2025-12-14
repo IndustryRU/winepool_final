@@ -9,7 +9,7 @@ class WineTile extends StatelessWidget {
   const WineTile({super.key, required this.wine, this.isSearch = false});
 
   @override
-  Widget build(BuildContext context) {
+ Widget build(BuildContext context) {
     print(wine.winery);
     
     // Вычисляем минимальную и максимальную цену из предложений
@@ -37,6 +37,7 @@ class WineTile extends StatelessWidget {
     return SizedBox(
       height: 150, // Увеличиваем высоту всего виджета
       child: Card(
+        elevation: 0, // Убираем тень у карточки вина
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Row(
@@ -117,5 +118,5 @@ class WineTile extends StatelessWidget {
         ),
       ),
     );
-  }
+ }
 }

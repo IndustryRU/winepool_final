@@ -49,77 +49,78 @@ class CategoryScreen extends StatelessWidget {
           ),
         ),
         body: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: GridView.builder(
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: 10.0,
-            mainAxisSpacing: 10.0,
-            childAspectRatio: 1.0,
-          ),
-          itemCount: categories.length,
-          itemBuilder: (context, index) {
-            final category = categories[index];
-            final route = category['route'] as String;
-            
-            VoidCallback? onPressed;
-            if (route == '/accessories-catalog' ||
-                route == '/brandy-catalog' ||
-                route == '/wineries-catalog') {
-              onPressed = () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Раздел в разработке'),
-                  ),
-                );
-              };
-            } else {
-              onPressed = () {
-                context.go(route);
-              };
-            }
-
-            return ElevatedButton(
-              onPressed: onPressed,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.grey[200], // Изменяем цвет фона
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-              ),
-              child: Stack(
-                children: [
-                  // Картинка внизу
-                  Positioned(
-                    bottom: 5,
-                    left: 0,
-                    right: 0,
-                    child: Image.asset(
-                      category['image'] as String,
-                      fit: BoxFit.contain,
-                      height: 120, // Масштабируем картинку
+          padding: const EdgeInsets.all(10.0),
+          child: GridView.builder(
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 10.0,
+              mainAxisSpacing: 10.0,
+              childAspectRatio: 1.0,
+            ),
+            itemCount: categories.length,
+            itemBuilder: (context, index) {
+              final category = categories[index];
+              final route = category['route'] as String;
+              
+              VoidCallback? onPressed;
+              if (route == '/accessories-catalog' ||
+                  route == '/brandy-catalog' ||
+                  route == '/wineries-catalog') {
+                onPressed = () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Раздел в разработке'),
                     ),
+                  );
+                };
+              } else {
+                onPressed = () {
+                  context.go(route);
+                };
+              }
+
+              return ElevatedButton(
+                onPressed: onPressed,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.grey[200], // Изменяем цвет фона
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0),
                   ),
-                  // Название вверху слева
-                  Positioned(
-                    top: 5,
-                    left: 0,
-                    child: Text(
-                      category['name'] as String,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black, // Цвет текста для контраста
+                  elevation: 0, // Убираем тень
+                ),
+                child: Stack(
+                  children: [
+                    // Картинка внизу
+                    Positioned(
+                      bottom: 5,
+                      left: 0,
+                      right: 0,
+                      child: Image.asset(
+                        category['image'] as String,
+                        fit: BoxFit.contain,
+                        height: 120, // Масштабируем картинку
                       ),
                     ),
-                  ),
-                ],
-              ),
-            );
-          },
+                    // Название вверху слева
+                    Positioned(
+                      top: 5,
+                      left: 0,
+                      child: Text(
+                        category['name'] as String,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black, // Цвет текста для контраста
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
         ),
       ),
-    ),
-  );
+    );
   }
 }

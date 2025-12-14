@@ -11,7 +11,7 @@ class CatalogFilters extends _$CatalogFilters {
   Map<String, dynamic> build() {
     print('--- CATALOG FILTERS INITIALIZED ---');
     print('Initial state: {}');
-    return {};
+    return {'min_year': 1900};
   }
 
   void updateFilters(Map<String, dynamic> newFilters) {
@@ -65,7 +65,7 @@ class CatalogFilters extends _$CatalogFilters {
     print('Updated state after resetting price filter: $state');
   }
 
-  void resetColorFilter() {
+ void resetColorFilter() {
     print('--- RESET COLOR FILTER CALLED ---');
     final newState = Map<String, dynamic>.from(state);
     newState.remove('color');
@@ -73,7 +73,7 @@ class CatalogFilters extends _$CatalogFilters {
     print('Updated state after resetting color filter: $state');
   }
 
-  void resetTypeFilter() {
+ void resetTypeFilter() {
     print('--- RESET TYPE FILTER CALLED ---');
     final newState = Map<String, dynamic>.from(state);
     newState.remove('type');
@@ -89,7 +89,7 @@ class CatalogFilters extends _$CatalogFilters {
     print('Updated state after resetting sugar filter: $state');
   }
 
-  void resetCountryFilter() {
+ void resetCountryFilter() {
     print('--- RESET COUNTRY FILTER CALLED ---');
     final newState = Map<String, dynamic>.from(state);
     newState.remove('country');
@@ -97,7 +97,7 @@ class CatalogFilters extends _$CatalogFilters {
     print('Updated state after resetting country filter: $state');
   }
 
-  void resetRegionFilter() {
+ void resetRegionFilter() {
     print('--- RESET REGION FILTER CALLED ---');
     final newState = Map<String, dynamic>.from(state);
     newState.remove('region');
@@ -113,7 +113,7 @@ class CatalogFilters extends _$CatalogFilters {
     print('Updated state after resetting grape filter: $state');
   }
 
-  void resetRatingFilter() {
+ void resetRatingFilter() {
     print('--- RESET RATING FILTER CALLED ---');
     final newState = Map<String, dynamic>.from(state);
     newState.remove('min_rating');
@@ -121,7 +121,7 @@ class CatalogFilters extends _$CatalogFilters {
     print('Updated state after resetting rating filter: $state');
   }
 
-  void resetYearFilter() {
+ void resetYearFilter() {
     print('--- RESET YEAR FILTER CALLED ---');
     final newState = Map<String, dynamic>.from(state);
     newState.remove('min_year');
@@ -138,7 +138,7 @@ class CatalogFilters extends _$CatalogFilters {
     print('Updated state after resetting volume filter: $state');
   }
 
-  void resetShowUnavailableFilter() {
+ void resetShowUnavailableFilter() {
     print('--- RESET SHOW UNAVAILABLE FILTER CALLED ---');
     final newState = Map<String, dynamic>.from(state);
     newState.remove('show_unavailable');
