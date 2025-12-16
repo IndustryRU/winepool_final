@@ -423,7 +423,7 @@ class BuyerHomeScreen extends HookConsumerWidget {
               width: 140,
               margin: const EdgeInsets.only(left: 12),
               decoration: BoxDecoration(
-                color: Colors.grey[20],
+                color: Colors.grey[200],
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Column(

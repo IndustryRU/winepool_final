@@ -170,7 +170,12 @@ class SearchResultsScreen extends HookConsumerWidget {
                 // Преобразуем Map<String, dynamic> из JSON в объект Wine
                 // Для этого Wine.fromJson должен уметь работать с вложенными объектами winery
                 final wine = Wine.fromJson(wineData);
-                return WineTile(wine: wine, isSearch: true);
+                return GestureDetector(
+                  onTap: () {
+                    GoRouter.of(context).push('/wine/${wine.id}', extra: wine);
+                  },
+                  child: WineTile(wine: wine, isSearch: true),
+                );
               }).toList());
             }
 
@@ -209,7 +214,7 @@ class SearchResultsScreen extends HookConsumerWidget {
     ), // Закрывающая скобка для Transform.scale
   ), // Закрывающая скобка для GestureDetector
 ); // Закрывающая скобка для WillPopScope
-  }
+ }
 }
 void showFiltersModal(
   BuildContext context,
@@ -243,7 +248,7 @@ class FiltersModal extends HookWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+ Widget build(BuildContext context) {
     final selectedCategoriesState = useState<Set<String>>(initialCategories);
 
     return Container(

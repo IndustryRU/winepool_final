@@ -116,7 +116,12 @@ class CatalogScreen extends HookConsumerWidget {
                     : ListView.builder(
                         itemCount: wines.length,
                         itemBuilder: (context, index) {
-                          return WineTile(wine: wines[index]);
+                          return GestureDetector(
+                            onTap: () {
+                              GoRouter.of(context).push('/wine/${wines[index].id}', extra: wines[index]);
+                            },
+                            child: WineTile(wine: wines[index]),
+                          );
                         },
                       ),
                 loading: () => const ShimmerLoadingIndicator(),
@@ -171,7 +176,7 @@ class FilterSlider extends HookConsumerWidget {
     final sortOption = selectedFilters.value['sort_option'] ?? '';
 
     // Создаем временные переменные для всех возможных фильтров на уровне build метода
-    final tempPriceRange = useState(RangeValues(0.0, 100000.0)); // Значения по умолчанию, будут обновлены при вызове модального окна
+    final tempPriceRange = useState(RangeValues(0.0, 10000.0)); // Значения по умолчанию, будут обновлены при вызове модального окна
     final tempShowUnavailable = useState(false);
     final tempColors = useState<List<String>>([]);
     final tempTypes = useState<List<String>>([]);
@@ -498,7 +503,7 @@ class FilterSlider extends HookConsumerWidget {
                                 if (newFilters['grape'].isEmpty) newFilters.remove('grape');
                                 if (newFilters['volume'].isEmpty) newFilters.remove('volume');
                                 if (newFilters['min_rating'] == 0.0) newFilters.remove('min_rating');
-                                if (newFilters['min_year'] == 1900 && newFilters['max_year'] == DateTime.now().year) {
+                                if (newFilters['min_year'] == 190 && newFilters['max_year'] == DateTime.now().year) {
                                   newFilters.remove('min_year');
                                   newFilters.remove('max_year');
                                 }
