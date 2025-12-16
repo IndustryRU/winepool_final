@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../application/cart_controller.dart';
+import '../../../common/widgets/shimmer_loading_indicator.dart';
 
 class CartScreen extends ConsumerWidget {
   const CartScreen({super.key});
@@ -102,7 +103,7 @@ class CartScreen extends ConsumerWidget {
             ],
           );
         },
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const Center(child: ShimmerLoadingIndicator()),
         error: (err, st) => Center(child: Text('Ошибка: $err')),
       ),
     );

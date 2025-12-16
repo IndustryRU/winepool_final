@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:winepool_final/features/orders/application/orders_controller.dart';
 import 'package:winepool_final/features/orders/domain/order.dart';
 import 'package:winepool_final/features/orders/presentation/order_details_screen.dart';
+import '../../../common/widgets/shimmer_loading_indicator.dart';
 
 class MyOrdersScreen extends ConsumerWidget {
   const MyOrdersScreen({super.key});
@@ -30,7 +31,7 @@ class MyOrdersScreen extends ConsumerWidget {
             ),
           );
         },
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const Center(child: ShimmerLoadingIndicator()),
         error: (error, stack) => Center(child: Text('Ошибка: $error')),
       ),
     );

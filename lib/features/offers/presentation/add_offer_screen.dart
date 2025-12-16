@@ -9,6 +9,7 @@ import 'package:winepool_final/features/offers/domain/offer.dart';
 import 'package:winepool_final/features/wines/application/wines_controller.dart';
 import 'package:winepool_final/features/wines/application/wineries_controller.dart';
 import 'package:winepool_final/features/wines/domain/wine.dart';
+import '../../../common/widgets/shimmer_loading_indicator.dart';
 
 class AddOfferScreen extends HookConsumerWidget {
   const AddOfferScreen({super.key});
@@ -182,7 +183,7 @@ class AddOfferScreen extends HookConsumerWidget {
                        ),
                        loading: () => const Padding(
                          padding: EdgeInsets.all(16.0),
-                         child: Center(child: CircularProgressIndicator()),
+                         child: Center(child: ShimmerLoadingIndicator()),
                        ),
                        error: (error, stack) => Padding(
                          padding: EdgeInsets.all(16.0),
@@ -193,7 +194,7 @@ class AddOfferScreen extends HookConsumerWidget {
                  },
                  loading: () => const Padding(
                    padding: EdgeInsets.all(16.0),
-                   child: Center(child: CircularProgressIndicator()),
+                   child: Center(child: ShimmerLoadingIndicator()),
                  ),
                  error: (error, stack) => Padding(
                    padding: EdgeInsets.all(16.0),
@@ -223,7 +224,7 @@ class AddOfferScreen extends HookConsumerWidget {
                                              bottleSize: double.tryParse(bottleSizeController.text),
                                              createdAt: DateTime.now(),
                                            );
-           
+             
                      // Вызываем и дожидаемся завершения
                      await ref.read(offersMutationProvider.notifier).addOffer(newOffer);
                    }

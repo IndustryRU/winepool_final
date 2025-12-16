@@ -5,6 +5,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../core/providers.dart';
 import '../../../catalog/application/catalog_controller.dart';
+import '../../../../common/widgets/shimmer_loading_indicator.dart';
 
 class PriceFilterWidget extends HookConsumerWidget {
   final ValueNotifier<Map<String, dynamic>> selectedFilters;
@@ -31,7 +32,7 @@ class PriceFilterWidget extends HookConsumerWidget {
      
      // Обработка состояний AsyncValue
      if (priceRangeAsync.isLoading) {
-       return const Center(child: CircularProgressIndicator());
+       return const Center(child: ShimmerLoadingIndicator());
      }
      
      if (priceRangeAsync.hasError) {
@@ -47,7 +48,7 @@ class PriceFilterWidget extends HookConsumerWidget {
      // Устанавливаем начальные значения диапазона цен только в состоянии data
      final data = priceRangeAsync.value!;
      final minPossiblePrice = (data['min_price'] as num?)?.toDouble() ?? 0.0;
-     final maxPossiblePrice = (data['max_price'] as num?)?.toDouble() ?? 10000000.0;
+     final maxPossiblePrice = (data['max_price'] as num?)?.toDouble() ?? 10000.0;
      
      // Округляем до ближайших сотен
      final roundedMinPrice = ((minPossiblePrice / 100).floor()) * 100;

@@ -4,6 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:winepool_final/features/auth/application/auth_controller.dart';
 import 'package:winepool_final/features/wines/application/wineries_controller.dart';
 import 'package:winepool_final/features/wines/domain/winery.dart';
+import '../../../common/widgets/shimmer_loading_indicator.dart';
 
 class WineriesListScreen extends ConsumerWidget {
   const WineriesListScreen({super.key});
@@ -55,7 +56,7 @@ class WineriesListScreen extends ConsumerWidget {
               },
             ),
           ),
-          loading: () => const Center(child: CircularProgressIndicator()),
+          loading: () => const Center(child: ShimmerLoadingIndicator()),
           error: (error, stack) => SelectableText.rich(
             TextSpan(
               text: 'Ошибка: $error',

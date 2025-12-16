@@ -12,6 +12,7 @@ import 'package:winepool_final/features/reviews/presentation/add_review_screen.d
 import 'package:winepool_final/core/providers/supabase_provider.dart';
 import 'package:winepool_final/features/wines/presentation/widgets/wine_characteristic_icons.dart';
 import 'package:winepool_final/features/wines/domain/winery.dart';
+import '../../../common/widgets/shimmer_loading_indicator.dart';
 
 class OfferDetailsScreen extends HookConsumerWidget {
   final String offerId;
@@ -195,7 +196,7 @@ class OfferDetailsScreen extends HookConsumerWidget {
                           },
                         );
                       },
-                      loading: () => const Center(child: CircularProgressIndicator()),
+                      loading: () => const Center(child: ShimmerLoadingIndicator()),
                       error: (error, stack) => Center(
                         child: Text('Ошибка загрузки отзывов: $error'),
                       ),
@@ -271,7 +272,7 @@ class OfferDetailsScreen extends HookConsumerWidget {
             ),
           );
         },
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const Center(child: ShimmerLoadingIndicator()),
         error: (error, stack) => Center(
           child: Text('Ошибка загрузки данных предложения: $error'),
         ),
@@ -359,7 +360,7 @@ class OfferDetailsScreen extends HookConsumerWidget {
   Widget _buildWineImage(String? imageUrl, ValueNotifier<double> scale, BuildContext context) {
     final bool isValidUrl = imageUrl != null && imageUrl.startsWith('http');
     final alignment = useState<Alignment>(Alignment.center);
-    final controller = useAnimationController(duration: const Duration(milliseconds: 1000));
+    final controller = useAnimationController(duration: const Duration(milliseconds: 100));
     final curvedAnimation = CurvedAnimation(parent: controller, curve: Curves.easeOut);
     final animation = Tween<double>(begin: 1.0, end: 1.6).animate(curvedAnimation);
 

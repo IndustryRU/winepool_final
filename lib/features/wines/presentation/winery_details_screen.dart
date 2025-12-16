@@ -4,6 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:winepool_final/features/wines/application/wineries_controller.dart';
 import 'package:winepool_final/features/wines/domain/winery.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../../common/widgets/shimmer_loading_indicator.dart';
 
 class WineryDetailsScreen extends ConsumerWidget {
   final Winery winery;
@@ -46,7 +47,7 @@ class WineryDetailsScreen extends ConsumerWidget {
                             height: 200,
                             width: double.infinity,
                             color: Colors.grey[300],
-                            child: const Center(child: CircularProgressIndicator()),
+                            child: const Center(child: ShimmerLoadingIndicator()),
                           );
                         },
                         errorBuilder: (context, error, stackTrace) {
@@ -136,7 +137,7 @@ class WineryDetailsScreen extends ConsumerWidget {
             ),
           );
         },
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const Center(child: ShimmerLoadingIndicator()),
         error: (error, stack) => SelectableText.rich(
           TextSpan(
             text: 'Ошибка загрузки данных: $error',

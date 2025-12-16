@@ -34,6 +34,8 @@ _Wine _$WineFromJson(Map<String, dynamic> json) => _Wine(
       ? null
       : DateTime.parse(json['updated_at'] as String),
   isDeleted: json['is_deleted'] as bool? ?? false,
+  minPrice: (json['min_price'] as num?)?.toInt(),
+  maxPrice: (json['max_price'] as num?)?.toInt(),
   offers: _offersFromJson(json['offers']),
 );
 
@@ -60,4 +62,6 @@ Map<String, dynamic> _$WineToJson(_Wine instance) => <String, dynamic>{
   'created_at': instance.createdAt?.toIso8601String(),
   'updated_at': instance.updatedAt?.toIso8601String(),
   'is_deleted': instance.isDeleted,
+  'min_price': instance.minPrice,
+  'max_price': instance.maxPrice,
 };

@@ -1,9 +1,9 @@
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:winepool_final/features/auth/application/auth_controller.dart';
 import 'package:winepool_final/features/auth/presentation/register_screen.dart';
+import 'package:winepool_final/features/auth/presentation/splash_screen.dart';
 import 'package:winepool_final/screens/login_screen.dart';
 import 'package:winepool_final/features/cart/domain/cart_item.dart';
 import 'package:winepool_final/features/home/presentation/admin_home_screen.dart';
@@ -47,6 +47,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/register',
         builder: (_, __) => const RegisterScreen(),
+      ),
+      GoRoute(
+        path: '/splash',
+        builder: (_, __) => const SplashScreen(),
       ),
       GoRoute(
         path: '/buyer-home',
@@ -196,8 +200,12 @@ final goRouterProvider = Provider<GoRouter>((ref) {
     redirect: (context, state) {
       final isLoggedIn = authState.asData?.value != null;
       final isLoggingIn = state.uri.toString() == '/login';
+      final isOnSplash = state.uri.toString() == '/splash';
       
-      if (authState is AsyncLoading) return null;
+      if (authState is AsyncLoading) {
+        if (!isOnSplash) return '/splash';
+        return null;
+      }
 
       if (!isLoggedIn && !isLoggingIn) return '/login';
       

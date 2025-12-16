@@ -6,6 +6,7 @@ import 'package:winepool_final/features/auth/application/auth_controller.dart';
 import 'package:winepool_final/features/wines/application/wines_controller.dart';
 import 'package:winepool_final/features/wines/domain/wine.dart';
 import 'package:winepool_final/features/wines/presentation/widgets/wine_characteristic_icons.dart';
+import 'package:winepool_final/common/widgets/shimmer_loading_indicator.dart';
 
 class BuyerHomeScreen extends HookConsumerWidget {
   const BuyerHomeScreen({super.key});
@@ -27,99 +28,116 @@ class BuyerHomeScreen extends HookConsumerWidget {
       return () => animation.removeListener(listener);
     }, [animation]);
 
-    return GestureDetector(
-     onLongPressStart: (LongPressStartDetails details) {
-       // Convert local position to alignment
-       RenderBox renderBox = context.findRenderObject() as RenderBox;
-       Offset localPosition = details.localPosition;
-       Size size = renderBox.size;
-       double dx = (localPosition.dx / size.width - 0.5) * 2; // Convert to range [-1, 1]
-       double dy = (localPosition.dy / size.height - 0.5) * 2; // Convert to range [-1, 1]
-       alignment.value = Alignment(dx, dy);
-       
-       controller
-         ..duration = const Duration(milliseconds: 100);
-       controller.forward();
-     },
-     onLongPressEnd: (LongPressEndDetails details) {
-       controller
-         ..duration = const Duration(milliseconds: 100);
-       controller.reverse();
-     },
-     child: Transform.scale(
-        scale: scale.value,
-        alignment: alignment.value,
-        child: Scaffold(
-    appBar: AppBar(
-      title: const Text('WinePool'),
-      actions: [
-        IconButton(
-          icon: const Icon(Icons.search),
-          onPressed: () => context.push('/search'),
-          tooltip: 'Поиск',
-        ),
-        IconButton(
-          icon: const Icon(Icons.receipt_long),
-          onPressed: () => context.push('/my-orders'),
-          tooltip: 'Мои заказы',
-        ),
-        IconButton(
-          icon: const Icon(Icons.shopping_cart),
-          onPressed: () => context.push('/cart'),
-        ),
-        IconButton(
-          icon: const Icon(Icons.person),
-          onPressed: () => context.push('/profile'),
-          tooltip: 'Профиль',
-        ),
-        IconButton(
-          icon: const Icon(Icons.logout),
-          onPressed: () {
-            ref.read(authControllerProvider.notifier).signOut();
-          },
-          tooltip: 'Выйти',
-        ),
-      ],
-    ),
-    body: SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Слайдер с баннерами
-          _buildBannerSlider(),
-          
-          const SizedBox(height: 16),
-          
-          // Слайдер категорий
-          _buildCategorySlider(context),
-          
-          const SizedBox(height: 16),
-          
-          // Поле поиска
-          _buildSearchField(context),
-          
-          const SizedBox(height: 16),
-          
-          // Подборка "Популярные вина"
-          _buildSectionHeader('Популярные вина'),
-          _buildPopularWineList(ref),
-          
-          const SizedBox(height: 16),
-          
-          // Подборка "Новинки"
-          _buildSectionHeader('Новинки'),
-          _buildNewWineList(ref),
-          
-          const SizedBox(height: 16),
-        ],
+    final aggregateData = ref.watch(homeScreenAggregateProvider);
+
+    return aggregateData.when(
+      loading: () => const Scaffold(
+        body: Center(child: ShimmerLoadingIndicator()),
       ),
-    ),
-  ), // Закрывающая скобка для Scaffold
-), // Закрывающая скобка для Transform.scale
-); // Закрывающая скобка для GestureDetector
+      error: (error, stack) => Scaffold(
+        body: Center(
+          child: SelectableText.rich(
+            TextSpan(
+              text: 'Ошибка загрузки: $error',
+              style: const TextStyle(color: Colors.red),
+            ),
+          ),
+        ),
+      ),
+      data: (data) => GestureDetector(
+        onLongPressStart: (LongPressStartDetails details) {
+          // Convert local position to alignment
+          RenderBox renderBox = context.findRenderObject() as RenderBox;
+          Offset localPosition = details.localPosition;
+          Size size = renderBox.size;
+          double dx = (localPosition.dx / size.width - 0.5) * 2; // Convert to range [-1, 1]
+          double dy = (localPosition.dy / size.height - 0.5) * 2; // Convert to range [-1, 1]
+          alignment.value = Alignment(dx, dy);
+          
+          controller
+            ..duration = const Duration(milliseconds: 100);
+          controller.forward();
+        },
+        onLongPressEnd: (LongPressEndDetails details) {
+          controller
+            ..duration = const Duration(milliseconds: 100);
+          controller.reverse();
+        },
+        child: Transform.scale(
+          scale: scale.value,
+          alignment: alignment.value,
+          child: Scaffold(
+            appBar: AppBar(
+              title: const Text('WinePool'),
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.search),
+                  onPressed: () => context.push('/search'),
+                  tooltip: 'Поиск',
+                ),
+                IconButton(
+                  icon: const Icon(Icons.receipt_long),
+                  onPressed: () => context.push('/my-orders'),
+                  tooltip: 'Мои заказы',
+                ),
+                IconButton(
+                  icon: const Icon(Icons.shopping_cart),
+                  onPressed: () => context.push('/cart'),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.person),
+                  onPressed: () => context.push('/profile'),
+                  tooltip: 'Профиль',
+                ),
+                IconButton(
+                  icon: const Icon(Icons.logout),
+                  onPressed: () {
+                    ref.read(authControllerProvider.notifier).signOut();
+                  },
+                  tooltip: 'Выйти',
+                ),
+              ],
+            ),
+            body: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Слайдер с баннерами
+                  _buildBannerSlider(),
+                  
+                  const SizedBox(height: 16),
+                  
+                  // Слайдер категорий
+                  _buildCategorySlider(context),
+                  
+                  const SizedBox(height: 16),
+                  
+                  // Поле поиска
+                  _buildSearchField(context),
+                  
+                  const SizedBox(height: 16),
+                  
+                  // Подборка "Популярные вина"
+                  _buildSectionHeader('Популярные вина'),
+                  _buildPopularWineList(data.popularWines),
+                  
+                  const SizedBox(height: 16),
+                  
+                  // Подборка "Новинки"
+                  _buildSectionHeader('Новинки'),
+                  _buildNewWineList(data.newWines),
+                  
+                  const SizedBox(height: 16),
+                ],
+              ),
+            ),
+          ), // Закрывающая скобка для Scaffold
+        ), // Закрывающая скобка для Transform.scale
+      ), // Закрывающая скобка для GestureDetector
+    );
   }
 
-  // Виджет слайдера с баннерами
+ // Виджет слайдера с баннерами
   Widget _buildBannerSlider() {
     return Container(
       height: 200,
@@ -139,7 +157,7 @@ class BuyerHomeScreen extends HookConsumerWidget {
         ],
       ),
     );
-  }
+ }
 
   // Поле поиска
   Widget _buildSearchField(BuildContext context) {
@@ -222,7 +240,7 @@ class BuyerHomeScreen extends HookConsumerWidget {
     );
   }
 
-  // Заголовок секции
+ // Заголовок секции
   Widget _buildSectionHeader(String title) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -288,7 +306,7 @@ class BuyerHomeScreen extends HookConsumerWidget {
                   textAlign: TextAlign.center,
                 ),
                 Text(
-                  '10000000 ₽',
+                  '10000 ₽',
                   style: TextStyle(fontWeight: FontWeight.bold),
                   textAlign: TextAlign.center,
                 ),
@@ -300,172 +318,158 @@ class BuyerHomeScreen extends HookConsumerWidget {
     );
   }
 
-  // Горизонтальный список популярных вин
-  Widget _buildPopularWineList(WidgetRef ref) {
-    final popularWinesAsync = ref.watch(popularWinesProvider);
+ // Горизонтальный список популярных вин
+  Widget _buildPopularWineList(List<Wine> wines) {
+    if (wines.isEmpty) {
+      return const Center(child: Text('Нет популярных вин'));
+    }
     return SizedBox(
       height: 220,
-      child: popularWinesAsync.when(
-        data: (wines) {
-          if (wines.isEmpty) {
-            return const Center(child: Text('Нет популярных вин'));
-          }
-          return ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: wines.length,
-            itemBuilder: (context, index) {
-              final wine = wines[index];
-              return Container(
-                width: 140,
-                margin: const EdgeInsets.only(left: 12),
-                decoration: BoxDecoration(
-                  color: Colors.grey[200],
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    if (wine.imageUrl != null && wine.imageUrl!.isNotEmpty)
-                      Container(
-                        width: 70,
-                        height: 70,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          image: DecorationImage(
-                            fit: BoxFit.cover,
-                            image: NetworkImage(wine.imageUrl!),
-                          ),
-                        ),
-                      )
-                    else
-                      Container(
-                        width: 70,
-                        height: 70,
-                        decoration: BoxDecoration(
-                          color: Colors.grey[400],
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.wine_bar,
-                          size: 35,
-                          color: Colors.grey,
-                        ),
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: wines.length,
+        itemBuilder: (context, index) {
+          final wine = wines[index];
+          return Container(
+            width: 140,
+            margin: const EdgeInsets.only(left: 12),
+            decoration: BoxDecoration(
+              color: Colors.grey[200],
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (wine.imageUrl != null && wine.imageUrl!.isNotEmpty)
+                  Container(
+                    width: 70,
+                    height: 70,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      image: DecorationImage(
+                        fit: BoxFit.cover,
+                        image: NetworkImage(wine.imageUrl!),
                       ),
-                    const SizedBox(height: 6),
-                    Text(
-                      wine.name,
-                      style: TextStyle(fontWeight: FontWeight.w500, fontSize: 12),
-                      textAlign: TextAlign.center,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
                     ),
-                    Text(
-                      wine.winery?.name ?? 'Нет данных', // Используем название винодельни из связанной таблицы
-                      style: TextStyle(fontSize: 10, color: Colors.grey),
-                      textAlign: TextAlign.center,
+                  )
+                else
+                  Container(
+                    width: 70,
+                    height: 70,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[400],
+                      shape: BoxShape.circle,
                     ),
-                    Text(
-                      '${wine.averageRating ?? 0.0} ★', // Показываем рейтинг вместо цены
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11),
+                    child: const Icon(
+                      Icons.wine_bar,
+                      size: 35,
+                      color: Colors.grey,
                     ),
-                    const SizedBox(height: 2),
-                    WineCharacteristicIconsColumn(
-                      wine: wine,
-                      iconSize: 14.0,
-                    ),
-                  ],
+                  ),
+                const SizedBox(height: 6),
+                Text(
+                  wine.name,
+                  style: TextStyle(fontWeight: FontWeight.w500, fontSize: 12),
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
-              );
-            },
+                Text(
+                  wine.winery?.name ?? 'Нет данных', // Используем название винодельни из связанной таблицы
+                  style: TextStyle(fontSize: 10, color: Colors.grey),
+                  textAlign: TextAlign.center,
+                ),
+                Text(
+                  '${wine.averageRating ?? 0.0} ★', // Показываем рейтинг вместо цены
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11),
+                ),
+                const SizedBox(height: 2),
+                WineCharacteristicIconsColumn(
+                  wine: wine,
+                  iconSize: 14.0,
+                ),
+              ],
+            ),
           );
         },
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => Center(child: Text('Ошибка: $error')),
       ),
     );
   }
 
   // Горизонтальный список новинок вин
-  Widget _buildNewWineList(WidgetRef ref) {
-    final newWinesAsync = ref.watch(newWinesProvider);
+  Widget _buildNewWineList(List<Wine> wines) {
+    if (wines.isEmpty) {
+      return const Center(child: Text('Нет новинок'));
+    }
     return SizedBox(
       height: 220,
-      child: newWinesAsync.when(
-        data: (wines) {
-          if (wines.isEmpty) {
-            return const Center(child: Text('Нет новинок'));
-          }
-          return ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: wines.length,
-            itemBuilder: (context, index) {
-              final wine = wines[index];
-              return Container(
-                width: 140,
-                margin: const EdgeInsets.only(left: 12),
-                decoration: BoxDecoration(
-                  color: Colors.grey[200],
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    if (wine.imageUrl != null && wine.imageUrl!.isNotEmpty)
-                      Container(
-                        width: 70,
-                        height: 70,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          image: DecorationImage(
-                            fit: BoxFit.cover,
-                            image: NetworkImage(wine.imageUrl!),
-                          ),
-                        ),
-                      )
-                    else
-                      Container(
-                        width: 70,
-                        height: 70,
-                        decoration: BoxDecoration(
-                          color: Colors.grey[400],
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.wine_bar,
-                          size: 35,
-                          color: Colors.grey,
-                        ),
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: wines.length,
+        itemBuilder: (context, index) {
+          final wine = wines[index];
+          return Container(
+            width: 140,
+            margin: const EdgeInsets.only(left: 12),
+            decoration: BoxDecoration(
+              color: Colors.grey[20],
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (wine.imageUrl != null && wine.imageUrl!.isNotEmpty)
+                  Container(
+                    width: 70,
+                    height: 70,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      image: DecorationImage(
+                        fit: BoxFit.cover,
+                        image: NetworkImage(wine.imageUrl!),
                       ),
-                    const SizedBox(height: 6),
-                    Text(
-                      wine.name,
-                      style: TextStyle(fontWeight: FontWeight.w500, fontSize: 12),
-                      textAlign: TextAlign.center,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
                     ),
-                    Text(
-                      wine.winery?.name ?? 'Нет данных', // Используем название винодельни из связанной таблицы
-                      style: TextStyle(fontSize: 10, color: Colors.grey),
-                      textAlign: TextAlign.center,
+                  )
+                else
+                  Container(
+                    width: 70,
+                    height: 70,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[400],
+                      shape: BoxShape.circle,
                     ),
-                    Text(
-                      '${wine.averageRating ?? 0.0} ★', // Показываем рейтинг вместо цены
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11),
+                    child: const Icon(
+                      Icons.wine_bar,
+                      size: 35,
+                      color: Colors.grey,
                     ),
-                    const SizedBox(height: 2),
-                    WineCharacteristicIconsColumn(
-                      wine: wine,
-                      iconSize: 14.0,
-                    ),
-                  ],
+                  ),
+                const SizedBox(height: 6),
+                Text(
+                  wine.name,
+                  style: TextStyle(fontWeight: FontWeight.w500, fontSize: 12),
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
-              );
-            },
+                Text(
+                  wine.winery?.name ?? 'Нет данных', // Используем название винодельни из связанной таблицы
+                  style: TextStyle(fontSize: 10, color: Colors.grey),
+                  textAlign: TextAlign.center,
+                ),
+                Text(
+                  '${wine.averageRating ?? 0.0} ★', // Показываем рейтинг вместо цены
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11),
+                ),
+                const SizedBox(height: 2),
+                WineCharacteristicIconsColumn(
+                  wine: wine,
+                  iconSize: 14.0,
+                ),
+              ],
+            ),
           );
         },
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => Center(child: Text('Ошибка: $error')),
       ),
     );
   }

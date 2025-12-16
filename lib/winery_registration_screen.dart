@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../common/widgets/shimmer_loading_indicator.dart';
 
 // Глобальный клиент Supabase, инициализированный в main.dart
 final supabase = Supabase.instance.client;
@@ -89,7 +90,7 @@ class _WineryRegistrationSupabaseScreenState extends State<WineryRegistrationSup
             TextField(controller: _passwordController, obscureText: true, decoration: InputDecoration(labelText: 'Пароль (минимум 6 символов)')),
             SizedBox(height: 30),
             _isLoading
-                ? CircularProgressIndicator()
+                ? ShimmerLoadingIndicator()
                 : ElevatedButton(
                     onPressed: _registerWinery,
                     style: ElevatedButton.styleFrom(minimumSize: Size(double.infinity, 50)),

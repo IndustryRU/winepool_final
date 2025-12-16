@@ -8,6 +8,7 @@ import 'package:winepool_final/features/wines/domain/wine.dart';
 import 'package:winepool_final/features/wines/presentation/wine_tile.dart';
 import '../../../features/wines/application/wines_controller.dart';
 import '../../../features/wines/data/wines_repository.dart';
+import '../../../common/widgets/shimmer_loading_indicator.dart';
 
 final searchAllProvider = FutureProvider.autoDispose.family<Map<String, dynamic>, Map<String, dynamic>>(
   (ref, searchParams) async {
@@ -194,7 +195,7 @@ class SearchResultsScreen extends HookConsumerWidget {
               children: children,
             );
           },
-          loading: () => const Center(child: CircularProgressIndicator()),
+          loading: () => const Center(child: ShimmerLoadingIndicator()),
           error: (error, stack) => Center(
             child: SelectableText.rich(
               TextSpan(

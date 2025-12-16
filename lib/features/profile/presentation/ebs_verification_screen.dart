@@ -1,5 +1,6 @@
 import 'package:ebs_plugin/ebs_plugin.dart';
 import 'package:flutter/material.dart';
+import '../../../common/widgets/shimmer_loading_indicator.dart';
 
 class EbsVerificationScreen extends StatefulWidget {
   const EbsVerificationScreen({super.key});
@@ -63,7 +64,7 @@ class _EbsVerificationScreenState extends State<EbsVerificationScreen> {
       ),
       body: Center(
         child: _isEbsAppInstalled == null
-            ? const CircularProgressIndicator()
+            ? const ShimmerLoadingIndicator()
             : _isEbsAppInstalled!
                 ? ElevatedButton(
                     onPressed: _startVerification,

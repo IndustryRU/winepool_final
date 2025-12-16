@@ -41,7 +41,7 @@ final class CatalogFiltersProvider
   }
 }
 
-String _$catalogFiltersHash() => r'1d66be0e46b05047539478a1ebc7f82e83184d1b';
+String _$catalogFiltersHash() => r'52e4b5b7848aa84263d6cc8145bc2a4b731dd9bf';
 
 abstract class _$CatalogFilters extends $Notifier<Map<String, dynamic>> {
   Map<String, dynamic> build();
@@ -101,4 +101,4 @@ final class PriceRangeProvider
   }
 }
 
-String _$priceRangeHash() => r'9f8a6b0f83b39ddb3da7fa2d272e9955728f93f0';
+String _$priceRangeHash() => r'af2f4171bfa9e3fa65f2a8a84555c6dfb218116f';

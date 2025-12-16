@@ -26,6 +26,8 @@ BEGIN
             ''created_at'', w.created_at,
             ''updated_at'', w.updated_at,
             ''is_deleted'', w.is_deleted,
+            ''min_price'', MIN(o.price),
+            ''max_price'', MAX(o.price),
             ''offers'', jsonb_agg(jsonb_build_object(
                 ''id'', o.id,
                 ''seller_id'', o.seller_id,

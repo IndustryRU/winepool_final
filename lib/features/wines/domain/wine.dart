@@ -147,6 +147,8 @@ abstract class Wine with _$Wine {
     @JsonKey(name: 'created_at') DateTime? createdAt,
     @JsonKey(name: 'updated_at') DateTime? updatedAt,
     @JsonKey(name: 'is_deleted') @Default(false) bool isDeleted,
+    @JsonKey(name: 'min_price') int? minPrice,
+    @JsonKey(name: 'max_price') int? maxPrice,
     @JsonKey(
       name: 'offers',
       includeToJson: false,

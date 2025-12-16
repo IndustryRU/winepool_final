@@ -17,54 +17,136 @@ BEGIN
     search_wineries_name := 'wineries_name' = ANY(search_categories);
 
     -- Search wines by name and grape_variety with all necessary fields
+    WITH wine_data AS (
+        SELECT
+            w.id,
+            w.winery_id,
+            w.name,
+            w.description,
+            w.grape_variety,
+            w.image_url,
+            w.color,
+            w.type,
+            w.sugar,
+            w.vintage,
+            w.alcohol_level,
+            w.rating,
+            w.average_rating,
+            w.reviews_count,
+            w.serving_temperature,
+            w.sweetness,
+            w.acidity,
+            w.tannins,
+            w.saturation,
+            w.created_at,
+            w.updated_at,
+            w.is_deleted,
+            o.price,
+            wn.id as winery_id_field,
+            wn.name as winery_name,
+            wn.description as winery_description,
+            wn.logo_url as winery_logo_url,
+            wn.banner_url as winery_banner_url,
+            wn.winemaker as winery_winemaker,
+            wn.website as winery_website,
+            wn.location_text as winery_location_text,
+            wn.country_code as winery_country_code,
+            COALESCE(c.name, wn.country_code::TEXT) as country_name,
+            wn.region as winery_region
+        FROM wines w
+        LEFT JOIN wineries wn ON w.winery_id = wn.id
+        LEFT JOIN countries c ON wn.country_code = c.code AND c.code IS NOT NULL
+        LEFT JOIN offers o ON w.id = o.wine_id
+        WHERE (
+            (search_wines_name AND w.name ILIKE '%' || search_query || '%')
+            OR
+            (search_wines_grape_variety AND w.grape_variety ILIKE '%' || search_query || '%')
+        )
+        AND w.is_deleted = false
+    ),
+    aggregated_wine_data AS (
+        SELECT
+            id,
+            winery_id,
+            name,
+            description,
+            grape_variety,
+            image_url,
+            color,
+            type,
+            sugar,
+            vintage,
+            alcohol_level,
+            rating,
+            average_rating,
+            reviews_count,
+            serving_temperature,
+            sweetness,
+            acidity,
+            tannins,
+            saturation,
+            created_at,
+            updated_at,
+            is_deleted,
+            MIN(price) as min_price,
+            MAX(price) as max_price,
+            winery_id_field,
+            winery_name,
+            winery_description,
+            winery_logo_url,
+            winery_banner_url,
+            winery_winemaker,
+            winery_website,
+            winery_location_text,
+            winery_country_code,
+            country_name,
+            winery_region
+        FROM wine_data
+        GROUP BY id, winery_id, name, description, grape_variety, image_url, color, type, sugar, vintage, alcohol_level, rating, average_rating, reviews_count, serving_temperature, sweetness, acidity, tannins, saturation, created_at, updated_at, is_deleted, winery_id_field, winery_name, winery_description, winery_logo_url, winery_banner_url, winery_winemaker, winery_website, winery_location_text, winery_country_code, country_name, winery_region
+    )
     SELECT jsonb_agg(
         DISTINCT jsonb_build_object(
-            'id', w.id,
-            'winery_id', w.winery_id,
-            'name', w.name,
-            'description', w.description,
-            'grape_variety', w.grape_variety,
-            'image_url', w.image_url,
-            'color', w.color,
-            'type', w.type,
-            'sugar', w.sugar,
-            'vintage', w.vintage,
-            'alcohol_level', w.alcohol_level,
-            'rating', w.rating,
-            'average_rating', w.average_rating,
-            'reviews_count', w.reviews_count,
-            'serving_temperature', w.serving_temperature,
-            'sweetness', w.sweetness,
-            'acidity', w.acidity,
-            'tannins', w.tannins,
-            'saturation', w.saturation,
-            'created_at', w.created_at,
-            'updated_at', w.updated_at,
-            'is_deleted', w.is_deleted,
+            'id', awd.id,
+            'winery_id', awd.winery_id,
+            'name', awd.name,
+            'description', awd.description,
+            'grape_variety', awd.grape_variety,
+            'image_url', awd.image_url,
+            'color', awd.color,
+            'type', awd.type,
+            'sugar', awd.sugar,
+            'vintage', awd.vintage,
+            'alcohol_level', awd.alcohol_level,
+            'rating', awd.rating,
+            'average_rating', awd.average_rating,
+            'reviews_count', awd.reviews_count,
+            'serving_temperature', awd.serving_temperature,
+            'sweetness', awd.sweetness,
+            'acidity', awd.acidity,
+            'tannins', awd.tannins,
+            'saturation', awd.saturation,
+            'created_at', awd.created_at,
+            'updated_at', awd.updated_at,
+            'is_deleted', awd.is_deleted,
+            'min_price', awd.min_price,
+            'max_price', awd.max_price,
             'wineries', jsonb_build_object(
-                'id', wn.id,
-                'name', wn.name,
-                'description', wn.description,
-                'logo_url', wn.logo_url,
-                'banner_url', wn.banner_url,
-                'winemaker', wn.winemaker,
-                'website', wn.website,
-                'location_text', wn.location_text,
-                'country_code', wn.country_code,
-                'country', COALESCE(c.name, wn.country_code::TEXT),
-                'region', wn.region
+                'id', awd.winery_id_field,
+                'name', awd.winery_name,
+                'description', awd.winery_description,
+                'logo_url', awd.winery_logo_url,
+                'banner_url', awd.winery_banner_url,
+                'winemaker', awd.winery_winemaker,
+                'website', awd.winery_website,
+                'location_text', awd.winery_location_text,
+                'country_code', awd.winery_country_code,
+                'country', awd.country_name,
+                'region', awd.winery_region
             )
         )
-    ) INTO wines_result
-    FROM wines w
-    LEFT JOIN wineries wn ON w.winery_id = wn.id
-    LEFT JOIN countries c ON wn.country_code = c.code AND c.code IS NOT NULL
-    WHERE (
-        (search_wines_name AND w.name ILIKE '%' || search_query || '%')
-        OR
-        (search_wines_grape_variety AND w.grape_variety ILIKE '%' || search_query || '%')
     )
-    AND w.is_deleted = false;
+    FROM aggregated_wine_data awd
+    INTO wines_result;
 
     -- Search wineries by name
     SELECT jsonb_agg(

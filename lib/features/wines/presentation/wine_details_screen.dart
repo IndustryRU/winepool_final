@@ -8,6 +8,7 @@ import 'package:winepool_final/features/reviews/application/reviews_controller.d
 import 'package:winepool_final/features/reviews/domain/review.dart';
 import 'package:winepool_final/features/wines/domain/wine.dart';
 import 'package:winepool_final/features/reviews/presentation/add_review_screen.dart';
+import '../../../common/widgets/shimmer_loading_indicator.dart';
 
 class WineDetailsScreen extends ConsumerWidget {
   final Wine wine;
@@ -176,7 +177,7 @@ class WineDetailsScreen extends ConsumerWidget {
                         },
                       );
                     },
-                    loading: () => const Center(child: CircularProgressIndicator()),
+                    loading: () => const Center(child: ShimmerLoadingIndicator()),
                     error: (error, stack) => Center(
                       child: Text('Ошибка загрузки отзывов: $error'),
                     ),
@@ -221,7 +222,7 @@ class WineDetailsScreen extends ConsumerWidget {
                     },
                   );
                 },
-                loading: () => const Center(child: CircularProgressIndicator()),
+                loading: () => const Center(child: ShimmerLoadingIndicator()),
                 error: (error, stack) => Center(
                   child: Text('Ошибка загрузки предложений: $error'),
                 ),

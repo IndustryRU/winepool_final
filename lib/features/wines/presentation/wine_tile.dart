@@ -12,23 +12,13 @@ class WineTile extends StatelessWidget {
  Widget build(BuildContext context) {
     print(wine.winery);
     
-    // Вычисляем минимальную и максимальную цену из предложений
+    // Используем min_price и max_price из модели Wine
     String priceInfo = '';
-    if (wine.offers != null && wine.offers!.isNotEmpty) {
-      final prices = wine.offers!.map((offer) => offer.price ?? 0).toList();
-      prices.removeWhere((price) => price == 0); // Убираем нулевые цены
-      
-      if (prices.isNotEmpty) {
-        final minPrice = prices.reduce((a, b) => a < b ? a : b);
-        final maxPrice = prices.reduce((a, b) => a > b ? a : b);
-        
-        if (minPrice == maxPrice) {
-          priceInfo = '${minPrice.toStringAsFixed(0)} ₽';
-        } else {
-          priceInfo = 'от ${minPrice.toStringAsFixed(0)} до ${maxPrice.toStringAsFixed(0)} ₽';
-        }
+    if (wine.minPrice != null && wine.maxPrice != null) {
+      if (wine.minPrice == wine.maxPrice) {
+        priceInfo = '${wine.minPrice!.toStringAsFixed(0)} ₽';
       } else {
-        priceInfo = 'Цена не указана';
+        priceInfo = 'от ${wine.minPrice!.toStringAsFixed(0)} до ${wine.maxPrice!.toStringAsFixed(0)} ₽';
       }
     } else {
       priceInfo = 'Цена не указана';

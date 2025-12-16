@@ -4,6 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:winepool_final/features/auth/application/auth_controller.dart';
 import 'package:winepool_final/features/orders/presentation/my_sales_screen.dart';
 import 'package:winepool_final/features/offers/application/offers_controller.dart';
+import '../../../common/widgets/shimmer_loading_indicator.dart';
 
 class SellerHomeScreen extends StatefulWidget {
   const SellerHomeScreen({super.key});
@@ -150,7 +151,7 @@ class _SellerHomeScreenState extends State<SellerHomeScreen> {
             },
           ),
           loading: () => const Center(
-            child: CircularProgressIndicator(),
+            child: ShimmerLoadingIndicator(),
           ),
           error: (error, stack) => Center(
             child: Text('Ошибка: $error'),

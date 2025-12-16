@@ -6,6 +6,36 @@ import 'package:winepool_final/features/wines/domain/wine.dart';
 
 part 'wines_controller.g.dart';
 
+class HomeScreenData {
+  final List<Wine> popularWines;
+  final List<Wine> newWines;
+
+  const HomeScreenData({
+    required this.popularWines,
+    required this.newWines,
+  });
+}
+
+@riverpod
+Future<HomeScreenData> homeScreenAggregate(Ref ref) async {
+  final popularWinesAsync = ref.watch(popularWinesProvider.future);
+  final newWinesAsync = ref.watch(newWinesProvider.future);
+
+  // Асинхронно получаем результаты обоих провайдеров
+  final results = await Future.wait([
+    popularWinesAsync.then((value) => value as Object),
+    newWinesAsync.then((value) => value as Object),
+  ], eagerError: true);
+
+  final popularWines = results[0] as List<Wine>;
+  final newWines = results[1] as List<Wine>;
+
+  return HomeScreenData(
+    popularWines: popularWines,
+    newWines: newWines,
+  );
+}
+
 @riverpod
 Future<List<Wine>> winesController(Ref ref) async {
   print('--- BUILDING WINES CONTROLLER ---');

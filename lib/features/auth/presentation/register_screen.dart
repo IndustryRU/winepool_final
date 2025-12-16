@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:winepool_final/features/auth/application/auth_controller.dart';
 import 'package:winepool_final/features/auth/domain/profile.dart';
+import '../../../../common/widgets/shimmer_loading_indicator.dart';
 
 class RegisterScreen extends HookConsumerWidget {
   const RegisterScreen({super.key});
@@ -91,7 +92,7 @@ class RegisterScreen extends HookConsumerWidget {
                         context.go('/dashboard');
                       }
                     },
-              child: isLoading ? const CircularProgressIndicator() : const Text('Зарегистрироваться'),
+              child: isLoading ? const ShimmerLoadingIndicator() : const Text('Зарегистрироваться'),
             ),
           ],
         ),

@@ -8,6 +8,7 @@ import 'package:image_picker/image_picker.dart'; // Для выбора изоб
 // Предполагаемый сервис для загрузки данных
 import 'package:winepool_final/services/storage_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../common/widgets/shimmer_loading_indicator.dart';
 
 class AddWineScreen extends StatefulWidget {
   const AddWineScreen({super.key});
@@ -50,7 +51,7 @@ class _AddWineScreenState extends State<AddWineScreen> {
   // Метод для отображения состояния загрузки
   Widget _buildUploadState(AsyncValue<bool> uploadState) {
     if (uploadState.isLoading) {
-      return const Center(child: CircularProgressIndicator());
+      return const Center(child: ShimmerLoadingIndicator());
     } else if (uploadState.hasError) {
       return SelectableText.rich(
         TextSpan(

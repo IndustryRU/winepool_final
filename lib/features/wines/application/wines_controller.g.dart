@@ -9,6 +9,46 @@ part of 'wines_controller.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
+@ProviderFor(homeScreenAggregate)
+const homeScreenAggregateProvider = HomeScreenAggregateProvider._();
+
+final class HomeScreenAggregateProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<HomeScreenData>,
+          HomeScreenData,
+          FutureOr<HomeScreenData>
+        >
+    with $FutureModifier<HomeScreenData>, $FutureProvider<HomeScreenData> {
+  const HomeScreenAggregateProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'homeScreenAggregateProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$homeScreenAggregateHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<HomeScreenData> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<HomeScreenData> create(Ref ref) {
+    return homeScreenAggregate(ref);
+  }
+}
+
+String _$homeScreenAggregateHash() =>
+    r'bcec0b650c80eed9aa36139be848f3b3918c2fa7';
+
 @ProviderFor(winesController)
 const winesControllerProvider = WinesControllerProvider._();
 

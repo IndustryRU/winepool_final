@@ -18,6 +18,7 @@ import 'package:winepool_final/features/catalog/presentation/widgets/grape_filte
 import 'package:winepool_final/features/catalog/presentation/widgets/rating_filter_widget.dart';
 import 'package:winepool_final/features/catalog/presentation/widgets/year_filter_widget.dart';
 import 'package:winepool_final/features/catalog/presentation/widgets/volume_filter_widget.dart';
+import 'package:winepool_final/common/widgets/shimmer_loading_indicator.dart';
 
 // Провайдер для фильтров
 
@@ -118,7 +119,7 @@ class CatalogScreen extends HookConsumerWidget {
                           return WineTile(wine: wines[index]);
                         },
                       ),
-                loading: () => const Center(child: CircularProgressIndicator()),
+                loading: () => const ShimmerLoadingIndicator(),
                 error: (error, stack) => Center(
                   child: SelectableText.rich(
                     TextSpan(
@@ -288,7 +289,7 @@ class FilterSlider extends HookConsumerWidget {
     // Обновляем временные переменные текущими значениями фильтров
     tempPriceRange.value = RangeValues(
       (currentFilters['min_price']?.toDouble() ?? 0.0),
-      (currentFilters['max_price']?.toDouble() ?? 100000000.0)
+      (currentFilters['max_price']?.toDouble() ?? 1000000.0)
     );
     tempShowUnavailable.value = currentFilters['show_unavailable'] ?? false;
     tempColors.value = (currentFilters['color'] as List<dynamic>?)?.cast<String>() ?? [];
@@ -307,7 +308,7 @@ class FilterSlider extends HookConsumerWidget {
       // Читаем текущие значения цен из провайдера
       final currentGlobalFilters = ref.read(catalogFiltersProvider);
       final currentMinPrice = currentGlobalFilters['min_price']?.toDouble() ?? 0.0;
-      final currentMaxPrice = currentGlobalFilters['max_price']?.toDouble() ?? 100000000.0;
+      final currentMaxPrice = currentGlobalFilters['max_price']?.toDouble() ?? 1000000.0;
       
       // СРАЗУ ИНИЦИАЛИЗИРУЕМ временную переменную актуальными значениями
       RangeValues currentPriceRange = RangeValues(currentMinPrice, currentMaxPrice);
@@ -334,7 +335,7 @@ class FilterSlider extends HookConsumerWidget {
                               onPressed: () {
                                 // Логика "Сбросить и Применить" для ценового фильтра
                                 // СБРОСИТЬ ВСЕ ЛОКАЛЬНЫЕ TEMP ПЕРЕМЕННЫЕ ДО ИХ НАЧАЛЬНЫХ/ДЕФОЛТНЫХ ЗНАЧЕНИЙ
-                                tempPriceRange.value = RangeValues(0, 10000000);
+                                tempPriceRange.value = RangeValues(0, 100000);
                                 tempShowUnavailable.value = false;
                                 
                                 // СОБРАТЬ НОВЫЙ ОБЪЕКТ newFilters ИЗ ЭТИХ ТОЛЬКО ЧТО СБРОШЕННЫХ ЛОКАЛЬНЫХ ПЕРЕМЕННЫХ
@@ -457,7 +458,7 @@ class FilterSlider extends HookConsumerWidget {
                               onPressed: () {
                                 // Остальная логика сброса для других фильтров
                                 // СБРОСИТЬ ВСЕ ЛОКАЛЬНЫЕ TEMP ПЕРЕМЕННЫЕ ДО ИХ НАЧАЛЬНЫХ/ДЕФОЛТНЫХ ЗНАЧЕНИЙ
-                                tempPriceRange.value = RangeValues(0, 10000000);
+                                tempPriceRange.value = RangeValues(0, 100000);
                                 tempShowUnavailable.value = false;
                                 tempColors.value = [];
                                 tempTypes.value = [];
@@ -550,7 +551,7 @@ class FilterSlider extends HookConsumerWidget {
                                 final currentFilters = ref.read(catalogFiltersProvider);
                                 tempPriceRange.value = RangeValues(
                                   (currentFilters['min_price']?.toDouble() ?? 0.0),
-                                  (currentFilters['max_price']?.toDouble() ?? 100000000.0)
+                                  (currentFilters['max_price']?.toDouble() ?? 1000000.0)
                                 );
                                 
                                 final newFilters = <String, dynamic>{
@@ -607,7 +608,7 @@ class FilterSlider extends HookConsumerWidget {
       );
     }
  }
- 
+  
  Widget _buildFilterContentWithCallbacks(
    BuildContext context,
    String filterKey,
@@ -815,7 +816,7 @@ class FilterSlider extends HookConsumerWidget {
                    },
                  ),
                ],
-             
+           
            );
          },
        );
@@ -1041,7 +1042,7 @@ class FilterButton extends StatelessWidget {
        return ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: isActive ? Colors.green[300] : Colors.grey[200],
+          backgroundColor: isActive ? Colors.green[300] : Colors.grey[20],
           foregroundColor: Colors.black87,
           elevation: 0, // Убираем тень у кнопки фильтра
         ),
