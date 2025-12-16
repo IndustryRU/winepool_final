@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-//import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:winepool_final/features/offers/application/all_offers_controller.dart';
-//import 'package:winepool_final/features/offers/domain/offer.dart';
 import 'package:winepool_final/features/reviews/application/reviews_controller.dart';
 import 'package:winepool_final/features/reviews/domain/review.dart';
 import 'package:winepool_final/features/wines/domain/wine.dart';
@@ -22,6 +20,10 @@ class WineDetailsScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(wine.name ?? ''),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
       ),
       body: SingleChildScrollView(
         child: Padding(

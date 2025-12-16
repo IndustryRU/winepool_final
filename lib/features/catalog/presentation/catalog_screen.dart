@@ -171,7 +171,7 @@ class FilterSlider extends HookConsumerWidget {
     final sortOption = selectedFilters.value['sort_option'] ?? '';
 
     // Создаем временные переменные для всех возможных фильтров на уровне build метода
-    final tempPriceRange = useState(RangeValues(0.0, 10000000.0)); // Значения по умолчанию, будут обновлены при вызове модального окна
+    final tempPriceRange = useState(RangeValues(0.0, 100000.0)); // Значения по умолчанию, будут обновлены при вызове модального окна
     final tempShowUnavailable = useState(false);
     final tempColors = useState<List<String>>([]);
     final tempTypes = useState<List<String>>([]);
@@ -253,7 +253,7 @@ class FilterSlider extends HookConsumerWidget {
         // Для года проверяем, заданы ли конкретные годы (отличные от стандартных)
         final minYear = currentFilters['min_year'];
         final maxYear = currentFilters['max_year'];
-        final defaultMinYear = 1900;
+        final defaultMinYear = 190;
         final defaultMaxYear = DateTime.now().year;
         
         return (minYear != null && minYear != defaultMinYear) || 
@@ -289,7 +289,7 @@ class FilterSlider extends HookConsumerWidget {
     // Обновляем временные переменные текущими значениями фильтров
     tempPriceRange.value = RangeValues(
       (currentFilters['min_price']?.toDouble() ?? 0.0),
-      (currentFilters['max_price']?.toDouble() ?? 1000000.0)
+      (currentFilters['max_price']?.toDouble() ?? 10000.0)
     );
     tempShowUnavailable.value = currentFilters['show_unavailable'] ?? false;
     tempColors.value = (currentFilters['color'] as List<dynamic>?)?.cast<String>() ?? [];
@@ -308,7 +308,7 @@ class FilterSlider extends HookConsumerWidget {
       // Читаем текущие значения цен из провайдера
       final currentGlobalFilters = ref.read(catalogFiltersProvider);
       final currentMinPrice = currentGlobalFilters['min_price']?.toDouble() ?? 0.0;
-      final currentMaxPrice = currentGlobalFilters['max_price']?.toDouble() ?? 1000000.0;
+      final currentMaxPrice = currentGlobalFilters['max_price']?.toDouble() ?? 10000.0;
       
       // СРАЗУ ИНИЦИАЛИЗИРУЕМ временную переменную актуальными значениями
       RangeValues currentPriceRange = RangeValues(currentMinPrice, currentMaxPrice);
@@ -551,7 +551,7 @@ class FilterSlider extends HookConsumerWidget {
                                 final currentFilters = ref.read(catalogFiltersProvider);
                                 tempPriceRange.value = RangeValues(
                                   (currentFilters['min_price']?.toDouble() ?? 0.0),
-                                  (currentFilters['max_price']?.toDouble() ?? 1000000.0)
+                                  (currentFilters['max_price']?.toDouble() ?? 10000.0)
                                 );
                                 
                                 final newFilters = <String, dynamic>{
@@ -608,7 +608,7 @@ class FilterSlider extends HookConsumerWidget {
       );
     }
  }
-  
+
  Widget _buildFilterContentWithCallbacks(
    BuildContext context,
    String filterKey,

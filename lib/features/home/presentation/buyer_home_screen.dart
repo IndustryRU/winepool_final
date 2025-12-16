@@ -238,7 +238,7 @@ class BuyerHomeScreen extends HookConsumerWidget {
         },
       ),
     );
-  }
+ }
 
  // Заголовок секции
   Widget _buildSectionHeader(String title) {
@@ -306,7 +306,7 @@ class BuyerHomeScreen extends HookConsumerWidget {
                   textAlign: TextAlign.center,
                 ),
                 Text(
-                  '10000 ₽',
+                  '1000 ₽',
                   style: TextStyle(fontWeight: FontWeight.bold),
                   textAlign: TextAlign.center,
                 ),
@@ -316,7 +316,7 @@ class BuyerHomeScreen extends HookConsumerWidget {
         },
       ),
     );
-  }
+ }
 
  // Горизонтальный список популярных вин
   Widget _buildPopularWineList(List<Wine> wines) {
@@ -330,65 +330,71 @@ class BuyerHomeScreen extends HookConsumerWidget {
         itemCount: wines.length,
         itemBuilder: (context, index) {
           final wine = wines[index];
-          return Container(
-            width: 140,
-            margin: const EdgeInsets.only(left: 12),
-            decoration: BoxDecoration(
-              color: Colors.grey[200],
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                if (wine.imageUrl != null && wine.imageUrl!.isNotEmpty)
-                  Container(
-                    width: 70,
-                    height: 70,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      image: DecorationImage(
-                        fit: BoxFit.cover,
-                        image: NetworkImage(wine.imageUrl!),
+          return GestureDetector(
+            onTap: () {
+              // Навигация на страницу деталей вина
+              GoRouter.of(context).push('/wine/${wine.id}', extra: wine);
+            },
+            child: Container(
+              width: 140,
+              margin: const EdgeInsets.only(left: 12),
+              decoration: BoxDecoration(
+                color: Colors.grey[200],
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  if (wine.imageUrl != null && wine.imageUrl!.isNotEmpty)
+                    Container(
+                      width: 70,
+                      height: 70,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        image: DecorationImage(
+                          fit: BoxFit.cover,
+                          image: NetworkImage(wine.imageUrl!),
+                        ),
+                      ),
+                    )
+                  else
+                    Container(
+                      width: 70,
+                      height: 70,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[400],
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.wine_bar,
+                        size: 35,
+                        color: Colors.grey,
                       ),
                     ),
-                  )
-                else
-                  Container(
-                    width: 70,
-                    height: 70,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[400],
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.wine_bar,
-                      size: 35,
-                      color: Colors.grey,
-                    ),
+                  const SizedBox(height: 6),
+                  Text(
+                    wine.name,
+                    style: TextStyle(fontWeight: FontWeight.w500, fontSize: 12),
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                const SizedBox(height: 6),
-                Text(
-                  wine.name,
-                  style: TextStyle(fontWeight: FontWeight.w500, fontSize: 12),
-                  textAlign: TextAlign.center,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                Text(
-                  wine.winery?.name ?? 'Нет данных', // Используем название винодельни из связанной таблицы
-                  style: TextStyle(fontSize: 10, color: Colors.grey),
-                  textAlign: TextAlign.center,
-                ),
-                Text(
-                  '${wine.averageRating ?? 0.0} ★', // Показываем рейтинг вместо цены
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11),
-                ),
-                const SizedBox(height: 2),
-                WineCharacteristicIconsColumn(
-                  wine: wine,
-                  iconSize: 14.0,
-                ),
-              ],
+                  Text(
+                    wine.winery?.name ?? 'Нет данных', // Используем название винодельни из связанной таблицы
+                    style: TextStyle(fontSize: 10, color: Colors.grey),
+                    textAlign: TextAlign.center,
+                  ),
+                  Text(
+                    '${wine.averageRating ?? 0.0} ★', // Показываем рейтинг вместо цены
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11),
+                  ),
+                  const SizedBox(height: 2),
+                  WineCharacteristicIconsColumn(
+                    wine: wine,
+                    iconSize: 14.0,
+                  ),
+                ],
+              ),
             ),
           );
         },
@@ -408,65 +414,71 @@ class BuyerHomeScreen extends HookConsumerWidget {
         itemCount: wines.length,
         itemBuilder: (context, index) {
           final wine = wines[index];
-          return Container(
-            width: 140,
-            margin: const EdgeInsets.only(left: 12),
-            decoration: BoxDecoration(
-              color: Colors.grey[20],
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                if (wine.imageUrl != null && wine.imageUrl!.isNotEmpty)
-                  Container(
-                    width: 70,
-                    height: 70,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      image: DecorationImage(
-                        fit: BoxFit.cover,
-                        image: NetworkImage(wine.imageUrl!),
+          return GestureDetector(
+            onTap: () {
+              // Навигация на страницу деталей вина
+              GoRouter.of(context).push('/wine/${wine.id}', extra: wine);
+            },
+            child: Container(
+              width: 140,
+              margin: const EdgeInsets.only(left: 12),
+              decoration: BoxDecoration(
+                color: Colors.grey[20],
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  if (wine.imageUrl != null && wine.imageUrl!.isNotEmpty)
+                    Container(
+                      width: 70,
+                      height: 70,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        image: DecorationImage(
+                          fit: BoxFit.cover,
+                          image: NetworkImage(wine.imageUrl!),
+                        ),
+                      ),
+                    )
+                  else
+                    Container(
+                      width: 70,
+                      height: 70,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[400],
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.wine_bar,
+                        size: 35,
+                        color: Colors.grey,
                       ),
                     ),
-                  )
-                else
-                  Container(
-                    width: 70,
-                    height: 70,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[400],
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.wine_bar,
-                      size: 35,
-                      color: Colors.grey,
-                    ),
+                  const SizedBox(height: 6),
+                  Text(
+                    wine.name,
+                    style: TextStyle(fontWeight: FontWeight.w500, fontSize: 12),
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                const SizedBox(height: 6),
-                Text(
-                  wine.name,
-                  style: TextStyle(fontWeight: FontWeight.w500, fontSize: 12),
-                  textAlign: TextAlign.center,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                Text(
-                  wine.winery?.name ?? 'Нет данных', // Используем название винодельни из связанной таблицы
-                  style: TextStyle(fontSize: 10, color: Colors.grey),
-                  textAlign: TextAlign.center,
-                ),
-                Text(
-                  '${wine.averageRating ?? 0.0} ★', // Показываем рейтинг вместо цены
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11),
-                ),
-                const SizedBox(height: 2),
-                WineCharacteristicIconsColumn(
-                  wine: wine,
-                  iconSize: 14.0,
-                ),
-              ],
+                  Text(
+                    wine.winery?.name ?? 'Нет данных', // Используем название винодельни из связанной таблицы
+                    style: TextStyle(fontSize: 10, color: Colors.grey),
+                    textAlign: TextAlign.center,
+                  ),
+                  Text(
+                    '${wine.averageRating ?? 0.0} ★', // Показываем рейтинг вместо цены
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11),
+                  ),
+                  const SizedBox(height: 2),
+                  WineCharacteristicIconsColumn(
+                    wine: wine,
+                    iconSize: 14.0,
+                  ),
+                ],
+              ),
             ),
           );
         },
