@@ -84,7 +84,7 @@ WineType? _stringToWineType(String? type) {
   if (type == null) return null;
  try {
     return WineType.values.byName(type);
-  } catch (e) {
+ } catch (e) {
     return WineType.unknown;
   }
 }
@@ -112,7 +112,7 @@ abstract class Wine with _$Wine {
       fromJson: _wineryFromJson,
     )
     Winery? winery,
-    required String name,
+    String? name, // Изменено на nullable
     String? description,
     String? grapeVariety,
     @JsonKey(name: 'image_url') String? imageUrl,
@@ -155,7 +155,7 @@ abstract class Wine with _$Wine {
       fromJson: _offersFromJson,
     )
     List<Offer>? offers,
-  }) = _Wine;
+ }) = _Wine;
 
   factory Wine.fromJson(Map<String, dynamic> json) => _$WineFromJson(json);
 }

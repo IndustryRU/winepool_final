@@ -65,7 +65,7 @@ class WineTile extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center, // Центрируем содержимое по вертикали
                   children: [
                     Text(
-                      wine.name,
+                      wine.name ?? 'Название не указано',
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,

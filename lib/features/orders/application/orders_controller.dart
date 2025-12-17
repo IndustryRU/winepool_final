@@ -2,6 +2,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:winepool_final/features/auth/application/auth_controller.dart';
 import 'package:winepool_final/features/cart/domain/cart_item.dart';
+import 'package:winepool_final/features/cellar/application/cellar_controller.dart';
 import 'package:winepool_final/features/orders/data/orders_repository.dart';
 import 'package:winepool_final/features/orders/domain/order.dart';
 
@@ -68,6 +69,17 @@ class PlaceOrderController extends AsyncNotifier<void> {
             total: total,
             address: address,
           );
+      // После успешного создания заказа, добавляем вина в "погреб"
+      for (final item in items) {
+        if (item.productId != null && item.quantity != null) {
+          await ref.read(cellarControllerProvider.notifier).addToStorage(
+                wineId: item.productId!,
+                quantity: item.quantity!,
+                purchasePrice: item.offer?.price,
+                purchaseDate: DateTime.now(),
+              );
+        }
+      }
       state = const AsyncData(null);
     } catch (e, st) {
       state = AsyncError(e, st);

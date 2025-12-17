@@ -29,6 +29,8 @@ import 'package:winepool_final/features/profile/presentation/ebs_verification_sc
 import 'package:winepool_final/features/catalog/presentation/catalog_screen.dart';
 import 'package:winepool_final/features/catalog/presentation/category_screen.dart';
 import 'package:winepool_final/features/search/presentation/search_results_screen.dart';
+import 'package:winepool_final/features/cellar/presentation/my_cellar_screen.dart';
+import 'package:winepool_final/features/cellar/presentation/add_tasting_screen.dart';
 
 // Создаем ключ над провайдером
 final _shellNavigatorKey = GlobalKey<NavigatorState>();
@@ -138,6 +140,23 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           final wine = state.extra as Wine;
           return WineDetailsScreen(wine: wine);
         },
+        routes: [
+          GoRoute(
+            path: 'add-tasting',
+            name: 'add-tasting',
+            builder: (context, state) {
+              final wine = state.extra as Wine?;
+              if (wine == null) {
+                return const Scaffold(
+                  body: Center(
+                    child: Text('Ошибка: Вино не передано'),
+                  ),
+                );
+              }
+              return AddTastingScreen(wine: wine);
+            },
+          ),
+        ],
       ),
       GoRoute(
         path: '/add-offer',
@@ -184,6 +203,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/profile',
         builder: (_, __) => const ProfileScreen(),
+      ),
+      GoRoute(
+        path: '/my-cellar',
+        builder: (_, __) => const MyCellarScreen(),
       ),
       GoRoute(
         path: '/profile/ebs-verification',

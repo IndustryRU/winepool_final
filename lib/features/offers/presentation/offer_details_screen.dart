@@ -54,7 +54,7 @@ class OfferDetailsScreen extends HookConsumerWidget {
                 
                 // Название вина
                 Text(
-                  wine.name,
+                  wine.name ?? 'Название не указано',
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),

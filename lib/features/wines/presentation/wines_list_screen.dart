@@ -33,7 +33,7 @@ class WinesListScreen extends ConsumerWidget {
               itemBuilder: (context, index) {
                 final wine = wines[index];
                 return ListTile(
-                  title: Text(wine.name),
+                  title: Text(wine.name ?? 'Название не указано'),
                   // TODO: Добавить onTap для перехода к деталям вина
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,

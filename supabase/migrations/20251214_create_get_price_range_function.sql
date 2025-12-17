@@ -77,7 +77,7 @@ BEGIN
 
     IF filters ? 'region' THEN
         IF jsonb_typeof(filters->'region') = 'array' THEN
-            query_text := query_text || ' AND w.region = ANY(ARRAY(SELECT jsonb_array_elements_text($1->''region'')))';
+            query_text := query_text || ' AND w.region = ANY(ARRAY(SELECT jsonb_array_elements_text($1->''region')))';
         ELSE
             query_text := query_text || ' AND w.region = ($1->>''region'')';
         END IF;
@@ -87,7 +87,7 @@ BEGIN
         IF jsonb_typeof(filters->'grape') = 'array' THEN
             query_text := query_text || ' AND w.grape_variety = ANY(ARRAY(SELECT jsonb_array_elements_text($1->''grape'')))';
         ELSE
-            query_text := query_text || ' AND w.grape_variety = ($1->>''grape')';
+            query_text := query_text || ' AND w.grape_variety = ($1->>''grape'')';
         END IF;
     END IF;
 

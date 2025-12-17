@@ -10,7 +10,7 @@ _Wine _$WineFromJson(Map<String, dynamic> json) => _Wine(
   id: json['id'] as String?,
   wineryId: json['winery_id'] as String?,
   winery: _wineryFromJson(json['wineries']),
-  name: json['name'] as String,
+  name: json['name'] as String?,
   description: json['description'] as String?,
   grapeVariety: json['grape_variety'] as String?,
   imageUrl: json['image_url'] as String?,

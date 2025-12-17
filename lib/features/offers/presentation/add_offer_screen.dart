@@ -70,7 +70,7 @@ class AddOfferScreen extends HookConsumerWidget {
                              : const AsyncValue.data(null);
                          return Card(
                            child: ListTile(
-                             title: Text(wine.name),
+                             title: Text(wine.name ?? 'Название не указано'),
                              subtitle: wineryAsync.when(
                                data: (winery) => Text(winery?.name ?? ''),
                                loading: () => const Text('Загрузка...'),

@@ -9,7 +9,7 @@ import 'package:winepool_final/features/wines/presentation/widgets/wine_characte
 import 'package:winepool_final/common/widgets/shimmer_loading_indicator.dart';
 
 class BuyerHomeScreen extends HookConsumerWidget {
-  const BuyerHomeScreen({super.key});
+ const BuyerHomeScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -79,6 +79,11 @@ class BuyerHomeScreen extends HookConsumerWidget {
                   icon: const Icon(Icons.receipt_long),
                   onPressed: () => context.push('/my-orders'),
                   tooltip: 'Мои заказы',
+                ),
+                IconButton(
+                  icon: const Icon(Icons.local_drink),
+                  onPressed: () => context.push('/my-cellar'),
+                  tooltip: 'Мой Погребок',
                 ),
                 IconButton(
                   icon: const Icon(Icons.shopping_cart),
@@ -177,7 +182,7 @@ class BuyerHomeScreen extends HookConsumerWidget {
         onTap: () => context.push('/search'),
       ),
     );
-  }
+ }
 
   // Слайдер категорий
   Widget _buildCategorySlider(BuildContext context) {
@@ -240,7 +245,7 @@ class BuyerHomeScreen extends HookConsumerWidget {
     );
  }
 
- // Заголовок секции
+  // Заголовок секции
   Widget _buildSectionHeader(String title) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -318,7 +323,7 @@ class BuyerHomeScreen extends HookConsumerWidget {
     );
  }
 
- // Горизонтальный список популярных вин
+  // Горизонтальный список популярных вин
   Widget _buildPopularWineList(List<Wine> wines) {
     if (wines.isEmpty) {
       return const Center(child: Text('Нет популярных вин'));
@@ -373,7 +378,7 @@ class BuyerHomeScreen extends HookConsumerWidget {
                     ),
                   const SizedBox(height: 6),
                   Text(
-                    wine.name,
+                    wine.name ?? 'Название не указано',
                     style: TextStyle(fontWeight: FontWeight.w500, fontSize: 12),
                     textAlign: TextAlign.center,
                     maxLines: 2,
@@ -457,7 +462,7 @@ class BuyerHomeScreen extends HookConsumerWidget {
                     ),
                   const SizedBox(height: 6),
                   Text(
-                    wine.name,
+                    wine.name ?? 'Название не указано',
                     style: TextStyle(fontWeight: FontWeight.w500, fontSize: 12),
                     textAlign: TextAlign.center,
                     maxLines: 2,
