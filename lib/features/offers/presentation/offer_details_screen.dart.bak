@@ -96,7 +96,8 @@ class OfferDetailsScreen extends HookConsumerWidget {
                   'Страна:',
                   wine.winery?.countryName ?? 'Не указана',
                 ),
-                _buildInfoRow(
+                _buildInfoRowWithIcon(
+                  WineGrapeIcon(grapeVariety: wine.grapeVariety, size: 24.0),
                   'Сорт винограда:',
                   wine.grapeVariety ?? 'Не указан',
                 ),

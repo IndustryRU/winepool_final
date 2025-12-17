@@ -6,6 +6,7 @@ import 'package:winepool_final/features/reviews/application/reviews_controller.d
 import 'package:winepool_final/features/reviews/domain/review.dart';
 import 'package:winepool_final/features/wines/domain/wine.dart';
 import 'package:winepool_final/features/reviews/presentation/add_review_screen.dart';
+import 'package:go_router/go_router.dart';
 import '../../../common/widgets/shimmer_loading_indicator.dart';
 
 class WineDetailsScreen extends ConsumerWidget {
@@ -212,13 +213,15 @@ class WineDetailsScreen extends ConsumerWidget {
                     itemBuilder: (context, index) {
                       final offer = wineOffers[index];
                       return Card(
-                        child: ListTile(
-                          title: Text('Цена: ${offer.price} руб.'),
-                          subtitle: Text('Продавец: ${offer.sellerId}'),
-                          trailing: const Icon(Icons.arrow_forward_ios),
+                        child: InkWell(
                           onTap: () {
-                            // TODO: Перейти к деталям предложения
+                            context.push('/offers/${offer.id}', extra: offer);
                           },
+                          child: ListTile(
+                            title: Text('Цена: ${offer.price} руб.'),
+                            subtitle: Text('Продавец: ${offer.sellerId}'),
+                            trailing: const Icon(Icons.arrow_forward_ios),
+                          ),
                         ),
                       );
                     },
