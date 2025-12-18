@@ -33,7 +33,7 @@ final class CellarControllerProvider
   CellarController create() => CellarController();
 }
 
-String _$cellarControllerHash() => r'651c534903d7ecb6f9306ee1bf716c01dc13a09b';
+String _$cellarControllerHash() => r'310eba4f3c0a5d9743e4caf732ab616d92aac6a1';
 
 abstract class _$CellarController extends $AsyncNotifier<CellarData> {
   FutureOr<CellarData> build();

@@ -16,6 +16,7 @@ class AddTastingScreen extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final notesController = useTextEditingController();
     final rating = useState<double>(0.0);
+    final publishAsReview = useState(false);
 
     return PopScope(
       canPop: false, // Отключаем стандартное поведение кнопки "назад"
@@ -73,6 +74,17 @@ class AddTastingScreen extends HookConsumerWidget {
                   border: OutlineInputBorder(),
                 ),
               ),
+              const SizedBox(height: 16),
+              
+              // Чекбокс "Опубликовать как отзыв"
+              CheckboxListTile(
+                title: const Text('Опубликовать как отзыв'),
+                value: publishAsReview.value,
+                onChanged: (bool? newValue) {
+                  publishAsReview.value = newValue ?? false;
+                },
+                controlAffinity: ListTileControlAffinity.leading,
+              ),
             ],
           ),
         ),
@@ -85,6 +97,7 @@ class AddTastingScreen extends HookConsumerWidget {
                 rating: rating.value,
                 notes: notesController.text.isNotEmpty ? notesController.text : null,
                 tastingDate: DateTime.now(), // Устанавливаем текущую дату по умолчанию
+                publishAsReview: publishAsReview.value,
               );
 
               // Инвалидируем провайдер, чтобы обновить список

@@ -11,7 +11,7 @@ final cellarRepositoryProvider = Provider<CellarRepository>((ref) {
 class CellarRepository {
   final _client = Supabase.instance.client;
 
- Future<List<UserTasting>> getUserTastings() async {
+  Future<List<UserTasting>> getUserTastings() async {
     try {
       final response = await _client.rpc('get_user_tastings');
 
@@ -25,7 +25,7 @@ class CellarRepository {
     } catch (e) {
       throw Exception('Failed to get user tastings: $e');
     }
- }
+  }
 
   Future<void> addUserTasting({
     required String wineId,
@@ -49,7 +49,7 @@ class CellarRepository {
     }
   }
 
- Future<void> deleteUserTasting(String tastingId) async {
+  Future<void> deleteUserTasting(String tastingId) async {
     try {
       await _client.rpc('delete_user_tasting', params: {'p_tasting_id': tastingId});
     } catch (e) {
@@ -72,7 +72,7 @@ class CellarRepository {
     } catch (e) {
       throw Exception('Failed to get user storage: $e');
     }
- }
+  }
 
   Future<void> addToUserStorage({
     required String userId,
@@ -100,7 +100,7 @@ class CellarRepository {
     }
   }
 
- Future<void> updateStorageItemQuantity({
+  Future<void> updateStorageItemQuantity({
     required String itemId,
     required int newQuantity,
   }) async {
@@ -111,6 +111,17 @@ class CellarRepository {
       );
     } catch (e) {
       throw Exception('Failed to update storage item quantity: $e');
+    }
+  }
+
+  Future<void> deleteStorageItem(String itemId) async {
+    try {
+      await _client.rpc(
+        'delete_user_storage_item',
+        params: {'p_item_id': itemId},
+      );
+    } catch (e) {
+      throw Exception('Failed to delete storage item: $e');
     }
   }
 

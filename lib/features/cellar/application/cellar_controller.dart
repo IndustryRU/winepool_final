@@ -2,6 +2,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:winepool_final/features/auth/application/auth_controller.dart';
 import 'package:winepool_final/features/cellar/data/cellar_repository.dart';
+import 'package:winepool_final/features/reviews/application/reviews_controller.dart';
+import 'package:winepool_final/features/reviews/data/reviews_repository.dart';
+import 'package:winepool_final/features/reviews/domain/review.dart';
+import 'package:winepool_final/core/providers/supabase_provider.dart';
 import '../domain/models.dart';
 import '../domain/analytics_models.dart';
 
@@ -31,9 +35,16 @@ class CellarController extends _$CellarController {
     String? notes,
     String? photoUrl,
     DateTime? tastingDate,
- }) async {
+    bool publishAsReview = false,
+  }) async {
     try {
       final cellarRepository = ref.read(cellarRepositoryProvider);
+      
+      // Получаем значения до асинхронной операции, чтобы избежать ошибки "ref disposed"
+      final currentUserId = ref.read(authControllerProvider).value?.id;
+      final supabaseClient = ref.read(supabaseClientProvider);
+      final reviewsRepository = ReviewsRepository(supabaseClient);
+
       await cellarRepository.addUserTasting(
         wineId: wineId,
         rating: rating,
@@ -41,6 +52,24 @@ class CellarController extends _$CellarController {
         photoUrl: photoUrl,
         tastingDate: tastingDate,
       );
+      
+      // Если пользователь выбрал публикацию как отзыв и есть заметки
+      if (publishAsReview && notes != null && notes.isNotEmpty) {
+        if (currentUserId == null) {
+          throw Exception('User ID is not available.');
+        }
+        
+        // Создаем объект отзыва
+        final review = Review(
+          wineId: wineId,
+          userId: currentUserId,
+          rating: rating,
+          text: notes,
+        );
+        
+        // Добавляем отзыв через reviews repository
+        await reviewsRepository.addReview(review);
+      }
     } catch (e) {
       throw Exception('Failed to add tasting: $e');
     }
@@ -102,6 +131,27 @@ class CellarController extends _$CellarController {
       );
     } catch (e) {
       throw Exception('Failed to update storage quantity: $e');
+    }
+  }
+
+  Future<void> drinkBottle(UserStorageItem item) async {
+    try {
+      final cellarRepository = ref.read(cellarRepositoryProvider);
+      
+      if (item.quantity! > 1) {
+        // Уменьшаем количество на 1
+        await cellarRepository.updateStorageItemQuantity(
+          itemId: item.id!,
+          newQuantity: item.quantity! - 1,
+        );
+      } else {
+        // Если количество равно 1, удаляем запись
+        await cellarRepository.deleteStorageItem(item.id!);
+      }
+      
+      // Убираем инвалидацию провайдера из контроллера, т.к. она будет выполнена в UI
+    } catch (e) {
+      throw Exception('Failed to drink bottle: $e');
     }
   }
 }

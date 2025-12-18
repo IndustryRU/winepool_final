@@ -3,16 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:winepool_final/features/cellar/presentation/analytics_screen.dart';
+import 'package:go_router/go_router.dart';
 
 import '../application/cellar_controller.dart';
 import '../domain/models.dart';
 import '../../wines/domain/wine.dart';
 
 class MyCellarScreen extends HookConsumerWidget {
-  const MyCellarScreen({super.key});
+ const MyCellarScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+ Widget build(BuildContext context, WidgetRef ref) {
     final tabController = useTabController(initialLength: 3);
     
     return Scaffold(
@@ -61,7 +62,8 @@ class MyCellarScreen extends HookConsumerWidget {
         ],
       ),
     );
- }
+  }
+
 }
 
 // Виджет для отображения продегустированных вин
@@ -71,7 +73,7 @@ class _TastedWinesView extends StatelessWidget {
   const _TastedWinesView(this.tastings);
 
   @override
- Widget build(BuildContext context) {
+  Widget build(BuildContext context) {
     if (tastings.isEmpty) {
       return const Center(
         child: Text('Вы еще не пробовали вина'),
@@ -176,32 +178,33 @@ class _TastedWinesView extends StatelessWidget {
 }
 
 // Виджет для отображения хранимых вин
-class _StoredWinesView extends StatelessWidget {
+class _StoredWinesView extends ConsumerWidget {
   final List<UserStorageItem> storageItems;
 
   const _StoredWinesView(this.storageItems);
 
-  @override
-  Widget build(BuildContext context) {
+ @override
+  Widget build(BuildContext context, WidgetRef ref) {
     if (storageItems.isEmpty) {
       return const Center(
         child: Text('У вас нет вин в коллекции'),
       );
     }
 
-    final groupedByWine =
-        groupBy<UserStorageItem, Wine>(storageItems, (item) => item.wine);
-
-    final wineGroups = groupedByWine.entries.toList();
+    // Группируем элементы по wine.id, обрабатывая случай, когда id может быть null
+    final groupedItems = groupBy<UserStorageItem, String?>(
+      storageItems, 
+      (item) => item.wine.id
+    );
 
     return ListView.builder(
       padding: const EdgeInsets.all(16),
-      itemCount: wineGroups.length,
+      itemCount: groupedItems.keys.length,
       itemBuilder: (context, index) {
-        final wineGroup = wineGroups[index];
-        final wine = wineGroup.key;
-        final items = wineGroup.value;
-        final bottleCount = items.length;
+        final wineId = groupedItems.keys.elementAt(index);
+        final items = groupedItems[wineId]!;
+        final wine = items.first.wine;
+        final totalQuantity = items.fold<int>(0, (sum, item) => sum + (item.quantity ?? 0));
 
         return Card(
           margin: const EdgeInsets.only(bottom: 16),
@@ -227,7 +230,7 @@ class _StoredWinesView extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
-                    'x$bottleCount',
+                    'x$totalQuantity',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: Colors.blue[800],
@@ -241,7 +244,7 @@ class _StoredWinesView extends StatelessWidget {
               style: Theme.of(context).textTheme.bodyMedium,
             ),
             children: items
-                .map((item) => _buildBottleListItem(context, item))
+                .map((item) => _buildBottleListItem(context, ref, item))
                 .toList(),
           ),
         );
@@ -249,21 +252,62 @@ class _StoredWinesView extends StatelessWidget {
     );
   }
 
-  Widget _buildBottleListItem(BuildContext context, UserStorageItem item) {
-    return ListTile(
-      title: Text(
-        'Цена: ${item.purchasePrice?.toStringAsFixed(2) ?? "N/A"} ₽',
-        style: Theme.of(context).textTheme.bodyMedium,
-      ),
-      subtitle: Text(
-        'Куплено: ${item.purchaseDate != null ? _formatDate(item.purchaseDate!) : "N/A"}',
-        style: Theme.of(context).textTheme.bodySmall,
-      ),
-      trailing: OutlinedButton(
-        onPressed: () {
-          // TODO: Implement "Mark as Tasted" logic
-        },
-        child: const Text("Пробовал"),
+  Widget _buildBottleListItem(BuildContext context, WidgetRef ref, UserStorageItem item) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.grey.shade300),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: ListTile(
+          title: Text(
+            'Количество: ${item.quantity ?? 1} шт.',
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (item.purchasePrice != null) ...[
+                Text(
+                  'Цена покупки: ${item.purchasePrice!.toStringAsFixed(2)} ₽',
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+              ],
+              if (item.purchaseDate != null) ...[
+                Text(
+                  'Дата покупки: ${_formatDate(item.purchaseDate!)}',
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+              ],
+              if (item.idealDrinkFrom != null || item.idealDrinkTo != null) ...[
+                Text(
+                  'Идеальный период потребления: ${item.idealDrinkFrom != null ? item.idealDrinkFrom : "не указан"} - ${item.idealDrinkTo != null ? item.idealDrinkTo : "не указан"} гг.',
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+              ],
+            ],
+          ),
+          trailing: IconButton(
+            icon: const Icon(Icons.wine_bar),
+            onPressed: () async {
+              // Логика для функционала "Пробовал"
+              await ref.read(cellarControllerProvider.notifier).drinkBottle(item);
+              
+              // Обновляем состояние хранилища
+              ref.invalidate(cellarStorageProvider);
+              
+              // Перенаправление на AddTastingScreen с предварительно заполненными данными
+              if (item.wineId != null) {
+                context.pushNamed(
+                  'add-tasting',
+                  pathParameters: {'id': item.wineId!}, // Используем именованный маршрут и параметр 'id'
+                  extra: item.wine,
+                );
+              }
+            },
+          ),
+        ),
       ),
     );
   }
