@@ -83,6 +83,13 @@ class ProfileScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: 10),
                   ElevatedButton(
+                    onPressed: () {
+                      context.push('/wine-label-ocr');
+                    },
+                    child: const Text('Распознавание этикетки вина'),
+                  ),
+                  const SizedBox(height: 10),
+                  ElevatedButton(
                     onPressed: () async {
                       await ref.read(authControllerProvider.notifier).signOut();
                       if (context.mounted) {

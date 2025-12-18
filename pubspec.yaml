@@ -73,6 +73,9 @@ dependencies:
   # Shimmer effect
   shimmer: ^3.0.0
   fl_chart: ^1.1.1
+  
+  # ML Kit for OCR
+  google_mlkit_text_recognition: ^0.15.0
 
 dev_dependencies:
   flutter_test:
@@ -120,8 +123,7 @@ flutter:
   # To add custom fonts to your application, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a
   # "family" key with the font family name, and a "fonts" key with a
-  # list giving the asset and other descriptors for the font. For
-  # example:
+  # list giving the asset and other descriptors for the font. For example:
   # fonts:
  #   - family: Schyler
   #     fonts:
@@ -141,6 +143,6 @@ flutter:
 # see https://flutter.dev/to/font-from-package
 
 flutter_launcher_icons:
- android: true
- ios: true
- image_path: "assets/icons/WP_ico2.png"
+  android: true
+  ios: true
+  image_path: "assets/icons/WP_ico2.png"

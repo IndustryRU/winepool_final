@@ -31,6 +31,7 @@ import 'package:winepool_final/features/catalog/presentation/category_screen.dar
 import 'package:winepool_final/features/search/presentation/search_results_screen.dart';
 import 'package:winepool_final/features/cellar/presentation/my_cellar_screen.dart';
 import 'package:winepool_final/features/cellar/presentation/add_tasting_screen.dart';
+import 'package:winepool_final/features/wines/presentation/wine_label_ocr_screen.dart';
 
 // Создаем ключ над провайдером
 final _shellNavigatorKey = GlobalKey<NavigatorState>();
@@ -218,6 +219,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) {
           return const SearchResultsScreen();
         },
+      ),
+      GoRoute(
+        path: '/wine-label-ocr',
+        builder: (context, state) => const WineLabelOcrScreen(),
       ),
     ],
     redirect: (context, state) {
