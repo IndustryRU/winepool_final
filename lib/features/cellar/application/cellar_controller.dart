@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:winepool_final/features/auth/application/auth_controller.dart';
 import 'package:winepool_final/features/cellar/data/cellar_repository.dart';
 import '../domain/models.dart';
 import '../domain/analytics_models.dart';
@@ -61,10 +62,20 @@ class CellarController extends _$CellarController {
     DateTime? purchaseDate,
     int? idealDrinkFrom,
     int? idealDrinkTo,
+    String? userId,
   }) async {
+    print(
+        '[CellarController] addToStorage called with: userId=$userId, wineId=$wineId, quantity=$quantity');
     try {
       final cellarRepository = ref.read(cellarRepositoryProvider);
+      final finalUserId = userId ?? ref.read(authControllerProvider).value?.id;
+
+      if (finalUserId == null) {
+        throw Exception('User ID is not available.');
+      }
+
       await cellarRepository.addToUserStorage(
+        userId: finalUserId,
         wineId: wineId,
         quantity: quantity,
         purchasePrice: purchasePrice,
@@ -72,8 +83,10 @@ class CellarController extends _$CellarController {
         idealDrinkFrom: idealDrinkFrom,
         idealDrinkTo: idealDrinkTo,
       );
-    } catch (e) {
-      throw Exception('Failed to add to storage: $e');
+    } catch (e, st) {
+      print('[CellarController] Error in addToStorage: $e\n$st');
+      // Повторно выбрасываем исключение, чтобы вызывающий код мог его обработать
+      rethrow;
     }
   }
 

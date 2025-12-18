@@ -69,17 +69,6 @@ class PlaceOrderController extends AsyncNotifier<void> {
             total: total,
             address: address,
           );
-      // После успешного создания заказа, добавляем вина в "погреб"
-      for (final item in items) {
-        if (item.productId != null && item.quantity != null) {
-          await ref.read(cellarControllerProvider.notifier).addToStorage(
-                wineId: item.productId!,
-                quantity: item.quantity!,
-                purchasePrice: item.offer?.price,
-                purchaseDate: DateTime.now(),
-              );
-        }
-      }
       state = const AsyncData(null);
     } catch (e, st) {
       state = AsyncError(e, st);
@@ -116,9 +105,43 @@ class MySalesController extends AsyncNotifier<List<Order>> {
   }
 
   Future<void> updateOrderStatus(String orderId, OrderStatus newStatus) async {
+    print('[OrdersController] updateOrderStatus: orderId=$orderId, newStatus=$newStatus');
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
-      await ref.read(ordersRepositoryProvider).updateOrderStatus(orderId, newStatus);
+      await ref
+          .read(ordersRepositoryProvider)
+          .updateOrderStatus(orderId, newStatus);
+
+      // Если статус обновлен на "Доставлен", добавляем вино в погреб
+      if (newStatus == OrderStatus.delivered) {
+        try {
+          print(
+              '[OrdersController] Order status is delivered. Adding to cellar.');
+          final order = await ref.read(orderProvider(orderId).future);
+          if (order?.items != null) {
+            for (final item in order!.items!) {
+              print(
+                  '[OrdersController] Processing item: ${item.offer?.wineId}');
+              if (item.offer?.wineId != null && item.quantity != null) {
+                print(
+                    '[OrdersController] Calling addToStorage with: buyerId=${order.buyerId}, wineId=${item.offer!.wineId!}, quantity=${item.quantity!}');
+                await ref.read(cellarControllerProvider.notifier).addToStorage(
+                      userId: order.buyerId,
+                      wineId: item.offer!.wineId!,
+                      quantity: item.quantity!,
+                      purchasePrice: item.priceAtPurchase,
+                      purchaseDate: DateTime.now(),
+                    );
+              }
+            }
+          }
+        } catch (e, st) {
+          print(
+              '[OrdersController] Error adding to cellar: $e\n$st');
+          // Тут можно обработать ошибку, например, показать уведомление пользователю
+          // Но пока просто логируем
+        }
+      }
       // Обновить список продаж напрямую
       return fetchMySales();
     });

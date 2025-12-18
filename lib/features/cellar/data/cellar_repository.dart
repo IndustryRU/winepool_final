@@ -60,7 +60,8 @@ class CellarRepository {
   Future<List<UserStorageItem>> getUserStorage() async {
     try {
       final response = await _client.rpc('get_user_storage');
-      
+      print('DEBUG: Response from get_user_storage: $response');
+
       if (response is List) {
         return (response as List)
             .map((json) => UserStorageItem.fromJson(json))
@@ -73,7 +74,8 @@ class CellarRepository {
     }
  }
 
-  Future<UserStorageItem> addToUserStorage({
+  Future<void> addToUserStorage({
+    required String userId,
     required String wineId,
     required int quantity,
     double? purchasePrice,
@@ -83,6 +85,7 @@ class CellarRepository {
   }) async {
     try {
       final params = {
+        'p_user_id': userId,
         'p_wine_id': wineId,
         'p_quantity': quantity,
         'p_purchase_price': purchasePrice,
@@ -90,15 +93,8 @@ class CellarRepository {
         'p_ideal_drink_from': idealDrinkFrom,
         'p_ideal_drink_to': idealDrinkTo,
       };
-      
-      final response = await _client.rpc('add_to_user_storage', params: params);
-      
-      if (response is List && response.isNotEmpty) {
-        final allStorageItems = (response as List).map((json) => UserStorageItem.fromJson(json)).toList();
-        return allStorageItems.first;
-      } else {
-        throw Exception('Invalid response format for addToUserStorage');
-      }
+
+      await _client.rpc('add_to_user_storage', params: params);
     } catch (e) {
       throw Exception('Failed to add to user storage: $e');
     }

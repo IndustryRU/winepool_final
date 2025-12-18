@@ -15,7 +15,7 @@ List<OrderItem>? _orderItemsFromJson(dynamic json) {
 abstract class Order with _$Order {
   const factory Order({
     required String id,
-    @JsonKey(name: 'user_id') String? userId,
+    @JsonKey(name: 'user_id') String? buyerId,
     @JsonKey(name: 'total_price') double? totalPrice,
     String? status,
     @JsonKey(name: 'created_at') DateTime? createdAt,

@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -5,6 +6,7 @@ import 'package:winepool_final/features/cellar/presentation/analytics_screen.dar
 
 import '../application/cellar_controller.dart';
 import '../domain/models.dart';
+import '../../wines/domain/wine.dart';
 
 class MyCellarScreen extends HookConsumerWidget {
   const MyCellarScreen({super.key});
@@ -187,94 +189,82 @@ class _StoredWinesView extends StatelessWidget {
       );
     }
 
+    final groupedByWine =
+        groupBy<UserStorageItem, Wine>(storageItems, (item) => item.wine);
+
+    final wineGroups = groupedByWine.entries.toList();
+
     return ListView.builder(
       padding: const EdgeInsets.all(16),
-      itemCount: storageItems.length,
+      itemCount: wineGroups.length,
       itemBuilder: (context, index) {
-        final item = storageItems[index];
+        final wineGroup = wineGroups[index];
+        final wine = wineGroup.key;
+        final items = wineGroup.value;
+        final bottleCount = items.length;
+
         return Card(
           margin: const EdgeInsets.only(bottom: 16),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+          child: ExpansionTile(
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        item.wine.name ?? 'Название не указано',
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                Expanded(
+                  child: Text(
+                    wine.name ?? 'Название не указано',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.blue[100],
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        'x${item.quantity ?? 0}',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.blue[100],
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    'x$bottleCount',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: Colors.blue[800],
                         ),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  'Винодельня: ${item.wine.winery?.name ?? "Не указана"}',
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-                const SizedBox(height: 8),
-                if (item.purchasePrice != null) ...[
-                  Text(
-                    'Цена покупки: ${item.purchasePrice!.toStringAsFixed(2)} ₽',
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                  const SizedBox(height: 4),
-                ],
-                if (item.purchaseDate != null) ...[
-                  Text(
-                    'Дата покупки: ${_formatDate(item.purchaseDate!)}',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Colors.grey[600],
-                    ),
-                  ),
-                ],
-                if (item.idealDrinkFrom != null || item.idealDrinkTo != null) ...[
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      if (item.idealDrinkFrom != null) ...[
-                        Text(
-                          'Пить с: ${item.idealDrinkFrom}',
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
-                        if (item.idealDrinkTo != null) const Text(' '),
-                      ],
-                      if (item.idealDrinkTo != null) ...[
-                        Text(
-                          'по: ${item.idealDrinkTo}',
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
-                      ],
-                    ],
-                  ),
-                ],
               ],
             ),
+            subtitle: Text(
+              'Винодельня: ${wine.winery?.name ?? "Не указана"}',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            children: items
+                .map((item) => _buildBottleListItem(context, item))
+                .toList(),
           ),
         );
       },
+    );
+  }
+
+  Widget _buildBottleListItem(BuildContext context, UserStorageItem item) {
+    return ListTile(
+      title: Text(
+        'Цена: ${item.purchasePrice?.toStringAsFixed(2) ?? "N/A"} ₽',
+        style: Theme.of(context).textTheme.bodyMedium,
+      ),
+      subtitle: Text(
+        'Куплено: ${item.purchaseDate != null ? _formatDate(item.purchaseDate!) : "N/A"}',
+        style: Theme.of(context).textTheme.bodySmall,
+      ),
+      trailing: OutlinedButton(
+        onPressed: () {
+          // TODO: Implement "Mark as Tasted" logic
+        },
+        child: const Text("Пробовал"),
+      ),
     );
   }
 
