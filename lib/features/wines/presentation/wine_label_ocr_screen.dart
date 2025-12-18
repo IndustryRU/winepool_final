@@ -2,15 +2,21 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart'; // Добавляем hooks_riverpod для FutureProvider
+import 'package:winepool_final/features/wines/application/wine_label_search_controller.dart'; // Импортируем новый контроллер
+import 'package:winepool_final/features/wines/domain/wine.dart'; // Импортируем модель Wine
+import 'package:winepool_final/features/cellar/application/cellar_controller.dart'; // Импортируем контроллер погребка
+import 'package:winepool_final/features/wines/presentation/add_edit_wine_screen.dart'; // Импортируем экран добавления/редактирования вина
+import 'package:go_router/go_router.dart'; // Импортируем GoRouter для навигации
 
-class WineLabelOcrScreen extends StatefulWidget {
+class WineLabelOcrScreen extends ConsumerStatefulWidget {
   const WineLabelOcrScreen({super.key});
 
   @override
-  State<WineLabelOcrScreen> createState() => _WineLabelOcrScreenState();
+  ConsumerState<WineLabelOcrScreen> createState() => _WineLabelOcrScreenState();
 }
 
-class _WineLabelOcrScreenState extends State<WineLabelOcrScreen> {
+class _WineLabelOcrScreenState extends ConsumerState<WineLabelOcrScreen> {
   final ImagePicker _picker = ImagePicker();
   File? _selectedImage;
   String _recognizedText = '';
@@ -63,7 +69,7 @@ class _WineLabelOcrScreenState extends State<WineLabelOcrScreen> {
     try {
       final inputImage = InputImage.fromFilePath(imageFile.path);
       final textRecognizer = TextRecognizer(
-        script: TextRecognitionScript.latin,
+        script: TextRecognitionScript.japanese, // Используем латинский скрипт, поддержка кириллицы обеспечивается моделью devanagari (установлена в build.gradle)
       );
 
       final RecognizedText recognizedText = await textRecognizer.processImage(inputImage);
@@ -106,8 +112,10 @@ class _WineLabelOcrScreenState extends State<WineLabelOcrScreen> {
     }
   }
 
-  @override
   Widget build(BuildContext context) {
+    // В ConsumerStatefulWidget ref доступен напрямую через this.ref
+    final searchResults = ref.watch(wineLabelSearchProvider(_recognizedText)); // Наблюдаем за результатами поиска
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Распознавание этикетки вина'),
@@ -220,6 +228,105 @@ class _WineLabelOcrScreenState extends State<WineLabelOcrScreen> {
                 ),
               ),
             ),
+            
+            // Виджет для отображения результатов поиска и кнопки "Добавить в погребок"
+            if (_recognizedText.isNotEmpty && !_isProcessing)
+              searchResults.when(
+                data: (wines) {
+                  if (wines.isEmpty) {
+                    // Если вино не найдено, предлагаем добавить новое
+                    return Padding(
+                      padding: const EdgeInsets.only(top: 16.0),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Text(
+                            'Вино не найдено в базе данных.',
+                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: 8),
+                          ElevatedButton.icon(
+                            onPressed: () {
+                              // Навигация на экран добавления вина
+                              // GoRouter.of(context).push('/wines-catalog/add', extra: _recognizedText);
+                              // Пока просто покажем SnackBar
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Функция добавления вина из OCR в разработке.')),
+                              );
+                            },
+                            icon: const Icon(Icons.add),
+                            label: const Text('Добавить винo'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.green[600],
+                              foregroundColor: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  } else {
+                    // Если вино найдено, показываем его и кнопку "Добавить в погребок"
+                    final foundWine = wines.first; // Берем первое найденное вино
+                    return Padding(
+                      padding: const EdgeInsets.only(top: 16.0),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            'Найдено вино: ${foundWine.name ?? "Неизвестно"}',
+                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: 8),
+                          ElevatedButton.icon(
+                            onPressed: () async {
+                              try {
+                                // Добавляем вино в "Храню" с количеством 1
+                                await ref.read(cellarControllerProvider.notifier).addToStorage(
+                                  wineId: foundWine.id ?? '',
+                                  quantity: 1,
+                                  // Можно добавить другие поля, если они доступны из распознанного текста
+                                );
+                                // Инвалидируем провайдер хранилища для обновления UI
+                                ref.invalidate(cellarStorageProvider);
+                                // Показываем сообщение об успехе
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text('Вино добавлено в погребок!')),
+                                );
+                              } catch (e) {
+                                // Показываем сообщение об ошибке
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text('Ошибка при добавлении вина: $e')),
+                                );
+                              }
+                            },
+                            icon: const Icon(Icons.local_bar),
+                            label: const Text('Добавить в Погребок'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.blue[600],
+                              foregroundColor: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+                },
+                loading: () => const Padding(
+                  padding: EdgeInsets.only(top: 16.0),
+                  child: Center(child: CircularProgressIndicator()),
+                ),
+                error: (error, stack) => Padding(
+                  padding: const EdgeInsets.only(top: 16.0),
+                  child: Center(
+                    child: SelectableText.rich(
+                      TextSpan(
+                        text: 'Ошибка поиска: $error',
+                        style: const TextStyle(color: Colors.red),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
           ],
         ),
       ),

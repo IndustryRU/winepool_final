@@ -39,6 +39,17 @@ android {
     }
 }
 
+dependencies {
+    // Добавляем зависимость для поддержки кириллицы в MLKit Text Recognition
+    // https://developers.google.com/ml-kit/vision/text-recognition/v2/android#add-dependencies-to-your-project
+    // Используем common, так как он может включать в себя поддержку кириллицы
+    // Зависимости для поддержки латиницы и кириллицы (включая русский язык)
+    // Модель devanagari включает поддержку кириллического (Cyrl) скрипта.
+    //implementation("com.google.mlkit:text-recognition:16.0.0")
+    implementation("com.google.mlkit:text-recognition-devanagari:16.0.1")
+    implementation("com.google.mlkit:text-recognition-japanese:16.0.1")
+}
+
 flutter {
     source = "../.."
 }
