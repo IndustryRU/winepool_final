@@ -34,7 +34,8 @@ dependencies:
   # Supabase and utilities
   supabase_flutter: ^2.8.0
   uuid: ^4.5.0
-  image_picker: ^1.1.2
+  image_picker: ^1.2.1
+  image: ^4.5.4 # Добавляем зависимость для обработки изображений
   cached_network_image: ^3.4.1
 
   # State management and routing
@@ -77,6 +78,8 @@ dependencies:
   # ML Kit for OCR
   google_mlkit_text_recognition: ^0.15.0
   google_mlkit_commons: ^0.11.0
+  # Tesseract OCR for Cyrillic support
+  flutter_tesseract_ocr: ^0.4.30
 
 dev_dependencies:
   flutter_test:
@@ -114,6 +117,10 @@ flutter:
   assets:
     - assets/images/
     - assets/icons/
+    - assets/tessdata/
+    - assets/tessdata/eng.traineddata
+    - assets/tessdata/rus.traineddata
+    - assets/tessdata_config.json
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

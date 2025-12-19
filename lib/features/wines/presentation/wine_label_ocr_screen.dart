@@ -1,13 +1,17 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
+import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart'; // Оставляем для случая, если выбран не Tesseract
 import 'package:hooks_riverpod/hooks_riverpod.dart'; // Добавляем hooks_riverpod для FutureProvider
 import 'package:winepool_final/features/wines/application/wine_label_search_controller.dart'; // Импортируем новый контроллер
 import 'package:winepool_final/features/wines/domain/wine.dart'; // Импортируем модель Wine
 import 'package:winepool_final/features/cellar/application/cellar_controller.dart'; // Импортируем контроллер погребка
 import 'package:winepool_final/features/wines/presentation/add_edit_wine_screen.dart'; // Импортируем экран добавления/редактирования вина
 import 'package:go_router/go_router.dart'; // Импортируем GoRouter для навигации
+import 'package:winepool_final/services/wine_label_text_processor.dart'; // Импортируем сервис для обработки текста
+import 'package:winepool_final/features/profile/application/ocr_service_controller.dart'; // Импортируем провайдер для выбора OCR-сервиса
+import 'package:flutter_tesseract_ocr/flutter_tesseract_ocr.dart'; // Импортируем Tesseract OCR
+import 'package:image/image.dart' as img; // Импортируем библиотеку для работы с изображениями
 
 class WineLabelOcrScreen extends ConsumerStatefulWidget {
   const WineLabelOcrScreen({super.key});
@@ -26,7 +30,8 @@ class _WineLabelOcrScreenState extends ConsumerState<WineLabelOcrScreen> {
     try {
       final XFile? pickedFile = await _picker.pickImage(
         source: ImageSource.camera,
-        imageQuality: 80,
+        imageQuality: 100,
+        requestFullMetadata: true,
       );
 
       if (pickedFile != null) {
@@ -68,17 +73,38 @@ class _WineLabelOcrScreenState extends ConsumerState<WineLabelOcrScreen> {
 
     try {
       final inputImage = InputImage.fromFilePath(imageFile.path);
-      final textRecognizer = TextRecognizer(
-        script: TextRecognitionScript.japanese, // Используем латинский скрипт, поддержка кириллицы обеспечивается моделью devanagari (установлена в build.gradle)
-      );
+      // Получаем выбранный пользователем OCR-сервис из провайдера
+      final ocrService = ref.read(ocrServiceProvider);
 
-      final RecognizedText recognizedText = await textRecognizer.processImage(inputImage);
+      String recognizedText = '';
+
+      if (ocrService == OcrService.tesseract) {
+        // Используем Tesseract OCR
+        recognizedText = await FlutterTesseractOcr.extractText(
+          imageFile.path,
+          language: 'rus+eng', // Указываем язык для поддержки кириллицы
+          args: {
+            //"tessedit_char_whitelist": "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдеёжзийклмнопрстуфхцчшщъыьэюя .,-",
+            //"user_defined_dpi": "300",
+            'psm': '11', // 3 автомат, 11 - шум, https://microkontroller.ru/raspberry-pi-projects/opticheskoe-raspoznavanie-simvolov-v-raspberry-pi-s-pomoshhyu-tesseract/
+            'oem': '1', //режим работы "движка" распознавания символов 0, 1, 2, 3 (по умолчанию 3)
+          },
+        );
+      } else {
+        // Используем Google ML Kit (латинский скрипт)
+        final textRecognizer = TextRecognizer(
+          script: TextRecognitionScript.latin,
+        );
+
+        final RecognizedText mlKitRecognizedText = await textRecognizer.processImage(inputImage);
+        recognizedText = mlKitRecognizedText.text;
+
+        await textRecognizer.close();
+      }
 
       setState(() {
-        _recognizedText = recognizedText.text;
+        _recognizedText = recognizedText.trim();
       });
-
-      await textRecognizer.close();
     } catch (e) {
       _showErrorDialog('Ошибка при распознавании текста: $e');
     } finally {
@@ -112,6 +138,8 @@ class _WineLabelOcrScreenState extends ConsumerState<WineLabelOcrScreen> {
     }
   }
 
+  @override
+  @override
   Widget build(BuildContext context) {
     // В ConsumerStatefulWidget ref доступен напрямую через this.ref
     final searchResults = ref.watch(wineLabelSearchProvider(_recognizedText)); // Наблюдаем за результатами поиска

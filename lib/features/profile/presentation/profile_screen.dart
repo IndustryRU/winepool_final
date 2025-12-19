@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:winepool_final/core/providers.dart';
 import 'package:winepool_final/features/auth/application/auth_controller.dart';
+import 'package:winepool_final/features/profile/application/ocr_service_controller.dart'; // Импортируем контроллер сервиса
 import '../../../common/widgets/shimmer_loading_indicator.dart';
 
 class ProfileScreen extends ConsumerWidget {
@@ -13,11 +14,11 @@ class ProfileScreen extends ConsumerWidget {
     final authState = ref.watch(authControllerProvider);
     final supabaseClient = ref.watch(supabaseClientProvider);
 
-    return WillPopScope(
-      onWillPop: () async {
-        // Возвращаем на предыдущий экран (обычно главный экран)
-        context.go('/buyer-home');
-        return false;
+    return PopScope(
+      onPopInvoked: (didPop) async {
+        if (!didPop) {
+          context.go('/buyer-home');
+        }
       },
       child: Scaffold(
         appBar: AppBar(
@@ -89,6 +90,9 @@ class ProfileScreen extends ConsumerWidget {
                     child: const Text('Распознавание этикетки вина'),
                   ),
                   const SizedBox(height: 10),
+                  // Добавляем переключатель для выбора OCR-сервиса
+                  const OcrServiceSwitch(),
+                  const SizedBox(height: 10),
                   ElevatedButton(
                     onPressed: () async {
                       await ref.read(authControllerProvider.notifier).signOut();
@@ -112,6 +116,24 @@ class ProfileScreen extends ConsumerWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class OcrServiceSwitch extends ConsumerWidget {
+  const OcrServiceSwitch({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final ocrService = ref.watch(ocrServiceProvider);
+
+    return SwitchListTile(
+      title: const Text('Использовать Tesseract OCR'),
+      value: ocrService == OcrService.tesseract,
+      onChanged: (value) {
+        final newService = value ? OcrService.tesseract : OcrService.google;
+        ref.read(ocrServiceProvider.notifier).setOcrService(newService);
+      },
     );
   }
 }

@@ -14,6 +14,16 @@ pluginManagement {
         google()
         mavenCentral()
         gradlePluginPortal()
+        // Добавляем jcenter() как временный фикс для flutter_tesseract_ocr
+        // maven { url 'https://jcenter.bintray.com/' } // Bintray больше не существует
+        // Используем_mirror_jcenter() // Это также может не работать
+        // Попробуем 
+        //maven {
+        //    url = uri("https://jcenter.bintray.com/")
+        //    content {
+        //        includeGroupByRegex(".*")
+        //    }
+        //}
     }
 }
 
@@ -24,3 +34,4 @@ plugins {
 }
 
 include(":app")
+
