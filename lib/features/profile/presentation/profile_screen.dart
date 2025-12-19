@@ -127,12 +127,29 @@ class OcrServiceSwitch extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final ocrService = ref.watch(ocrServiceProvider);
 
-    return SwitchListTile(
-      title: const Text('Использовать Tesseract OCR'),
-      value: ocrService == OcrService.tesseract,
-      onChanged: (value) {
-        final newService = value ? OcrService.tesseract : OcrService.google;
-        ref.read(ocrServiceProvider.notifier).setOcrService(newService);
+    return DropdownButtonFormField<OcrService>(
+      value: ocrService,
+      decoration: const InputDecoration(
+        labelText: 'Сервис OCR',
+      ),
+      items: const [
+        DropdownMenuItem(
+          value: OcrService.google,
+          child: Text('Google ML Kit'),
+        ),
+        DropdownMenuItem(
+          value: OcrService.tesseract,
+          child: Text('Tesseract OCR'),
+        ),
+        DropdownMenuItem(
+          value: OcrService.yandex,
+          child: Text('Yandex OCR'),
+        ),
+      ],
+      onChanged: (newService) {
+        if (newService != null) {
+          ref.read(ocrServiceProvider.notifier).setOcrService(newService);
+        }
       },
     );
   }
