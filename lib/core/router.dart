@@ -6,7 +6,6 @@ import 'package:winepool_final/features/auth/presentation/register_screen.dart';
 import 'package:winepool_final/features/auth/presentation/splash_screen.dart';
 import 'package:winepool_final/screens/login_screen.dart';
 import 'package:winepool_final/features/cart/domain/cart_item.dart';
-import 'package:winepool_final/features/home/presentation/admin_home_screen.dart';
 import 'package:winepool_final/features/home/presentation/buyer_home_screen.dart';
 import 'package:winepool_final/features/home/presentation/seller_home_screen.dart';
 import 'package:winepool_final/features/offers/domain/offer.dart';
@@ -32,6 +31,8 @@ import 'package:winepool_final/features/search/presentation/search_results_scree
 import 'package:winepool_final/features/cellar/presentation/my_cellar_screen.dart';
 import 'package:winepool_final/features/cellar/presentation/add_tasting_screen.dart';
 import 'package:winepool_final/features/wines/presentation/wine_label_ocr_screen.dart';
+import 'package:winepool_final/features/admin/presentation/admin_dashboard_screen.dart';
+import 'package:winepool_final/features/admin/presentation/import_data_screen.dart';
 
 // Создаем ключ над провайдером
 final _shellNavigatorKey = GlobalKey<NavigatorState>();
@@ -78,8 +79,14 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         },
         routes: [
           GoRoute(
-            path: '/admin-home',
-            builder: (context, state) => const AdminHomeScreen(),
+            path: '/admin',
+            builder: (context, state) => const AdminDashboardScreen(),
+            routes: [
+              GoRoute(
+                path: 'import',
+                builder: (context, state) => const ImportDataScreen(),
+              ),
+            ],
           ),
           GoRoute(
             path: '/wineries',
@@ -240,7 +247,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       if (isLoggedIn && isLoggingIn) {
          final role = authState.asData!.value!.role;
          switch (role) {
-           case 'administrator': return '/admin-home';
+           case 'administrator': return '/admin';
            case 'seller': return '/seller-home';
            case 'buyer': return '/buyer-home';
            default: return '/buyer-home'; // Редирект на витрину по умолчанию

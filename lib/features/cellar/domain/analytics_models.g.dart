@@ -8,45 +8,45 @@ part of 'analytics_models.dart';
 
 _AnalyticsData _$AnalyticsDataFromJson(Map<String, dynamic> json) =>
     _AnalyticsData(
-      topVarieties: (json['top_varieties'] as List<dynamic>)
+      topVarieties: (json['topVarieties'] as List<dynamic>)
           .map((e) => TopVariety.fromJson(e as Map<String, dynamic>))
           .toList(),
-      topCountries: (json['top_countries'] as List<dynamic>)
+      topCountries: (json['topCountries'] as List<dynamic>)
           .map((e) => TopCountry.fromJson(e as Map<String, dynamic>))
           .toList(),
-      averageRating: (json['average_rating'] as num?)?.toDouble(),
-      tasteWeb: json['taste_web'] == null
+      averageRating: (json['averageRating'] as num?)?.toDouble(),
+      tasteWeb: json['tasteWeb'] == null
           ? null
-          : TasteWeb.fromJson(json['taste_web'] as Map<String, dynamic>),
+          : TasteWeb.fromJson(json['tasteWeb'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$AnalyticsDataToJson(_AnalyticsData instance) =>
     <String, dynamic>{
-      'top_varieties': instance.topVarieties,
-      'top_countries': instance.topCountries,
-      'average_rating': instance.averageRating,
-      'taste_web': instance.tasteWeb,
+      'topVarieties': instance.topVarieties,
+      'topCountries': instance.topCountries,
+      'averageRating': instance.averageRating,
+      'tasteWeb': instance.tasteWeb,
     };
 
 _TopVariety _$TopVarietyFromJson(Map<String, dynamic> json) => _TopVariety(
-  grapeVariety: json['grape_variety'] as String?,
+  grapeVariety: json['grapeVariety'] as String?,
   count: (json['count'] as num).toInt(),
 );
 
 Map<String, dynamic> _$TopVarietyToJson(_TopVariety instance) =>
     <String, dynamic>{
-      'grape_variety': instance.grapeVariety,
+      'grapeVariety': instance.grapeVariety,
       'count': instance.count,
     };
 
 _TopCountry _$TopCountryFromJson(Map<String, dynamic> json) => _TopCountry(
-  countryName: json['country_name'] as String?,
+  countryName: json['countryName'] as String?,
   count: (json['count'] as num).toInt(),
 );
 
 Map<String, dynamic> _$TopCountryToJson(_TopCountry instance) =>
     <String, dynamic>{
-      'country_name': instance.countryName,
+      'countryName': instance.countryName,
       'count': instance.count,
     };
 

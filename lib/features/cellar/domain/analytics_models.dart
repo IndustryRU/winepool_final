@@ -5,7 +5,6 @@ part 'analytics_models.g.dart';
 
 @freezed
 abstract class AnalyticsData with _$AnalyticsData {
-  @JsonSerializable(fieldRename: FieldRename.snake)
   const factory AnalyticsData({
     required List<TopVariety> topVarieties,
     required List<TopCountry> topCountries,
@@ -19,7 +18,6 @@ abstract class AnalyticsData with _$AnalyticsData {
 
 @freezed
 abstract class TopVariety with _$TopVariety {
-  @JsonSerializable(fieldRename: FieldRename.snake)
   const factory TopVariety({
     String? grapeVariety,
     required int count,
@@ -31,7 +29,6 @@ abstract class TopVariety with _$TopVariety {
 
 @freezed
 abstract class TopCountry with _$TopCountry {
-  @JsonSerializable(fieldRename: FieldRename.snake)
   const factory TopCountry({
     String? countryName,
     required int count,
@@ -43,7 +40,6 @@ abstract class TopCountry with _$TopCountry {
 
 @freezed
 abstract class TasteWeb with _$TasteWeb {
-  @JsonSerializable(fieldRename: FieldRename.snake)
   const factory TasteWeb({
     required double? sweetness,
     required double? acidity,

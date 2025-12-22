@@ -4,8 +4,8 @@ import 'package:go_router/go_router.dart';
 
 import '../../auth/application/auth_controller.dart';
 
-class AdminHomeScreen extends ConsumerWidget {
-  const AdminHomeScreen({super.key});
+class AdminDashboardScreen extends ConsumerWidget {
+  const AdminDashboardScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -52,6 +52,20 @@ class AdminHomeScreen extends ConsumerWidget {
               ),
               child: const Text(
                 'Управление винами',
+                style: TextStyle(fontSize: 18),
+              ),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                context.go('/admin/import');
+              },
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
+                minimumSize: const Size(double.infinity, 50),
+              ),
+              child: const Text(
+                'Импорт данных',
                 style: TextStyle(fontSize: 18),
               ),
             ),

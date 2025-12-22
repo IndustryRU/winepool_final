@@ -224,8 +224,8 @@ return $default(_that.id,_that.userId,_that.wineId,_that.tastingDate,_that.ratin
 }
 
 /// @nodoc
+@JsonSerializable()
 
-@JsonSerializable(fieldRename: FieldRename.snake)
 class _UserTasting implements UserTasting {
   const _UserTasting({this.id, this.userId, this.wineId, this.tastingDate, this.rating, this.notes, this.photoUrl, this.createdAt, this.updatedAt, required this.wine});
   factory _UserTasting.fromJson(Map<String, dynamic> json) => _$UserTastingFromJson(json);
@@ -535,8 +535,8 @@ return $default(_that.id,_that.userId,_that.wineId,_that.quantity,_that.purchase
 }
 
 /// @nodoc
+@JsonSerializable()
 
-@JsonSerializable(fieldRename: FieldRename.snake)
 class _UserStorageItem implements UserStorageItem {
   const _UserStorageItem({this.id, this.userId, this.wineId, this.quantity, this.purchasePrice, this.purchaseDate, this.idealDrinkFrom, this.idealDrinkTo, this.createdAt, this.updatedAt, required this.wine});
   factory _UserStorageItem.fromJson(Map<String, dynamic> json) => _$UserStorageItemFromJson(json);

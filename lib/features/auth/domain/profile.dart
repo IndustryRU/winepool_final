@@ -14,7 +14,6 @@ enum UserRole {
 
 @freezed
 abstract class Profile with _$Profile {
-  @JsonSerializable()
   const factory Profile({
     required String id,
     String? role,

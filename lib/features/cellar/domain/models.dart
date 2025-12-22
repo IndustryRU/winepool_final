@@ -6,7 +6,6 @@ part 'models.g.dart';
 
 @freezed
 abstract class UserTasting with _$UserTasting {
-  @JsonSerializable(fieldRename: FieldRename.snake)
   const factory UserTasting({
     String? id,
     String? userId,
@@ -26,7 +25,6 @@ abstract class UserTasting with _$UserTasting {
 
 @freezed
 abstract class UserStorageItem with _$UserStorageItem {
-  @JsonSerializable(fieldRename: FieldRename.snake)
   const factory UserStorageItem({
     String? id,
     String? userId,

@@ -45,7 +45,7 @@ class _WineLabelOcrScreenState extends ConsumerState<WineLabelOcrScreen> {
     } catch (e) {
       _showErrorDialog('Ошибка при выборе изображения: $e');
     }
-  }
+ }
 
   Future<void> _selectImageFromGallery() async {
     try {
@@ -86,7 +86,7 @@ class _WineLabelOcrScreenState extends ConsumerState<WineLabelOcrScreen> {
           args: {
             //"tessedit_char_whitelist": "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдеёжзийклмнопрстуфхцчшщъыьэюя .,-",
             //"user_defined_dpi": "300",
-            'psm': '11', // 3 автомат, 11 - шум, https://microkontroller.ru/raspberry-pi-projects/opticheskoe-raspoznavanie-simvolov-v-raspberry-pi-s-pomoshhyu-tesseract/
+            'psm': '11', // 3 автомат, 1 - шум, https://microkontroller.ru/raspberry-pi-projects/opticheskoe-raspoznavanie-simvolov-v-raspberry-pi-s-pomoshhyu-tesseract/
             'oem': '1', //режим работы "движка" распознавания символов 0, 1, 2, 3 (по умолчанию 3)
           },
         );
@@ -146,6 +146,7 @@ class _WineLabelOcrScreenState extends ConsumerState<WineLabelOcrScreen> {
   @override
   Widget build(BuildContext context) {
     // В ConsumerStatefulWidget ref доступен напрямую через this.ref
+    // Обновляем вызов провайдера для передачи обработанных данных
     final searchResults = ref.watch(wineLabelSearchProvider(_recognizedText)); // Наблюдаем за результатами поиска
 
     return Scaffold(

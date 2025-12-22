@@ -210,8 +210,8 @@ return $default(_that.id,_that.role,_that.fullName,_that.username,_that.shopName
 }
 
 /// @nodoc
-
 @JsonSerializable()
+
 class _Profile implements Profile {
   const _Profile({required this.id, this.role, @JsonKey(name: 'full_name') this.fullName, this.username, @JsonKey(name: 'shop_name') this.shopName});
   factory _Profile.fromJson(Map<String, dynamic> json) => _$ProfileFromJson(json);

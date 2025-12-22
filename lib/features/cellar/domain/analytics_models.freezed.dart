@@ -221,8 +221,8 @@ return $default(_that.topVarieties,_that.topCountries,_that.averageRating,_that.
 }
 
 /// @nodoc
+@JsonSerializable()
 
-@JsonSerializable(fieldRename: FieldRename.snake)
 class _AnalyticsData implements AnalyticsData {
   const _AnalyticsData({required final  List<TopVariety> topVarieties, required final  List<TopCountry> topCountries, required this.averageRating, required this.tasteWeb}): _topVarieties = topVarieties,_topCountries = topCountries;
   factory _AnalyticsData.fromJson(Map<String, dynamic> json) => _$AnalyticsDataFromJson(json);
@@ -515,8 +515,8 @@ return $default(_that.grapeVariety,_that.count);case _:
 }
 
 /// @nodoc
+@JsonSerializable()
 
-@JsonSerializable(fieldRename: FieldRename.snake)
 class _TopVariety implements TopVariety {
   const _TopVariety({this.grapeVariety, required this.count});
   factory _TopVariety.fromJson(Map<String, dynamic> json) => _$TopVarietyFromJson(json);
@@ -781,8 +781,8 @@ return $default(_that.countryName,_that.count);case _:
 }
 
 /// @nodoc
+@JsonSerializable()
 
-@JsonSerializable(fieldRename: FieldRename.snake)
 class _TopCountry implements TopCountry {
   const _TopCountry({this.countryName, required this.count});
   factory _TopCountry.fromJson(Map<String, dynamic> json) => _$TopCountryFromJson(json);
@@ -1049,8 +1049,8 @@ return $default(_that.sweetness,_that.acidity,_that.tannins,_that.saturation);ca
 }
 
 /// @nodoc
+@JsonSerializable()
 
-@JsonSerializable(fieldRename: FieldRename.snake)
 class _TasteWeb implements TasteWeb {
   const _TasteWeb({required this.sweetness, required this.acidity, required this.tannins, required this.saturation});
   factory _TasteWeb.fromJson(Map<String, dynamic> json) => _$TasteWebFromJson(json);

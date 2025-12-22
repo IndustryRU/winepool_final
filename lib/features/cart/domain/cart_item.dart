@@ -8,9 +8,11 @@ part 'cart_item.g.dart';
 abstract class CartItem with _$CartItem {
   const factory CartItem({
     required String id,
-    @JsonKey(name: 'product_id', defaultValue: '') String? productId, // Оставляю product_id, так как в БД это поле
+    @JsonKey(name: 'product_id', defaultValue: '')
+    String? productId, // Оставляю product_id, так как в БД это поле
     int? quantity,
-    @JsonKey(includeFromJson: false, includeToJson: false) Offer? offer,
+    @JsonKey(includeFromJson: false, includeToJson: false)
+    Offer? offer,
   }) = _CartItem;
 
   factory CartItem.fromJson(Map<String, dynamic> json) => _$CartItemFromJson(json);
