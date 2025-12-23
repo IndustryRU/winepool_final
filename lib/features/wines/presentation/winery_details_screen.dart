@@ -3,8 +3,9 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:winepool_final/features/wines/application/wineries_controller.dart';
 import 'package:winepool_final/features/wines/domain/winery.dart';
+import 'package:winepool_final/features/wines/domain/region.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../../../common/widgets/shimmer_loading_indicator.dart';
+import 'package:winepool_final/common/widgets/shimmer_loading_indicator.dart';
 
 class WineryDetailsScreen extends ConsumerWidget {
   final Winery winery;
@@ -14,19 +15,14 @@ class WineryDetailsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // Получаем актуальные данные винодельни по ID
-    final wineryAsync = ref.watch(wineriesControllerProvider);
+    final wineryAsync = ref.watch(fetchWineryByIdProvider(winery.id!));
 
     return Scaffold(
       appBar: AppBar(
         title: Text(winery.name ?? 'Винодельня'),
       ),
       body: wineryAsync.when(
-        data: (wineries) {
-          final wineryData = wineries.firstWhere(
-            (w) => w.id == winery.id,
-            orElse: () => winery, // Если не найдена, используем переданный объект
-          );
-
+        data: (wineryData) {
           return SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
@@ -96,7 +92,17 @@ class WineryDetailsScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 16),
                   ],
-                  if (wineryData.winemaker != null || wineryData.locationText != null || wineryData.website != null) ...[
+                  if (wineryData.winemaker != null || 
+                      wineryData.locationText != null || 
+                      wineryData.website != null ||
+                      wineryData.latitude != null ||
+                      wineryData.longitude != null ||
+                      wineryData.foundedYear != null ||
+                      wineryData.isPartner != null ||
+                      wineryData.phone != null ||
+                      wineryData.email != null ||
+                      wineryData.countryCode != null ||
+                      wineryData.regionName != null) ...[
                     if (wineryData.winemaker != null) ...[
                       _buildDetailCard(
                         context,
@@ -105,12 +111,12 @@ class WineryDetailsScreen extends ConsumerWidget {
                         wineryData.winemaker ?? '',
                       ),
                     ],
-                    if (wineryData.countryCode != null || wineryData.region != null) ...[
+                    if (wineryData.countryCode != null || wineryData.regionName != null) ...[
                       _buildDetailCard(
                         context,
                         Icons.location_on,
                         'Регион',
-                        '${wineryData.countryCode ?? ''}${wineryData.countryCode != null && wineryData.region != null ? ', ' : ''}${wineryData.region ?? ''}',
+                        '${wineryData.countryCode ?? ''}${wineryData.countryCode != null && wineryData.regionName != null ? ', ' : ''}${wineryData.regionName ?? ''}',
                       ),
                     ],
                     if (wineryData.locationText != null) ...[
@@ -119,6 +125,46 @@ class WineryDetailsScreen extends ConsumerWidget {
                         Icons.place,
                         'Местоположение',
                         wineryData.locationText ?? '',
+                      ),
+                    ],
+                    if (wineryData.latitude != null && wineryData.longitude != null) ...[
+                      _buildDetailCard(
+                        context,
+                        Icons.location_pin,
+                        'Координаты',
+                        'Широта: ${wineryData.latitude}, Долгота: ${wineryData.longitude}',
+                      ),
+                    ],
+                    if (wineryData.foundedYear != null) ...[
+                      _buildDetailCard(
+                        context,
+                        Icons.event,
+                        'Год основания',
+                        wineryData.foundedYear.toString(),
+                      ),
+                    ],
+                    if (wineryData.isPartner != null) ...[
+                      _buildDetailCard(
+                        context,
+                        Icons.star,
+                        'Партнер',
+                        wineryData.isPartner! ? 'Да' : 'Нет',
+                      ),
+                    ],
+                    if (wineryData.phone != null) ...[
+                      _buildDetailCard(
+                        context,
+                        Icons.phone,
+                        'Телефон',
+                        wineryData.phone!,
+                      ),
+                    ],
+                    if (wineryData.email != null) ...[
+                      _buildDetailCard(
+                        context,
+                        Icons.email,
+                        'Email',
+                        wineryData.email!,
                       ),
                     ],
                     if (wineryData.website != null) ...[

@@ -9,9 +9,11 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:uuid/uuid.dart';
 import 'package:winepool_final/features/wines/application/wineries_controller.dart';
 import 'package:winepool_final/features/wines/domain/winery.dart';
+import 'package:winepool_final/features/wines/domain/region.dart';
 import 'package:winepool_final/features/wines/domain/country.dart';
 import 'package:winepool_final/services/storage_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:winepool_final/features/wines/data/wineries_repository.dart';
 
 class AddEditWineryScreen extends HookConsumerWidget {
   const AddEditWineryScreen({super.key, this.winery});
@@ -24,13 +26,70 @@ class AddEditWineryScreen extends HookConsumerWidget {
     final nameController = useTextEditingController(text: winery?.name);
     final descriptionController = useTextEditingController(text: winery?.description);
     final winemakerController = useTextEditingController(text: winery?.winemaker);
-    final countryController = useTextEditingController(text: winery?.countryCode);
-    final regionController = useTextEditingController(text: winery?.region);
+    final countryController = useTextEditingController();
+    final regionController = useTextEditingController(text: winery?.regionName);
     final locationTextController = useTextEditingController(text: winery?.locationText);
     final websiteController = useTextEditingController(text: winery?.website);
+    final latitudeController = useTextEditingController(text: winery?.latitude?.toString());
+    final longitudeController = useTextEditingController(text: winery?.longitude?.toString());
+    final foundedYearController = useTextEditingController(text: winery?.foundedYear?.toString());
+    final phoneController = useTextEditingController(text: winery?.phone);
+    final emailController = useTextEditingController(text: winery?.email);
+    final isPartnerController = useState<bool>(winery?.isPartner ?? false);
     final logoFile = useState<XFile?>(null);
     final bannerFile = useState<XFile?>(null);
     final formKey = useMemoized(() => GlobalKey<FormState>());
+    final regionsAsync = useState<AsyncValue<List<Region>>>(const AsyncValue.loading());
+    final selectedRegion = useState<Region?>(null);
+    final countriesAsync = useState<AsyncValue<List<Country>>>(const AsyncValue.loading());
+    final selectedCountry = useState<Country?>(null);
+
+    // Загружаем регионы при инициализации
+    useEffect(() {
+      final loadData = () async {
+        try {
+          final repository = ref.read(wineriesRepositoryProvider);
+          // Загружаем страны и регионы параллельно
+          final results = await Future.wait([
+            repository.getRegions(),
+            repository.getCountries(),
+          ]);
+          final regions = results[0] as List<Region>;
+          final countries = results[1] as List<Country>;
+
+          regionsAsync.value = AsyncValue.data(regions);
+          countriesAsync.value = AsyncValue.data(countries);
+          
+          if (isEditMode && winery != null) {
+            // Устанавливаем выбранную страну
+            if (winery!.countryCode != null) {
+              final currentCountry = countries.firstWhere(
+                (c) => c.code == winery!.countryCode,
+                // orElse: () => null, // Не нужно, так как мы хотим найти или ничего
+              );
+              selectedCountry.value = currentCountry;
+              countryController.text = currentCountry.name;
+            }
+
+            // Устанавливаем выбранный регион
+            if (winery!.regionId != null) {
+              final currentRegion = regions.firstWhere(
+                (region) => region.id == winery!.regionId,
+                orElse: () => Region(id: winery!.regionId, name: winery?.regionName ?? '', countryCode: winery?.countryCode ?? ''),
+              );
+              selectedRegion.value = currentRegion;
+              regionController.text = currentRegion.name ?? '';
+            }
+          }
+        } catch (e, st) {
+          regionsAsync.value = AsyncValue.error(e, st);
+          countriesAsync.value = AsyncValue.error(e, st);
+        }
+      };
+      
+      loadData();
+      return null;
+    }, [isEditMode, winery]);
 
     return Scaffold(
       appBar: AppBar(
@@ -60,14 +119,94 @@ class AddEditWineryScreen extends HookConsumerWidget {
                 decoration: const InputDecoration(labelText: 'Винодел'),
               ),
               const SizedBox(height: 16),
-              TextFormField(
-                controller: countryController,
-                decoration: const InputDecoration(labelText: 'Страна'),
+              countriesAsync.value.when(
+                data: (countries) {
+                  return DropdownButtonFormField<Country>(
+                    value: selectedCountry.value,
+                    decoration: const InputDecoration(labelText: 'Страна'),
+                    items: countries
+                        .map((country) => DropdownMenuItem(
+                              value: country,
+                              child: Text(country.name),
+                            ))
+                        .toList(),
+                    onChanged: (Country? newValue) {
+                      selectedCountry.value = newValue;
+                      countryController.text = newValue?.name ?? '';
+                      // Опционально: сбрасывать регион при смене страны
+                      selectedRegion.value = null;
+                      regionController.text = '';
+                    },
+                    validator: (value) => value == null ? 'Выберите страну' : null,
+                  );
+                },
+                loading: () => DropdownButtonFormField<Country>(
+                  decoration: const InputDecoration(labelText: 'Страна'),
+                  items: const [],
+                  onChanged: (Country? value) {},
+                  hint: const Text('Загрузка...'),
+                ),
+                error: (error, stack) => DropdownButtonFormField<Country>(
+                  decoration: const InputDecoration(labelText: 'Страна', errorText: 'Ошибка загрузки'),
+                  items: const [],
+                  onChanged: (Country? value) {},
+                ),
               ),
               const SizedBox(height: 16),
-              TextFormField(
-                controller: regionController,
-                decoration: const InputDecoration(labelText: 'Регион'),
+              regionsAsync.value!.when(
+                data: (regions) {
+                  final filteredRegions = selectedCountry.value == null
+                      ? <Region>[]
+                      : regions.where((r) => r.countryCode == selectedCountry.value!.code).toList();
+
+                  // Если текущий выбранный регион не входит в отфильтрованный список, сбрасываем его
+                  if (selectedRegion.value != null && !filteredRegions.contains(selectedRegion.value)) {
+                    selectedRegion.value = null;
+                    regionController.text = '';
+                  }
+
+                  return DropdownButtonFormField<Region>(
+                    value: selectedRegion.value,
+                    decoration: InputDecoration(
+                      labelText: 'Регион',
+                      enabled: selectedCountry.value != null && filteredRegions.isNotEmpty,
+                      hintText: selectedCountry.value == null
+                          ? 'Сначала выберите страну'
+                          : filteredRegions.isEmpty
+                              ? 'Нет регионов для этой страны'
+                              : null,
+                    ),
+                    items: filteredRegions
+                        .map((region) => DropdownMenuItem(
+                              value: region,
+                              child: Text(region.name ?? ''),
+                            ))
+                        .toList(),
+                    onChanged: (selectedCountry.value != null && filteredRegions.isNotEmpty)
+                      ? (Region? newValue) {
+                          selectedRegion.value = newValue;
+                          regionController.text = newValue?.name ?? '';
+                        }
+                      : null,
+                    validator: (value) {
+                      if (selectedCountry.value != null && filteredRegions.isNotEmpty && value == null) {
+                        return 'Выберите регион';
+                      }
+                      return null;
+                    },
+                  );
+                },
+                loading: () => DropdownButtonFormField<Region>(
+                  decoration: const InputDecoration(labelText: 'Регион'),
+                  items: const [],
+                  onChanged: (Region? value) {},
+                  hint: const Text('Загрузка...'),
+                ),
+                error: (error, stack) => DropdownButtonFormField<Region>(
+                  decoration: const InputDecoration(labelText: 'Регион', errorText: 'Ошибка загрузки'),
+                  items: [],
+                  onChanged: (Region? value) {},
+                ),
               ),
               const SizedBox(height: 16),
               TextFormField(
@@ -78,6 +217,48 @@ class AddEditWineryScreen extends HookConsumerWidget {
               TextFormField(
                 controller: websiteController,
                 decoration: const InputDecoration(labelText: 'Веб-сайт'),
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: latitudeController,
+                decoration: const InputDecoration(labelText: 'Широта'),
+                keyboardType: TextInputType.numberWithOptions(decimal: true),
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: longitudeController,
+                decoration: const InputDecoration(labelText: 'Долгота'),
+                keyboardType: TextInputType.numberWithOptions(decimal: true),
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: foundedYearController,
+                decoration: const InputDecoration(labelText: 'Год основания'),
+                keyboardType: TextInputType.number,
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: phoneController,
+                decoration: const InputDecoration(labelText: 'Телефон'),
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: emailController,
+                decoration: const InputDecoration(labelText: 'Email'),
+                keyboardType: TextInputType.emailAddress,
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Text('Партнер'),
+                  const Spacer(),
+                  Switch(
+                    value: isPartnerController.value,
+                    onChanged: (bool newValue) {
+                      isPartnerController.value = newValue;
+                    },
+                  ),
+                ],
               ),
               const SizedBox(height: 16),
               Text('Логотип', style: Theme.of(context).textTheme.titleMedium),
@@ -159,12 +340,18 @@ class AddEditWineryScreen extends HookConsumerWidget {
                         name: nameController.text,
                         description: descriptionController.text,
                         winemaker: winemakerController.text,
-                        region: regionController.text,
+                        regionId: selectedRegion.value?.id,
                         website: websiteController.text,
                         locationText: locationTextController.text,
                         logoUrl: logoUrl, // используем новые URL
                         bannerUrl: bannerUrl, // используем новые URL
-                        countryCode: countryController.text,
+                        countryCode: selectedCountry.value?.code,
+                        latitude: double.tryParse(latitudeController.text),
+                        longitude: double.tryParse(longitudeController.text),
+                        foundedYear: int.tryParse(foundedYearController.text),
+                        isPartner: isPartnerController.value,
+                        phone: phoneController.text,
+                        email: emailController.text,
                       );
 
                       final success = isEditMode
@@ -185,8 +372,10 @@ class AddEditWineryScreen extends HookConsumerWidget {
                         const SnackBar(content: Text('Пожалуйста, заполните все обязательные поля.')),
                       );
                     }
-                  } catch (e) {
+                  } catch (e, st) {
                     // Если что-то пошло не так, показываем ошибку
+                    debugPrint('Error saving winery: $e');
+                    debugPrint('Stack trace: $st');
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text('Произошла ошибка: $e')),

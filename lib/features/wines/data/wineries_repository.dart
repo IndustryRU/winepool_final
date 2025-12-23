@@ -1,6 +1,8 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../domain/winery.dart';
+import '../domain/region.dart';
+import '../domain/country.dart';
 import '../../../core/providers.dart';
 
 final wineriesRepositoryProvider = Provider<WineriesRepository>((ref) {
@@ -15,7 +17,7 @@ class WineriesRepository {
   Future<List<Winery>> fetchAllWineries() async {
     final response = await _supabaseClient
         .from('wineries')
-        .select('id, name, country_code, region, winemaker, website, description, logo_url, banner_url, location_text, created_at, countries!inner(name)')
+        .select('id, name, country_code, region_id, winemaker, website, description, logo_url, banner_url, location_text, latitude, longitude, founded_year, is_partner, phone, email, created_at, countries!inner(name), regions!inner(name)')
         .order('created_at', ascending: false);
     print(response);
 
@@ -36,60 +38,92 @@ class WineriesRepository {
   Future<Winery> fetchWineryById(String id) async {
     final data = await _supabaseClient
         .from('wineries')
-        .select('*, countries!inner(name)')
+        .select('*, countries!inner(name), regions!inner(name)')
         .eq('id', id)
         .single();
     print(data);
     return Winery.fromJson(data);
   }
+  
   Future<Winery> addWinery(Winery winery) async {
-    print('Начало добавления винодельни: ${winery.name}');
-    final response = await _supabaseClient
-        .from('wineries')
-        .insert({
-          'name': winery.name,
-          'country_code': winery.countryCode,
-          'region': winery.region,
-          'winemaker': winery.winemaker,
-          'website': winery.website,
-          'description': winery.description,
-          'logo_url': winery.logoUrl,
-          'banner_url': winery.bannerUrl,
-          'location_text': winery.locationText,
-        })
-        .select('id, name, country_code, region, winemaker, website, description, logo_url, banner_url, location_text, created_at, countries!inner(name)')
-        .single();
-    print(response);
+    try {
+      print('Начало добавления винодельни: ${winery.name}');
+      final response = await _supabaseClient
+          .from('wineries')
+          .insert({
+            'name': winery.name,
+            'country_code': winery.countryCode,
+            'region_id': winery.regionId,
+            'winemaker': winery.winemaker,
+            'website': winery.website,
+            'description': winery.description,
+            'logo_url': winery.logoUrl,
+            'banner_url': winery.bannerUrl,
+            'location_text': winery.locationText,
+            'latitude': winery.latitude,
+            'longitude': winery.longitude,
+            'founded_year': winery.foundedYear,
+            'is_partner': winery.isPartner,
+            'phone': winery.phone,
+            'email': winery.email,
+          })
+          .select('id, name, country_code, region_id, winemaker, website, description, logo_url, banner_url, location_text, latitude, longitude, founded_year, is_partner, phone, email, created_at, countries!inner(name), regions!inner(name)')
+          .single();
+      print(response);
 
-    print('Завершено добавление винодельни: ${winery.name}');
-    print('Завершено обновление винодельни: ${winery.name}');
-    return Winery.fromJson(response);
+      print('Завершено добавление винодельни: ${winery.name}');
+      return Winery.fromJson(response);
+    } catch (e, st) {
+      print('Error adding winery in repository: $e');
+      print('Stack trace: $st');
+      rethrow;
+    }
   }
 
   Future<Winery> updateWinery(Winery winery) async {
     if (winery.id == null) {
       throw Exception('Cannot update winery without ID');
     }
-    print('Начало обновления винодельни: ${winery.name}');
-    final response = await _supabaseClient
-        .from('wineries')
-        .update({
-          'name': winery.name,
-          'country_code': winery.countryCode,
-          'region': winery.region,
-          'winemaker': winery.winemaker,
-          'website': winery.website,
-          'description': winery.description,
-          'logo_url': winery.logoUrl,
-          'banner_url': winery.bannerUrl,
-          'location_text': winery.locationText,
-        })
-        .eq('id', winery.id!)
-        .select('id, name, country_code, region, winemaker, website, description, logo_url, banner_url, location_text, created_at, countries!inner(name)')
-        .single();
-    print(response);
+    try {
+      print('Начало обновления винодельни: ${winery.name}');
+      final response = await _supabaseClient
+          .from('wineries')
+          .update({
+            'name': winery.name,
+            'country_code': winery.countryCode,
+            'region_id': winery.regionId,
+            'winemaker': winery.winemaker,
+            'website': winery.website,
+            'description': winery.description,
+            'logo_url': winery.logoUrl,
+            'banner_url': winery.bannerUrl,
+            'location_text': winery.locationText,
+            'latitude': winery.latitude,
+            'longitude': winery.longitude,
+            'founded_year': winery.foundedYear,
+            'is_partner': winery.isPartner,
+            'phone': winery.phone,
+            'email': winery.email,
+          })
+          .eq('id', winery.id!)
+          .select('id, name, country_code, region_id, winemaker, website, description, logo_url, banner_url, location_text, latitude, longitude, founded_year, is_partner, phone, email, created_at, countries!inner(name), regions!inner(name)')
+          .single();
+      print(response);
 
-    return Winery.fromJson(response);
+      return Winery.fromJson(response);
+    } catch (e, st) {
+      print('Error updating winery in repository: $e');
+      print('Stack trace: $st');
+      rethrow;
+    }
+  }
+
+  Future<List<Country>> getCountries() async {
+    final response = await _supabaseClient
+        .from('countries')
+        .select('code, name');
+    
+    return response.map((json) => Country.fromJson(json)).toList();
   }
 
   Future<void> deleteWinery(String wineryId) async {
@@ -108,5 +142,13 @@ class WineriesRepository {
       throw Exception('Cannot delete winery without ID');
     }
     await deleteWineryFromWineryObject(winery);
+  }
+  
+  Future<List<Region>> getRegions() async {
+    final response = await _supabaseClient
+        .from('regions')
+        .select('id, name, country_code');
+    
+    return response.map((json) => Region.fromJson(json)).toList();
   }
 }
