@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:winepool_final/features/cart/application/cart_controller.dart';
 import 'package:winepool_final/features/offers/domain/offer.dart';
 import 'package:winepool_final/features/offers/application/offer_details_controller.dart';
+import 'package:winepool_final/features/wines/presentation/wine_details_screen.dart';
 import 'package:winepool_final/features/wines/domain/wine_characteristics.dart';
 import 'package:winepool_final/features/reviews/application/reviews_controller.dart';
 import 'package:winepool_final/features/reviews/domain/review.dart';
@@ -47,35 +48,23 @@ class OfferDetailsScreen extends HookConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Фото вина
                 _buildWineImage(wine.imageUrl, scale, context),
-                
                 const SizedBox(height: 16),
-                
-                // Название вина
                 Text(
                   wine.name ?? 'Название не указано',
-                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
-                
                 const SizedBox(height: 8),
-                
-                // Название винодельни
                 Text(
                   wine.winery?.name ?? 'Винодельня не указана',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: Colors.grey[700],
-                  ),
+                        color: Colors.grey[700],
+                      ),
                 ),
-                
                 const SizedBox(height: 16),
-                
-                // Характеристики вина
                 _buildSectionTitle('Характеристики вина'),
-
-                // Отображение пиктограмм с текстовыми описаниями
                 _buildInfoRowWithIcon(
                   WineColorIcon(color: wine.color, size: 24.0),
                   'Цвет:',
@@ -96,29 +85,18 @@ class OfferDetailsScreen extends HookConsumerWidget {
                   'Страна:',
                   wine.winery?.countryName ?? 'Не указана',
                 ),
-                _buildInfoRow(
-                  'Сорт винограда:',
-                  wine.grapeVariety ?? 'Не указан',
-                ),
+                _GrapeVarietiesRow(grapeVarietyIds: wine.grapeVarietyIds),
                 _buildInfoRow('Год:', offer.vintage?.toString() ?? 'Не указан'),
-                // Отзывы и рейтинг
                 _buildInfoRow('Рейтинг:', wine.averageRating?.toStringAsFixed(1) ?? '0.0'),
                 _buildInfoRow('Отзывы:', (wine.reviewsCount ?? 0).toString()),
                 const SizedBox(height: 16),
                 _buildInfoRow('Температура подачи:', wine.servingTemperature ?? 'Не указана'),
-                
                 const SizedBox(height: 16),
-                
-                // Детали предложения
                 _buildSectionTitle('Детали предложения'),
-                
                 _buildInfoRow('Цена:', offer.price != null ? '${offer.price!.toStringAsFixed(0)} ₽' : 'Не указана'),
                 _buildInfoRow('Объем бутылки:', offer.bottleSize != null ? '${offer.bottleSize!} л' : 'Не указан'),
                 _buildInfoRow('Продавец:', offer.seller?.shopName ?? 'Не указан'),
-                
                 const SizedBox(height: 24),
-
-                // Загрузка и отображение отзывов
                 Consumer(
                   builder: (context, ref, child) {
                     final reviewsState = ref.watch(reviewsControllerProvider(wine.id ?? ''));
@@ -146,7 +124,6 @@ class OfferDetailsScreen extends HookConsumerWidget {
                                     Row(
                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       children: [
-                                        // Отображение имени пользователя, если доступно
                                         if (review.userName != null && review.userName!.isNotEmpty)
                                           Text(
                                             review.userName!,
@@ -154,7 +131,6 @@ class OfferDetailsScreen extends HookConsumerWidget {
                                                   fontWeight: FontWeight.bold,
                                                 ),
                                           ),
-                                        // Звезды рейтинга
                                         Row(
                                           children: List.generate(5, (starIndex) {
                                             return Icon(
@@ -177,7 +153,6 @@ class OfferDetailsScreen extends HookConsumerWidget {
                                         style: Theme.of(context).textTheme.bodyMedium,
                                       ),
                                     ],
-                                    // Дата отзыва в нижнем правом углу
                                     if (review.createdAt != null)
                                       Align(
                                         alignment: Alignment.centerRight,
@@ -202,10 +177,7 @@ class OfferDetailsScreen extends HookConsumerWidget {
                     );
                   },
                 ),
-
                 const SizedBox(height: 24),
-
-                // Кнопка "Добавить в корзину" и "Оставить отзыв"
                 Row(
                   children: [
                     Expanded(
@@ -237,7 +209,7 @@ class OfferDetailsScreen extends HookConsumerWidget {
                         final userId = ref.watch(supabaseClientProvider).auth.currentUser?.id;
                         
                         if (userId == null) {
-                          return const SizedBox.shrink(); // Скрываем кнопку, если пользователь не авторизован
+                          return const SizedBox.shrink();
                         }
                         
                         return ElevatedButton(
@@ -246,8 +218,8 @@ class OfferDetailsScreen extends HookConsumerWidget {
                               MaterialPageRoute(
                                 builder: (context) => AddReviewScreen(
                                   wineId: wine.id ?? '',
-                                  userId: userId, // Передаем реальный ID пользователя
-                                  offerId: offerId, // Передаем offerId для инвалидации провайдера
+                                  userId: userId,
+                                  offerId: offerId,
                                 ),
                               ),
                             );
@@ -374,12 +346,11 @@ class OfferDetailsScreen extends HookConsumerWidget {
 
     return GestureDetector(
        onLongPressStart: (LongPressStartDetails details) {
-          // Convert local position to alignment
           RenderBox renderBox = context.findRenderObject() as RenderBox;
           Offset localPosition = details.localPosition;
           Size size = renderBox.size;
-          double dx = (localPosition.dx / size.width - 0.5) * 2; // Convert to range [-1, 1]
-          double dy = (localPosition.dy / size.height - 0.5) * 2; // Convert to range [-1, 1]
+          double dx = (localPosition.dx / size.width - 0.5) * 2;
+          double dy = (localPosition.dy / size.height - 0.5) * 2;
           alignment.value = Alignment(dx, dy);
           
           controller.forward();
@@ -413,6 +384,66 @@ class OfferDetailsScreen extends HookConsumerWidget {
                   color: Colors.grey,
                 ),
         ),
+      ),
+    );
+  }
+}
+
+class _GrapeVarietiesRow extends ConsumerWidget {
+  const _GrapeVarietiesRow({this.grapeVarietyIds});
+
+  final List<String>? grapeVarietyIds;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final ids = grapeVarietyIds;
+    if (ids == null || ids.isEmpty) {
+      return _buildStaticInfoRow('Сорт винограда:', 'Не указан');
+    }
+
+    final grapeVarietiesAsync =
+        ref.watch(fetchGrapeVarietiesByIdsProvider(ids));
+
+    return grapeVarietiesAsync.when(
+      data: (grapeVarieties) {
+        final names = grapeVarieties.map((e) => e.name).join(', ');
+        return _buildStaticInfoRow('Сорт винограда:', names);
+      },
+      loading: () => _buildStaticInfoRow(
+        'Сорт винограда:',
+        'Загрузка...',
+      ),
+      error: (error, stack) => _buildStaticInfoRow(
+        'Сорт винограда:',
+        'Ошибка',
+      ),
+    );
+  }
+
+  Widget _buildStaticInfoRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 120,
+            child: Text(
+              label,
+              style: const TextStyle(
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+          Expanded(
+            child: Text(
+              value,
+              style: const TextStyle(
+                color: Colors.grey,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

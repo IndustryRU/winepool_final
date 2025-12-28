@@ -1,26 +1,49 @@
 import 'dart:io';
-import 'package:dio/dio.dart';
+import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-Future<String?> downloadFile(List<int> bytes, String fileName) async {
-  if (await Permission.storage.request().isGranted) {
+class DownloadServiceMobile {
+  static Future<String?> downloadFile(Uint8List bytes, String filename) async {
     try {
-      final downloadsDir = '/storage/emulated/0/Download'; // Стандартный путь
-      final filePath = '$downloadsDir/$fileName';
-      
-      // Dio не нужен для сохранения байтов, используем File
+      // Запрашиваем разрешение на доступ к внешнему хранилищу
+      final status = await Permission.storage.request();
+      if (status != PermissionStatus.granted) {
+        debugPrint('Разрешение на доступ к хранилищу не получено');
+        return null;
+      }
+
+      // Получаем директорию для сохранения файлов
+      final directory = await getExternalStorageDirectory();
+      if (directory == null) {
+        debugPrint('Не удалось получить директорию для сохранения файлов');
+        return null;
+      }
+
+      // Создаем путь к файлу
+      final filePath = '${directory.path}/$filename';
       final file = File(filePath);
+
+      // Записываем байты в файл
       await file.writeAsBytes(bytes);
 
-      // Показываем уведомление
-      print('Файл успешно сохранен: $filePath');
-      return filePath;
+      // Проверяем, существует ли файл
+      if (await file.exists()) {
+        debugPrint('Файл успешно сохранен: $filePath');
+        return filePath;
+      } else {
+        debugPrint('Не удалось создать файл: $filePath');
+        return null;
+      }
     } catch (e) {
-      print('Ошибка при сохранении файла: $e');
+      debugPrint('Ошибка при сохранении файла: $e');
       return null;
     }
-  } else {
-    throw Exception('Разрешение на запись в хранилище не получено');
   }
+}
+
+// Экспортируем функцию для использования с импортом как в import_data_screen
+Future<String?> downloadFile(Uint8List bytes, String filename) async {
+  return await DownloadServiceMobile.downloadFile(bytes, filename);
 }

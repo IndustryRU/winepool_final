@@ -93,3 +93,82 @@ final class MyOffersControllerProvider
 
 String _$myOffersControllerHash() =>
     r'c566aa45cf406f2fc42f345613e1ee39844489f2';
+
+@ProviderFor(winePriceRangeProvider)
+const winePriceRangeProviderProvider = WinePriceRangeProviderFamily._();
+
+final class WinePriceRangeProviderProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<(double, double)?>,
+          (double, double)?,
+          FutureOr<(double, double)?>
+        >
+    with
+        $FutureModifier<(double, double)?>,
+        $FutureProvider<(double, double)?> {
+  const WinePriceRangeProviderProvider._({
+    required WinePriceRangeProviderFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'winePriceRangeProviderProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$winePriceRangeProviderHash();
+
+  @override
+  String toString() {
+    return r'winePriceRangeProviderProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<(double, double)?> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<(double, double)?> create(Ref ref) {
+    final argument = this.argument as String;
+    return winePriceRangeProvider(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is WinePriceRangeProviderProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$winePriceRangeProviderHash() =>
+    r'c1654141e17172888a6a92acec0c30e1f3e3a15e';
+
+final class WinePriceRangeProviderFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<(double, double)?>, String> {
+  const WinePriceRangeProviderFamily._()
+    : super(
+        retry: null,
+        name: r'winePriceRangeProviderProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  WinePriceRangeProviderProvider call(String wineId) =>
+      WinePriceRangeProviderProvider._(argument: wineId, from: this);
+
+  @override
+  String toString() => r'winePriceRangeProviderProvider';
+}

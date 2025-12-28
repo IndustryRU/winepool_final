@@ -24,11 +24,20 @@ abstract class Winery with _$Winery {
     @JsonKey(name: 'is_partner') bool? isPartner,
     @JsonKey(name: 'phone') String? phone,
     @JsonKey(name: 'email') String? email,
+    @JsonKey(name: 'is_deleted', fromJson: _isDeletedFromJson) bool? isDeleted,
     @JsonKey(name: 'country', fromJson: _countryFromJson) Country? country,
     @JsonKey(name: 'region', fromJson: _regionFromJson) Region? regionObject,
   }) = _Winery;
 
   factory Winery.fromJson(Map<String, dynamic> json) => _$WineryFromJson(json);
+}
+
+bool _isDeletedFromJson(dynamic json) {
+  if (json == null) return false;
+  if (json is bool) return json;
+  if (json is int) return json == 1;
+  if (json is String) return json.toLowerCase() == 'true';
+  return false;
 }
 
 Country? _countryFromJson(dynamic json) {

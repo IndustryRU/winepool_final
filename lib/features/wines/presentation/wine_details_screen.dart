@@ -6,6 +6,8 @@ import 'package:winepool_final/features/cellar/application/cellar_controller.dar
 import 'package:winepool_final/features/offers/application/all_offers_controller.dart';
 import 'package:winepool_final/features/reviews/application/reviews_controller.dart';
 import 'package:winepool_final/features/reviews/domain/review.dart';
+import 'package:winepool_final/features/wines/data/grape_variety_repository.dart';
+import 'package:winepool_final/features/wines/domain/grape_variety.dart';
 import 'package:winepool_final/features/wines/domain/wine.dart';
 import 'package:winepool_final/features/reviews/presentation/add_review_screen.dart';
 import 'package:winepool_final/common/widgets/shimmer_loading_indicator.dart';
@@ -83,7 +85,11 @@ class WineDetailsScreen extends ConsumerWidget {
                   _buildDetailItem('Цвет', wine.color?.name ?? ''),
                   _buildDetailItem('Сахар', wine.sugar?.name ?? ''),
                   _buildDetailItem('Крепость', (wine.alcoholLevel != null) ? wine.alcoholLevel.toString() : 'Не указано'),
-                  _buildDetailItem('Сорт винограда', wine.grapeVariety ?? ''),
+                  // Отображение сортов винограда
+                  if (wine.grapeVarietyIds != null && wine.grapeVarietyIds!.isNotEmpty) ...[
+                    const SizedBox(height: 8),
+                    _buildGrapeVarietiesDetailItem(context, ref, wine.grapeVarietyIds!),
+                  ],
                   if (wine.description != null) ...[
                     const SizedBox(height: 16),
                     Text(
@@ -276,6 +282,19 @@ class WineDetailsScreen extends ConsumerWidget {
         ),
       ),
     );
+ }
+ 
+ Widget _buildGrapeVarietiesDetailItem(BuildContext context, WidgetRef ref, List<String> grapeVarietyIds) {
+   final grapeVarietiesAsync = ref.watch(fetchGrapeVarietiesByIdsProvider(grapeVarietyIds));
+   
+   return grapeVarietiesAsync.when(
+     data: (grapeVarieties) {
+       final grapeNames = grapeVarieties.map((gv) => gv.name ?? '').join(', ');
+       return _buildDetailItem('Сорта винограда', grapeNames);
+     },
+     loading: () => _buildDetailItem('Сорта винограда', 'Загрузка...'),
+     error: (error, stack) => _buildDetailItem('Сорта винограда', 'Ошибка загрузки'),
+   );
  }
 
  Widget _buildDetailItem(String label, String value) {
@@ -495,7 +514,7 @@ void _showStorageFormDialog(BuildContext context, WidgetRef ref) {
                   return;
                 }
 
-                if (vintage < 1000) {
+                if (vintage < 100) {
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('Введите корректный год')),
@@ -541,3 +560,10 @@ void _showStorageFormDialog(BuildContext context, WidgetRef ref) {
     );
  }
 }
+
+// Добавляем провайдер для загрузки сортов винограда по ID
+final fetchGrapeVarietiesByIdsProvider = FutureProvider.family<List<GrapeVariety>, List<String>>((ref, grapeVarietyIds) async {
+  final repository = ref.watch(grapeVarietyRepositoryProvider);
+  final futures = grapeVarietyIds.map((id) => repository.fetchGrapeVariety(id));
+  return await Future.wait(futures);
+});

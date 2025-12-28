@@ -43,7 +43,6 @@ void main() {
       expect(result.color, null);
       expect(result.sugar, null);
       expect(result.alcoholLevel, null);
-      expect(result.grapeVariety, null);
       expect(result.vintage, null);
     });
 
@@ -54,7 +53,6 @@ void main() {
       expect(result.color, null);
       expect(result.sugar, null);
       expect(result.alcoholLevel, null);
-      expect(result.grapeVariety, null);
       expect(result.vintage, null);
     });
 
@@ -67,7 +65,6 @@ void main() {
       expect(result.color, null);
       expect(result.sugar, null);
       expect(result.alcoholLevel, null);
-      expect(result.grapeVariety, null);
       expect(result.vintage, null);
     });
 
@@ -81,9 +78,13 @@ void main() {
       expect(result.sugar, WineSugar.sweet);
     });
 
-    test('Тест на извлечение сорта винограда по ключевому слову', () {
+    // Тест на извлечение сорта винограда по ключевому слову - больше не актуален, так как
+    // grapeVariety больше не возвращается в WineLabelData и не используется в Wine.
+    // Сохраняем тест, чтобы показать, что логика извлечения может быть в processor,
+    // но результат не передается в WineLabelData.
+    test('Тест на извлечение сорта винограда по ключевому слову (не проверяет результат)', () {
       final result = processor.processText('Сорт винограда Каберне Совиньон');
-      expect(result.grapeVariety, 'каберне совиньон');
+      // expect(result.grapeVariety, 'каберне совиньон'); // Убрано
     });
 
     test('Тест на извлечение алкоголя в формате XX.X%', () {
@@ -111,9 +112,11 @@ void main() {
       expect(result.alcoholLevel, 13.5);
     });
 
-    test('Тест на извлечение сорта винограда из базы', () {
+    // Тест на извлечение сорта винограда из базы - больше не актуален, так как
+    // grapeVariety больше не возвращается в WineLabelData и не используется в Wine.
+    test('Тест на извлечение сорта винограда из базы (не проверяет результат)', () {
       final result = processor.processText('вино chardonnay');
-      expect(result.grapeVariety, 'chardonnay');
+      // expect(result.grapeVariety, 'chardonnay'); // Убрано
     });
   });
 }

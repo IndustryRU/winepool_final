@@ -34,7 +34,7 @@ void main() {
   group('wineLabelSearchProvider integration tests', () {
     test('Тест на точный поиск по названию в кавычках', () async {
       // Подготовка данных
-      final expectedWine = Wine(id: '1', name: 'Черный полковник', winery: Winery(id: '1', name: 'Солнечная Долина'), vintage: 2020, color: WineColor.red, sugar: WineSugar.sweet, grapeVariety: 'Эким Кара', rating: 4.8, createdAt: DateTime.now(), updatedAt: DateTime.now(), isDeleted: false);
+      final expectedWine = Wine(id: '1', name: 'Черный полковник', winery: Winery(id: '1', name: 'Солнечная Долина'), vintage: 2020, color: WineColor.red, sugar: WineSugar.sweet, createdAt: DateTime.now(), updatedAt: DateTime.now(), isDeleted: false);
 
       // Мокаем поведение репозитория. _multiStageSearch сначала ищет по имени.
       when(mockWinesRepository.searchWines('Черный полковник')).thenAnswer((_) async => [expectedWine]);
@@ -50,7 +50,7 @@ void main() {
 
     test('Тест на поиск по известному имени (из "базы")', () async {
       // Подготовка данных
-      final expectedWine = Wine(id: '2', name: 'Chateau Margaux', winery: Winery(id: '2', name: 'Chateau Margaux'), vintage: 2015, color: WineColor.red, sugar: WineSugar.dry, grapeVariety: 'Каберне Совиньон', rating: 4.9, createdAt: DateTime.now(), updatedAt: DateTime.now(), isDeleted: false);
+      final expectedWine = Wine(id: '2', name: 'Chateau Margaux', winery: Winery(id: '2', name: 'Chateau Margaux'), vintage: 2015, color: WineColor.red, sugar: WineSugar.dry, createdAt: DateTime.now(), updatedAt: DateTime.now(), isDeleted: false);
       
       // Мокаем. processText найдет 'chateau margaux' и передаст его в searchWines
       when(mockWinesRepository.searchWines('chateau margaux')).thenAnswer((_) async => [expectedWine]);
@@ -66,8 +66,8 @@ void main() {
 
     test('Тест на ранжирование по характеристикам', () async {
       // Подготовка данных
-      final wine1 = Wine(id: '1', name: 'Идеальное Мерло', winery: Winery(id: '1', name: 'Винодельня 1'), color: WineColor.red, sugar: WineSugar.dry, grapeVariety: 'Мерло', rating: 4.0, createdAt: DateTime.now(), updatedAt: DateTime.now(), isDeleted: false);
-      final wine2 = Wine(id: '2', name: 'Просто Мерло', winery: Winery(id: '2', name: 'Винодельня 2'), color: WineColor.red, sugar: WineSugar.semiSweet, grapeVariety: 'Мерло', rating: 4.2, createdAt: DateTime.now(), updatedAt: DateTime.now(), isDeleted: false);
+      final wine1 = Wine(id: '1', name: 'Идеальное Мерло', winery: Winery(id: '1', name: 'Винодельня 1'), color: WineColor.red, sugar: WineSugar.dry, averageRating: 4.0, createdAt: DateTime.now(), updatedAt: DateTime.now(), isDeleted: false);
+      final wine2 = Wine(id: '2', name: 'Просто Мерло', winery: Winery(id: '2', name: 'Винодельня 2'), color: WineColor.red, sugar: WineSugar.semiSweet, averageRating: 4.2, createdAt: DateTime.now(), updatedAt: DateTime.now(), isDeleted: false);
 
       // Мокаем searchAll, т.к. точного имени нет, поиск пойдет по характеристикам
       when(mockWinesRepository.searchAll(any)).thenAnswer((_) async => {'wines': [wine1.toJson(), wine2.toJson()]});

@@ -1,10 +1,13 @@
 import 'package:country_flags/country_flags.dart';
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'dart:developer';
 import 'package:winepool_final/features/wines/domain/wine.dart';
 import 'package:winepool_final/features/wines/domain/wine_characteristics.dart';
 import 'package:winepool_final/features/wines/domain/winery.dart';
 import 'package:winepool_final/features/wines/domain/country.dart';
+import 'package:winepool_final/features/wines/domain/grape_variety.dart';
+import 'package:winepool_final/features/wines/presentation/wine_details_screen.dart';
 
 /// Виджет для отображения пиктограммы цвета вина
 class WineColorIcon extends StatefulWidget {
@@ -735,20 +738,72 @@ class _WineCountryIconState extends State<WineCountryIcon>
   
 }
 
-/// Виджет для отображения пиктограммы сорта винограда
-class WineGrapeIcon extends StatelessWidget {
-  final String? grapeVariety;
-  final double size;
 
-  const WineGrapeIcon({
+/// Виджет для отображения всех пиктограмм характеристик вина
+class WineCharacteristicIconsRow extends ConsumerWidget {
+  final Wine wine;
+  final double iconSize;
+
+  const WineCharacteristicIconsRow({
     super.key,
-    this.grapeVariety,
-    this.size = 20.0,
+    required this.wine,
+    this.iconSize = 20.0,
   });
 
   @override
-  Widget build(BuildContext context) {
-    if (grapeVariety == null || grapeVariety!.isEmpty) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final ids = wine.grapeVarietyIds;
+    final colorIcon = WineColorIcon(color: wine.color, size: iconSize);
+    final sugarIcon = WineSugarIcon(sugar: wine.sugar, size: iconSize);
+    final alcoholIcon = WineAlcoholIcon(alcoholLevel: wine.alcoholLevel, size: iconSize);
+    final countryIcon = WineCountryIcon(country: wine.winery?.country, size: iconSize);
+
+    if (ids == null || ids.isEmpty) {
+      return Wrap(
+        spacing: 6,
+        runSpacing: 0,
+        children: [colorIcon, sugarIcon, alcoholIcon, countryIcon]
+            .where((widget) => !(widget is SizedBox))
+            .toList(),
+      );
+    }
+
+    final grapeVarietiesAsync = ref.watch(fetchGrapeVarietiesByIdsProvider(ids));
+
+    return grapeVarietiesAsync.when(
+      data: (grapeVarieties) {
+        final names = grapeVarieties.map((e) => e.name).join(', ');
+        return Wrap(
+          spacing: 6,
+          runSpacing: 0,
+          children: [
+            colorIcon,
+            sugarIcon,
+            alcoholIcon,
+            countryIcon,
+            _buildGrapeVarietyIcon(names, iconSize),
+          ].where((widget) => !(widget is SizedBox)).toList(),
+        );
+      },
+      loading: () => Wrap(
+        spacing: 6,
+        runSpacing: 0,
+        children: [colorIcon, sugarIcon, alcoholIcon, countryIcon]
+            .where((widget) => !(widget is SizedBox))
+            .toList(),
+      ),
+      error: (error, stack) => Wrap(
+        spacing: 6,
+        runSpacing: 0,
+        children: [colorIcon, sugarIcon, alcoholIcon, countryIcon]
+            .where((widget) => !(widget is SizedBox))
+            .toList(),
+      ),
+    );
+  }
+
+  Widget _buildGrapeVarietyIcon(String names, double size) {
+    if (names.isEmpty) {
       return const SizedBox.shrink();
     }
 
@@ -769,7 +824,7 @@ class WineGrapeIcon extends StatelessWidget {
           const SizedBox(width: 2),
           Expanded(
             child: Text(
-              grapeVariety!,
+              names,
               style: TextStyle(
                 fontSize: size * 0.6, // Увеличено на 30%
                 fontWeight: FontWeight.w500,
@@ -785,35 +840,8 @@ class WineGrapeIcon extends StatelessWidget {
   }
 }
 
-/// Виджет для отображения всех пиктограмм характеристик вина
-class WineCharacteristicIconsRow extends StatelessWidget {
-  final Wine wine;
-  final double iconSize;
-
-  const WineCharacteristicIconsRow({
-    super.key,
-    required this.wine,
-    this.iconSize = 20.0,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Wrap(
-      spacing: 6,
-      runSpacing: 0,
-      children: [
-        WineColorIcon(color: wine.color, size: iconSize),
-        WineSugarIcon(sugar: wine.sugar, size: iconSize),
-        WineAlcoholIcon(alcoholLevel: wine.alcoholLevel, size: iconSize),
-        WineCountryIcon(country: wine.winery?.country, size: iconSize), // Используем country у винодельни
-        WineGrapeIcon(grapeVariety: wine.grapeVariety, size: iconSize),
-      ].where((widget) => !(widget is SizedBox)).toList(),
-    );
-  }
-}
-
 /// Виджет для отображения всех пиктограмм характеристик вина в вертикальном расположении
-class WineCharacteristicIconsColumn extends StatelessWidget {
+class WineCharacteristicIconsColumn extends ConsumerWidget {
   final Wine wine;
   final double iconSize;
   final bool isSearch;
@@ -826,28 +854,103 @@ class WineCharacteristicIconsColumn extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     log('--- ГДЕ ЭТОТ КОММЕНТАРИЙ? ---');
     if (wine.winery != null) {
       log(wine.winery.toString());
     }
     print(wine.winery?.country);
-    return Wrap(
-      spacing: 8.0,
-      runSpacing: 4.0,
-      alignment: WrapAlignment.center,
-      children: [
-        if (wine.color != null) WineColorIcon(color: wine.color, size: iconSize),
-        if (wine.sugar != null) WineSugarIcon(sugar: wine.sugar, size: iconSize),
-        if (wine.alcoholLevel != null) WineAlcoholIcon(alcoholLevel: wine.alcoholLevel, size: iconSize),
-        if (wine.winery?.country != null) WineCountryIcon(
-          country: isSearch ?
-            Country(code: wine.winery?.countryCode ?? '', name: wine.winery?.country?.code ?? '') :
-            wine.winery?.country,
-          size: iconSize,
-        ),
-        if (wine.grapeVariety != null && wine.grapeVariety!.isNotEmpty) WineGrapeIcon(grapeVariety: wine.grapeVariety, size: iconSize),
-      ],
+    final ids = wine.grapeVarietyIds;
+    final colorIcon = wine.color != null ? WineColorIcon(color: wine.color, size: iconSize) : null;
+    final sugarIcon = wine.sugar != null ? WineSugarIcon(sugar: wine.sugar, size: iconSize) : null;
+    final alcoholIcon = wine.alcoholLevel != null ? WineAlcoholIcon(alcoholLevel: wine.alcoholLevel, size: iconSize) : null;
+    Widget? countryIcon;
+    if (wine.winery?.country != null) {
+      countryIcon = WineCountryIcon(
+        country: isSearch
+            ? Country(code: wine.winery?.countryCode ?? '', name: wine.winery?.country?.code ?? '')
+            : wine.winery?.country,
+        size: iconSize,
+      );
+    }
+
+    final iconsList = <Widget>[];
+    if (colorIcon != null) iconsList.add(colorIcon);
+    if (sugarIcon != null) iconsList.add(sugarIcon);
+    if (alcoholIcon != null) iconsList.add(alcoholIcon);
+    if (countryIcon != null) iconsList.add(countryIcon);
+
+    if (ids == null || ids.isEmpty) {
+      return Wrap(
+        spacing: 8.0,
+        runSpacing: 4.0,
+        alignment: WrapAlignment.center,
+        children: iconsList,
+      );
+    }
+
+    final grapeVarietiesAsync = ref.watch(fetchGrapeVarietiesByIdsProvider(ids));
+
+    return grapeVarietiesAsync.when(
+      data: (grapeVarieties) {
+        final names = grapeVarieties.map((e) => e.name).join(', ');
+        final grapeIcon = _buildGrapeVarietyIcon(names, iconSize);
+        return Wrap(
+          spacing: 8.0,
+          runSpacing: 4.0,
+          alignment: WrapAlignment.center,
+          children: [...iconsList, grapeIcon],
+        );
+      },
+      loading: () => Wrap(
+        spacing: 8.0,
+        runSpacing: 4.0,
+        alignment: WrapAlignment.center,
+        children: iconsList,
+      ),
+      error: (error, stack) => Wrap(
+        spacing: 8.0,
+        runSpacing: 4.0,
+        alignment: WrapAlignment.center,
+        children: iconsList,
+      ),
+    );
+  }
+
+  Widget _buildGrapeVarietyIcon(String names, double size) {
+    if (names.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return Container(
+      height: size,
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+      decoration: BoxDecoration(
+        color: Colors.green.withOpacity(0.2),
+        borderRadius: BorderRadius.circular(size / 2),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            Icons.grain,
+            size: size * 0.6,
+            color: Colors.green,
+          ),
+          const SizedBox(width: 2),
+          Expanded(
+            child: Text(
+              names,
+              style: TextStyle(
+                fontSize: size * 0.6, // Увеличено на 30%
+                fontWeight: FontWeight.w500,
+                color: Colors.green,
+                height: 1.5, // Добавлен отступ между строками
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

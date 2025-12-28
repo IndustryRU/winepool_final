@@ -1,4 +1,5 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:winepool_final/features/admin/providers/admin_view_settings_provider.dart';
 import 'package:winepool_final/features/catalog/application/catalog_controller.dart';
 import 'package:winepool_final/features/offers/application/offers_controller.dart';
 import 'package:winepool_final/features/wines/data/wines_repository.dart';
@@ -19,7 +20,7 @@ class HomeScreenData {
 @riverpod
 Future<HomeScreenData> homeScreenAggregate(Ref ref) async {
   final popularWinesAsync = ref.watch(popularWinesProvider.future);
-  final newWinesAsync = ref.watch(newWinesProvider.future);
+ final newWinesAsync = ref.watch(newWinesProvider.future);
 
   // Асинхронно получаем результаты обоих провайдеров
   final results = await Future.wait([
@@ -38,9 +39,10 @@ Future<HomeScreenData> homeScreenAggregate(Ref ref) async {
 
 @riverpod
 Future<List<Wine>> winesController(Ref ref) async {
+  final showDeleted = ref.watch(adminViewSettingsProvider);
   print('--- BUILDING WINES CONTROLLER ---');
   final winesRepository = ref.watch(winesRepositoryProvider);
- final wines = await winesRepository.fetchAllWines();
+  final wines = await winesRepository.fetchAllWines(includeDeleted: showDeleted);
   print('--- FETCHED WINES ---');
   print(wines);
   print('--- END OF FETCHED WINES ---');
@@ -49,34 +51,39 @@ Future<List<Wine>> winesController(Ref ref) async {
 
 @riverpod
 Future<List<Wine>> winesByWinery(Ref ref, String? wineryId) async {
+  final showDeleted = ref.watch(adminViewSettingsProvider);
   final winesRepository = ref.watch(winesRepositoryProvider);
   return wineryId != null
-      ? winesRepository.fetchWinesByWinery(wineryId)
+      ? winesRepository.fetchWinesByWinery(wineryId, includeDeleted: showDeleted)
       : [];
 }
 
 @riverpod
 Future<List<Wine>> allWines(Ref ref) {
+  final showDeleted = ref.watch(adminViewSettingsProvider);
   final winesRepository = ref.watch(winesRepositoryProvider);
-  return winesRepository.fetchAllWinesNoFilter();
+  return winesRepository.fetchAllWinesNoFilter(includeDeleted: showDeleted);
 }
 
 @riverpod
 Future<List<Wine>> popularWines(Ref ref) async {
+  final showDeleted = ref.watch(adminViewSettingsProvider);
   final winesRepository = ref.watch(winesRepositoryProvider);
-  return winesRepository.fetchPopularWines();
+  return winesRepository.fetchPopularWines(includeDeleted: showDeleted);
 }
 
 @riverpod
 Future<List<Wine>> newWines(Ref ref) async {
+  final showDeleted = ref.watch(adminViewSettingsProvider);
   final winesRepository = ref.watch(winesRepositoryProvider);
-  return winesRepository.fetchNewWines();
+  return winesRepository.fetchNewWines(includeDeleted: showDeleted);
 }
 
 @riverpod
 Future<List<Wine>> winesWithFilters(Ref ref, Map<String, dynamic> filters) async {
+  final showDeleted = ref.watch(adminViewSettingsProvider);
   final winesRepository = ref.watch(winesRepositoryProvider);
-  final result = await winesRepository.fetchWines(filters);
+  final result = await winesRepository.fetchWines(filters, includeDeleted: showDeleted);
   return result;
 }
 
@@ -84,11 +91,12 @@ Future<List<Wine>> winesWithFilters(Ref ref, Map<String, dynamic> filters) async
 @riverpod
 Future<List<Wine>> winesWithActiveFilters(Ref ref) async {
   final filters = ref.watch(catalogFiltersProvider);
+ final showDeleted = ref.watch(adminViewSettingsProvider);
   print('--- WINES WITH ACTIVE FILTERS PROVIDER REFRESHED ---');
-  print('Filters: $filters');
+ print('Filters: $filters');
   final winesRepository = ref.watch(winesRepositoryProvider);
-  final result = await winesRepository.fetchWines(filters);
- return result;
+  final result = await winesRepository.fetchWines(filters, includeDeleted: showDeleted);
+  return result;
 }
 
 @Riverpod(keepAlive: true)
@@ -96,7 +104,7 @@ class WineMutation extends _$WineMutation {
   @override
   AsyncValue<void> build() {
     return const AsyncData(null);
-  }
+ }
 
   Future<void> addWine(Wine wine) async {
     state = const AsyncLoading();
@@ -129,6 +137,19 @@ class WineMutation extends _$WineMutation {
       if (wineryId != null) {
         ref.invalidate(winesByWineryProvider(wineryId));
       }
+    });
+  }
+
+  Future<void> restoreWine(String wineId) async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() async {
+      await ref.read(winesRepositoryProvider).restoreWine(wineId);
+      // Инвалидируем все связанные провайдеры
+      ref.invalidate(winesControllerProvider);
+      ref.invalidate(allWinesProvider);
+      ref.invalidate(popularWinesProvider);
+      ref.invalidate(newWinesProvider);
+      ref.invalidate(winesWithActiveFiltersProvider);
     });
   }
 }

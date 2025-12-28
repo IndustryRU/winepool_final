@@ -23,6 +23,7 @@ _Winery _$WineryFromJson(Map<String, dynamic> json) => _Winery(
   isPartner: json['is_partner'] as bool?,
   phone: json['phone'] as String?,
   email: json['email'] as String?,
+  isDeleted: _isDeletedFromJson(json['is_deleted']),
   country: _countryFromJson(json['country']),
   regionObject: _regionFromJson(json['region']),
 );
@@ -44,6 +45,7 @@ Map<String, dynamic> _$WineryToJson(_Winery instance) => <String, dynamic>{
   'is_partner': instance.isPartner,
   'phone': instance.phone,
   'email': instance.email,
+  'is_deleted': instance.isDeleted,
   'country': instance.country,
   'region': instance.regionObject,
 };

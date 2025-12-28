@@ -34,7 +34,7 @@ final class WineriesControllerProvider
 }
 
 String _$wineriesControllerHash() =>
-    r'7d96da479cf5c828140dfe48b0d303ae9ea5c38d';
+    r'82e13aab585aceab5d490b6c4dd54e909e82aafb';
 
 abstract class _$WineriesController extends $AsyncNotifier<List<Winery>> {
   FutureOr<List<Winery>> build();

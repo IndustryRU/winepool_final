@@ -31,7 +31,7 @@ Winery? _wineryFromJson(dynamic json) {
       return null;
     }
   }
-  // Если json - это Map, используем его напрямую
+ // Если json - это Map, используем его напрямую
   else if (json is Map<String, dynamic>) {
     return Winery.fromJson(json);
   }
@@ -114,7 +114,8 @@ abstract class Wine with _$Wine {
     Winery? winery,
     String? name, // Изменено на nullable
     String? description,
-    String? grapeVariety,
+    // Удалено поле grapeVariety
+    @JsonKey(name: 'grape_variety_ids') List<String>? grapeVarietyIds,
     @JsonKey(name: 'image_url') String? imageUrl,
     @JsonKey(
       unknownEnumValue: WineColor.unknown,
@@ -136,7 +137,7 @@ abstract class Wine with _$Wine {
     WineSugar? sugar,
     int? vintage,
     @JsonKey(name: 'alcohol_level') double? alcoholLevel,
-    double? rating,
+    // Удалено поле rating
     @JsonKey(name: 'average_rating') double? averageRating,
     @JsonKey(name: 'reviews_count') int? reviewsCount,
     @JsonKey(name: 'serving_temperature') String? servingTemperature,
@@ -147,15 +148,15 @@ abstract class Wine with _$Wine {
     @JsonKey(name: 'created_at') DateTime? createdAt,
     @JsonKey(name: 'updated_at') DateTime? updatedAt,
     @JsonKey(name: 'is_deleted') @Default(false) bool isDeleted,
-    @JsonKey(name: 'min_price') int? minPrice,
-    @JsonKey(name: 'max_price') int? maxPrice,
+    @JsonKey(name: 'barcode') String? barcode,
+    @JsonKey(name: 'awards') List<String>? awards,
     @JsonKey(
       name: 'offers',
       includeToJson: false,
       fromJson: _offersFromJson,
     )
     List<Offer>? offers,
- }) = _Wine;
+  }) = _Wine;
 
   factory Wine.fromJson(Map<String, dynamic> json) => _$WineFromJson(json);
 }

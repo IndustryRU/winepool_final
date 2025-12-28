@@ -7,7 +7,7 @@ class WineLabelData {
   final WineColor? color;
   final WineSugar? sugar;
   final double? alcoholLevel;
-  final String? grapeVariety;
+  // final String? grapeVariety; - убираем это поле из WineLabelData
   final int? vintage;
   // Добавляем дополнительные поля, которые могут быть полезны для поиска
   final List<String>? potentialNames;
@@ -20,7 +20,6 @@ class WineLabelData {
     this.color,
     this.sugar,
     this.alcoholLevel,
-    this.grapeVariety,
     this.vintage,
     this.potentialNames,
     this.potentialWineries,
@@ -29,7 +28,7 @@ class WineLabelData {
 
   @override
   String toString() {
-    return 'WineLabelData{name: $name, winery: $winery, color: $color, sugar: $sugar, alcoholLevel: $alcoholLevel, grapeVariety: $grapeVariety, vintage: $vintage}';
+    return 'WineLabelData{name: $name, winery: $winery, color: $color, sugar: $sugar, alcoholLevel: $alcoholLevel, vintage: $vintage}';
   }
 }
 
@@ -1371,7 +1370,7 @@ class WineLabelTextProcessor {
       color: extractedEntities.color,
       sugar: extractedEntities.sugar,
       alcoholLevel: extractedEntities.alcoholLevel,
-      grapeVariety: extractedEntities.grapeVariety,
+      // grapeVariety больше не используется в Wine и не передается
       vintage: extractedEntities.vintage,
       potentialNames: extractedEntities.potentialNames,
       potentialWineries: extractedEntities.potentialWineries,
@@ -1428,7 +1427,7 @@ class WineLabelTextProcessor {
     WineColor? color = _extractColor(cleanedText);
     WineSugar? sugar = _extractSugar(cleanedText);
     double? alcoholLevel = _extractAlcoholLevel(cleanedText);
-    String? grapeVariety = _extractGrapeVariety(cleanedText) ?? _extractKnownEntity(cleanedText, knownGrapes);
+    // String? grapeVariety = _extractGrapeVariety(cleanedText) ?? _extractKnownEntity(cleanedText, knownGrapes); // Больше не используется
     int? vintage = _extractVintage(cleanedText);
     
     // Также извлекаем потенциальные совпадения для дальнейшего поиска
@@ -1442,7 +1441,7 @@ class WineLabelTextProcessor {
       color: color,
       sugar: sugar,
       alcoholLevel: alcoholLevel,
-      grapeVariety: grapeVariety,
+      // grapeVariety больше не используется в Wine и не передается
       vintage: vintage,
       potentialNames: potentialNames,
       potentialWineries: potentialWineries,
@@ -1570,7 +1569,7 @@ class _ExtractedEntities {
   final WineColor? color;
   final WineSugar? sugar;
  final double? alcoholLevel;
-  final String? grapeVariety;
+  // final String? grapeVariety; - убираем это поле
   final int? vintage;
   final List<String>? potentialNames;
   final List<String>? potentialWineries;
@@ -1582,7 +1581,6 @@ class _ExtractedEntities {
     this.color,
     this.sugar,
     this.alcoholLevel,
-    this.grapeVariety,
     this.vintage,
     this.potentialNames,
     this.potentialWineries,

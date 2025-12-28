@@ -49,7 +49,7 @@ Future<List<Wine>> _multiStageSearch(WinesRepository repository, WineLabelData w
   final searchTerms = <String>[];
   if (wineLabelData.name != null) searchTerms.add(wineLabelData.name!);
   if (wineLabelData.winery != null) searchTerms.add(wineLabelData.winery!);
-  if (wineLabelData.grapeVariety != null) searchTerms.add(wineLabelData.grapeVariety!);
+  // Убираем grapeVariety из поиска по searchAll, т.к. она теперь хранится отдельно
   if (wineLabelData.color != null) searchTerms.add(wineLabelData.color!.name);
   if (wineLabelData.sugar != null) searchTerms.add(wineLabelData.sugar!.name);
   
@@ -71,7 +71,7 @@ Future<List<Wine>> _multiStageSearch(WinesRepository repository, WineLabelData w
   // Шаг 3: Расширенный поиск с фильтрацией (Filtered Search)
   // Используем метод fetchWines с фильтрами
   final filters = <String, dynamic>{};
-  if (wineLabelData.grapeVariety != null) filters['grape_variety'] = wineLabelData.grapeVariety;
+  // Убираем фильтрацию по grape_variety, т.к. она теперь хранится отдельно и требует JOIN
   if (wineLabelData.vintage != null) filters['vintage'] = wineLabelData.vintage;
   if (wineLabelData.color != null) filters['color'] = wineLabelData.color!.name;
   if (wineLabelData.sugar != null) filters['sugar'] = wineLabelData.sugar!.name;
@@ -81,10 +81,7 @@ Future<List<Wine>> _multiStageSearch(WinesRepository repository, WineLabelData w
     final nameResults = await repository.searchWines(wineLabelData.name!);
     results = nameResults.where((wine) {
       bool matches = true;
-      if (filters['grape_variety'] != null && 
-          (wine.grapeVariety == null || !wine.grapeVariety!.toLowerCase().contains(filters['grape_variety'].toLowerCase()))) {
-        matches = false;
-      }
+      // Убираем фильтрацию по grape_variety, т.к. она теперь хранится отдельно
       if (filters['vintage'] != null && wine.vintage != filters['vintage']) {
         matches = false;
       }
@@ -112,10 +109,7 @@ Future<List<Wine>> _multiStageSearch(WinesRepository repository, WineLabelData w
         // Применяем фильтры
         results = results.where((wine) {
           bool matches = true;
-          if (filters['grape_variety'] != null && 
-              (wine.grapeVariety == null || !wine.grapeVariety!.toLowerCase().contains(filters['grape_variety'].toLowerCase()))) {
-            matches = false;
-          }
+          // Убираем фильтрацию по grape_variety, т.к. она теперь хранится отдельно
           if (filters['vintage'] != null && wine.vintage != filters['vintage']) {
             matches = false;
           }
@@ -219,12 +213,12 @@ _ScoredWine _calculateRelevanceScore(Wine wine, WineLabelData wineLabelData) {
     }
   }
 
-  // Совпадение по сорту винограда
-  if (wineLabelData.grapeVariety != null && wine.grapeVariety != null) {
-    if (wine.grapeVariety!.toLowerCase() == wineLabelData.grapeVariety!.toLowerCase()) {
-      score += 20;
-    }
-  }
+  // Совпадение по сорту винограда - убираем, т.к. поле больше не существует в Wine
+  // if (wineLabelData.grapeVariety != null && wine.grapeVariety != null) {
+  //   if (wine.grapeVariety!.toLowerCase() == wineLabelData.grapeVariety!.toLowerCase()) {
+  //     score += 20;
+  //   }
+  // }
 
   // Совпадение по году урожая
   if (wineLabelData.vintage != null && wine.vintage != null) {

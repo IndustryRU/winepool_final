@@ -12,14 +12,15 @@ _Wine _$WineFromJson(Map<String, dynamic> json) => _Wine(
   winery: _wineryFromJson(json['wineries']),
   name: json['name'] as String?,
   description: json['description'] as String?,
-  grapeVariety: json['grape_variety'] as String?,
+  grapeVarietyIds: (json['grape_variety_ids'] as List<dynamic>?)
+      ?.map((e) => e as String)
+      .toList(),
   imageUrl: json['image_url'] as String?,
   color: _stringToWineColor(json['color'] as String?),
   type: _stringToWineType(json['type'] as String?),
   sugar: _stringToWineSugar(json['sugar'] as String?),
   vintage: (json['vintage'] as num?)?.toInt(),
   alcoholLevel: (json['alcohol_level'] as num?)?.toDouble(),
-  rating: (json['rating'] as num?)?.toDouble(),
   averageRating: (json['average_rating'] as num?)?.toDouble(),
   reviewsCount: (json['reviews_count'] as num?)?.toInt(),
   servingTemperature: json['serving_temperature'] as String?,
@@ -34,8 +35,8 @@ _Wine _$WineFromJson(Map<String, dynamic> json) => _Wine(
       ? null
       : DateTime.parse(json['updated_at'] as String),
   isDeleted: json['is_deleted'] as bool? ?? false,
-  minPrice: (json['min_price'] as num?)?.toInt(),
-  maxPrice: (json['max_price'] as num?)?.toInt(),
+  barcode: json['barcode'] as String?,
+  awards: (json['awards'] as List<dynamic>?)?.map((e) => e as String).toList(),
   offers: _offersFromJson(json['offers']),
 );
 
@@ -44,14 +45,13 @@ Map<String, dynamic> _$WineToJson(_Wine instance) => <String, dynamic>{
   'winery_id': ?instance.wineryId,
   'name': instance.name,
   'description': instance.description,
-  'grape_variety': instance.grapeVariety,
+  'grape_variety_ids': instance.grapeVarietyIds,
   'image_url': instance.imageUrl,
   'color': _wineColorToString(instance.color),
   'type': _wineTypeToString(instance.type),
   'sugar': _wineSugarToString(instance.sugar),
   'vintage': instance.vintage,
   'alcohol_level': instance.alcoholLevel,
-  'rating': instance.rating,
   'average_rating': instance.averageRating,
   'reviews_count': instance.reviewsCount,
   'serving_temperature': instance.servingTemperature,
@@ -62,6 +62,6 @@ Map<String, dynamic> _$WineToJson(_Wine instance) => <String, dynamic>{
   'created_at': instance.createdAt?.toIso8601String(),
   'updated_at': instance.updatedAt?.toIso8601String(),
   'is_deleted': instance.isDeleted,
-  'min_price': instance.minPrice,
-  'max_price': instance.maxPrice,
+  'barcode': instance.barcode,
+  'awards': instance.awards,
 };

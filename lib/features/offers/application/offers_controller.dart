@@ -1,4 +1,4 @@
-                                      import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:winepool_final/features/offers/data/offers_repository.dart';
 import 'package:winepool_final/features/offers/domain/offer.dart';
@@ -49,3 +49,38 @@ class OffersMutationNotifier extends AsyncNotifier<void> {
 
 final offersMutationProvider = 
     AsyncNotifierProvider<OffersMutationNotifier, void>(OffersMutationNotifier.new);
+
+// Новый провайдер для вычисления минимальной и максимальной цены вина на основе его офферов
+@riverpod
+Future<(double, double)?> winePriceRangeProvider(
+  Ref ref,
+  String wineId,
+) async {
+  final offersRepository = ref.read(offersRepositoryProvider);
+  
+  // Получаем все активные офферы для данного вина
+  final allOffers = await offersRepository.fetchAllOffers();
+  final wineOffers = allOffers
+      .where((offer) => offer.wineId == wineId && offer.isActive)
+      .where((offer) => offer.price != null)
+      .toList();
+  
+  if (wineOffers.isEmpty) {
+    return null;
+  }
+  
+  // Находим минимальную и максимальную цену
+  double minPrice = wineOffers[0].price!;
+  double maxPrice = wineOffers[0].price!;
+  
+  for (final offer in wineOffers) {
+    if (offer.price! < minPrice) {
+      minPrice = offer.price!;
+    }
+    if (offer.price! > maxPrice) {
+      maxPrice = offer.price!;
+    }
+  }
+  
+  return (minPrice, maxPrice);
+}

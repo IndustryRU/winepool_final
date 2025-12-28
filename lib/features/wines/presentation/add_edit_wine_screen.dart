@@ -4,8 +4,10 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:multi_select_flutter/multi_select_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:winepool_final/features/wines/application/wines_controller.dart';
+import 'package:winepool_final/features/wines/data/grape_variety_repository.dart';
 import 'package:winepool_final/features/wines/domain/wine.dart';
 import 'package:winepool_final/features/wines/domain/wine_characteristics.dart';
 import 'package:winepool_final/services/storage_service.dart';
@@ -15,10 +17,10 @@ class AddEditWineScreen extends HookConsumerWidget {
     super.key,
     required this.wineryId,
     this.wine,
-  });
+ });
 
   final String wineryId;
-  final Wine? wine;
+ final Wine? wine;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -27,7 +29,6 @@ class AddEditWineScreen extends HookConsumerWidget {
     // Контроллеры для всех полей
     final nameController = useTextEditingController(text: wine?.name);
     final descriptionController = useTextEditingController(text: wine?.description);
-    final grapeVarietyController = useTextEditingController(text: wine?.grapeVariety);
     final imageUrlController = useTextEditingController(text: wine?.imageUrl);
     final selectedColor = useState<WineColor?>(wine?.color);
     final selectedType = useState<WineType?>(wine?.type);
@@ -35,9 +36,6 @@ class AddEditWineScreen extends HookConsumerWidget {
     final vintageController = useTextEditingController(text: wine?.vintage?.toString() ?? '');
     final alcoholLevelController = useTextEditingController(
       text: wine?.alcoholLevel?.toString(),
-    );
-    final ratingController = useTextEditingController(
-      text: wine?.rating?.toString(),
     );
     final servingTemperatureController = useTextEditingController(
       text: wine?.servingTemperature,
@@ -48,6 +46,29 @@ class AddEditWineScreen extends HookConsumerWidget {
     final acidityValue = useState<int>(wine?.acidity ?? 1);
     final tanninsValue = useState<int>(wine?.tannins ?? 1);
     final saturationValue = useState<int>(wine?.saturation ?? 1);
+
+    // Состояния для сортов винограда
+    final allGrapeVarieties = useState<List<String>>([]);
+    final selectedGrapeVarietyIds = useState<List<String>>([]);
+    final grapeVarietiesLoading = useState<bool>(true);
+
+    // Загрузка сортов винограда
+    useEffect(() {
+      Future.microtask(() async {
+        try {
+          final grapeVarieties = await ref.read(grapeVarietyRepositoryProvider).fetchAllGrapeVarieties();
+          allGrapeVarieties.value = grapeVarieties.map((gv) => gv.id!).toList();
+          if (isEditMode && wine?.grapeVarietyIds != null) {
+            selectedGrapeVarietyIds.value = wine!.grapeVarietyIds!;
+          }
+        } catch (e) {
+          print('Error loading grape varieties: $e');
+        } finally {
+          grapeVarietiesLoading.value = false;
+        }
+      });
+      return null;
+    }, []);
 
     // GlobalKey для формы
     final formKey = useMemoized(() => GlobalKey<FormState>());
@@ -141,13 +162,42 @@ class AddEditWineScreen extends HookConsumerWidget {
               ),
               const SizedBox(height: 16),
               TextFormField(
-                controller: grapeVarietyController,
-                decoration: const InputDecoration(labelText: 'Сорт винограда'),
-              ),
-              TextFormField(
                 controller: imageUrlController,
                 decoration: const InputDecoration(labelText: 'URL изображения'),
               ),
+              // Выбор сортов винограда
+              if (!grapeVarietiesLoading.value)
+                MultiSelectDialogField(
+                  items: allGrapeVarieties.value
+                      .map((id) => MultiSelectItem(id, id))
+                      .toList(),
+                  title: const Text("Сорта винограда"),
+                  selectedColor: Theme.of(context).primaryColor,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: const BorderRadius.all(Radius.circular(25)),
+                    border: Border.all(
+                      color: Colors.grey,
+                    ),
+                  ),
+                  buttonIcon: const Icon(Icons.wine_bar),
+                  buttonText: Text(
+                    "Сорта винограда: ${selectedGrapeVarietyIds.value.length}",
+                    style: TextStyle(
+                      color: Colors.grey[700],
+                      fontSize: 16,
+                    ),
+                  ),
+                  onConfirm: (results) {
+                    selectedGrapeVarietyIds.value = results.cast<String>();
+                  },
+                  initialValue: selectedGrapeVarietyIds.value,
+                )
+              else
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 16.0),
+                  child: Center(child: CircularProgressIndicator()),
+                ),
               DropdownButtonFormField<WineColor>(
                 initialValue: selectedColor.value,
                 decoration: const InputDecoration(labelText: 'Цвет'),
@@ -200,25 +250,13 @@ class AddEditWineScreen extends HookConsumerWidget {
                 validator: (value) {
                   if (value == null || value.isEmpty) return null; // Необязательное поле
                   final strength = double.tryParse(value);
-                  if (strength == null || strength < 0 || strength > 100) {
+                  if (strength == null || strength < 0 || strength > 10) {
                     return 'Введите корректную крепость';
                   }
                   return null;
                 },
               ),
-              TextFormField(
-                controller: ratingController,
-                decoration: const InputDecoration(labelText: 'Рейтинг'),
-                keyboardType: TextInputType.numberWithOptions(decimal: true),
-                validator: (value) {
-                  if (value == null || value.isEmpty) return null; // Необязательное поле
-                  final rating = double.tryParse(value);
-                  if (rating == null || rating < 0 || rating > 5) {
-                    return 'Введите корректный рейтинг (0-5)';
-                  }
-                  return null;
-                },
-              ),
+              // Убираем TextFormField для 'Рейтинг'
               TextFormField(
                 controller: vintageController,
                 decoration: const InputDecoration(labelText: 'Год'),
@@ -306,14 +344,14 @@ class AddEditWineScreen extends HookConsumerWidget {
                         wineryId: wineryId,
                         name: nameController.text,
                         description: descriptionController.text.isEmpty ? null : descriptionController.text,
-                        grapeVariety: grapeVarietyController.text.isEmpty ? null : grapeVarietyController.text,
+                        grapeVarietyIds: selectedGrapeVarietyIds.value, // Сохраняем список ID сортов
                         imageUrl: imageUrl, // Используем URL загруженного изображения
                         color: selectedColor.value,
                         type: selectedType.value,
                         sugar: selectedSugar.value,
                         vintage: int.tryParse(vintageController.text ?? ''),
                         alcoholLevel: alcoholLevelController.text.isEmpty ? null : double.tryParse(alcoholLevelController.text),
-                        rating: ratingController.text.isEmpty ? null : double.tryParse(ratingController.text),
+                        // rating убрано
                         servingTemperature: servingTemperatureController.text.isEmpty ? null : servingTemperatureController.text,
                         sweetness: sweetnessValue.value,
                         acidity: acidityValue.value,
@@ -349,5 +387,5 @@ class AddEditWineScreen extends HookConsumerWidget {
         ),
       ),
     );
-  }
+ }
 }

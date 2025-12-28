@@ -38,17 +38,23 @@ class MockWinesRepository extends _i1.Mock implements _i3.WinesRepository {
   }
 
   @override
-  _i4.Future<List<_i2.Wine>> fetchAllWines() =>
+  _i4.Future<List<_i2.Wine>> fetchAllWines({bool? includeDeleted = false}) =>
       (super.noSuchMethod(
-            Invocation.method(#fetchAllWines, []),
+            Invocation.method(#fetchAllWines, [], {
+              #includeDeleted: includeDeleted,
+            }),
             returnValue: _i4.Future<List<_i2.Wine>>.value(<_i2.Wine>[]),
           )
           as _i4.Future<List<_i2.Wine>>);
 
   @override
-  _i4.Future<List<_i2.Wine>> fetchAllWinesNoFilter() =>
+  _i4.Future<List<_i2.Wine>> fetchAllWinesNoFilter({
+    bool? includeDeleted = false,
+  }) =>
       (super.noSuchMethod(
-            Invocation.method(#fetchAllWinesNoFilter, []),
+            Invocation.method(#fetchAllWinesNoFilter, [], {
+              #includeDeleted: includeDeleted,
+            }),
             returnValue: _i4.Future<List<_i2.Wine>>.value(<_i2.Wine>[]),
           )
           as _i4.Future<List<_i2.Wine>>);
@@ -64,9 +70,16 @@ class MockWinesRepository extends _i1.Mock implements _i3.WinesRepository {
           as _i4.Future<_i2.Wine>);
 
   @override
-  _i4.Future<List<_i2.Wine>> fetchWinesByWinery(String? wineryId) =>
+  _i4.Future<List<_i2.Wine>> fetchWinesByWinery(
+    String? wineryId, {
+    bool? includeDeleted = false,
+  }) =>
       (super.noSuchMethod(
-            Invocation.method(#fetchWinesByWinery, [wineryId]),
+            Invocation.method(
+              #fetchWinesByWinery,
+              [wineryId],
+              {#includeDeleted: includeDeleted},
+            ),
             returnValue: _i4.Future<List<_i2.Wine>>.value(<_i2.Wine>[]),
           )
           as _i4.Future<List<_i2.Wine>>);
@@ -99,33 +112,53 @@ class MockWinesRepository extends _i1.Mock implements _i3.WinesRepository {
           as _i4.Future<void>);
 
   @override
-  _i4.Future<List<_i2.Wine>> fetchPopularWines() =>
+  _i4.Future<List<_i2.Wine>> fetchPopularWines({
+    bool? includeDeleted = false,
+  }) =>
       (super.noSuchMethod(
-            Invocation.method(#fetchPopularWines, []),
+            Invocation.method(#fetchPopularWines, [], {
+              #includeDeleted: includeDeleted,
+            }),
             returnValue: _i4.Future<List<_i2.Wine>>.value(<_i2.Wine>[]),
           )
           as _i4.Future<List<_i2.Wine>>);
 
   @override
-  _i4.Future<List<_i2.Wine>> fetchNewWines() =>
+  _i4.Future<List<_i2.Wine>> fetchNewWines({bool? includeDeleted = false}) =>
       (super.noSuchMethod(
-            Invocation.method(#fetchNewWines, []),
+            Invocation.method(#fetchNewWines, [], {
+              #includeDeleted: includeDeleted,
+            }),
             returnValue: _i4.Future<List<_i2.Wine>>.value(<_i2.Wine>[]),
           )
           as _i4.Future<List<_i2.Wine>>);
 
   @override
-  _i4.Future<List<_i2.Wine>> searchWines(String? query) =>
+  _i4.Future<List<_i2.Wine>> searchWines(
+    String? query, {
+    bool? includeDeleted = false,
+  }) =>
       (super.noSuchMethod(
-            Invocation.method(#searchWines, [query]),
+            Invocation.method(
+              #searchWines,
+              [query],
+              {#includeDeleted: includeDeleted},
+            ),
             returnValue: _i4.Future<List<_i2.Wine>>.value(<_i2.Wine>[]),
           )
           as _i4.Future<List<_i2.Wine>>);
 
   @override
-  _i4.Future<List<_i2.Wine>> fetchWines(Map<String, dynamic>? filters) =>
+  _i4.Future<List<_i2.Wine>> fetchWines(
+    Map<String, dynamic>? filters, {
+    bool? includeDeleted = false,
+  }) =>
       (super.noSuchMethod(
-            Invocation.method(#fetchWines, [filters]),
+            Invocation.method(
+              #fetchWines,
+              [filters],
+              {#includeDeleted: includeDeleted},
+            ),
             returnValue: _i4.Future<List<_i2.Wine>>.value(<_i2.Wine>[]),
           )
           as _i4.Future<List<_i2.Wine>>);
@@ -134,12 +167,22 @@ class MockWinesRepository extends _i1.Mock implements _i3.WinesRepository {
   _i4.Future<Map<String, dynamic>> searchAll(
     String? query, [
     Set<String>? categories = const {},
+    bool? includeDeleted = false,
   ]) =>
       (super.noSuchMethod(
-            Invocation.method(#searchAll, [query, categories]),
+            Invocation.method(#searchAll, [query, categories, includeDeleted]),
             returnValue: _i4.Future<Map<String, dynamic>>.value(
               <String, dynamic>{},
             ),
           )
           as _i4.Future<Map<String, dynamic>>);
+
+  @override
+  _i4.Future<void> restoreWine(String? wineId) =>
+      (super.noSuchMethod(
+            Invocation.method(#restoreWine, [wineId]),
+            returnValue: _i4.Future<void>.value(),
+            returnValueForMissingStub: _i4.Future<void>.value(),
+          )
+          as _i4.Future<void>);
 }

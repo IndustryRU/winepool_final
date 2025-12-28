@@ -85,7 +85,7 @@ final class WinesControllerProvider
   }
 }
 
-String _$winesControllerHash() => r'a33135cc3b6063fcfc764554e05cbb8eea32ca81';
+String _$winesControllerHash() => r'4522757903744a05620d96c51ad394dd86748b4d';
 
 @ProviderFor(winesByWinery)
 const winesByWineryProvider = WinesByWineryFamily._();
@@ -141,7 +141,7 @@ final class WinesByWineryProvider
   }
 }
 
-String _$winesByWineryHash() => r'02997cda6cc513f913de2a4729b97d0f84f2421f';
+String _$winesByWineryHash() => r'6849300720aade90bafc7bd2ba66770af0e9aa01';
 
 final class WinesByWineryFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<List<Wine>>, String?> {
@@ -197,7 +197,7 @@ final class AllWinesProvider
   }
 }
 
-String _$allWinesHash() => r'9b2e4463fc739dd8a5460234ec00f04cc03e6e63';
+String _$allWinesHash() => r'23bdf552b9591627b860a3e40258cb223b992e4d';
 
 @ProviderFor(popularWines)
 const popularWinesProvider = PopularWinesProvider._();
@@ -235,7 +235,7 @@ final class PopularWinesProvider
   }
 }
 
-String _$popularWinesHash() => r'8eaddc2ed89cbe4825d77b28f97996e88cfe78a5';
+String _$popularWinesHash() => r'83f67c1439551b6fd54dc5642dc75deb219976dd';
 
 @ProviderFor(newWines)
 const newWinesProvider = NewWinesProvider._();
@@ -273,7 +273,7 @@ final class NewWinesProvider
   }
 }
 
-String _$newWinesHash() => r'813127258e35dff47ed5404da62adfb601924740';
+String _$newWinesHash() => r'dca3b106462081e296e9b632d15cf6b2ad2ebd35';
 
 @ProviderFor(winesWithFilters)
 const winesWithFiltersProvider = WinesWithFiltersFamily._();
@@ -329,7 +329,7 @@ final class WinesWithFiltersProvider
   }
 }
 
-String _$winesWithFiltersHash() => r'30447becc7e1edc73ae58c89a295f03a974815e8';
+String _$winesWithFiltersHash() => r'49dfc214538ef9c102e4d02219a8a051395440bf';
 
 final class WinesWithFiltersFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<List<Wine>>, Map<String, dynamic>> {
@@ -386,7 +386,7 @@ final class WinesWithActiveFiltersProvider
 }
 
 String _$winesWithActiveFiltersHash() =>
-    r'6dee188028d00fb37106927c2915345bea594dce';
+    r'91bca05dde33c2a711cc8bce7083c9e98e0f12bd';
 
 @ProviderFor(WineMutation)
 const wineMutationProvider = WineMutationProvider._();
@@ -420,7 +420,7 @@ final class WineMutationProvider
   }
 }
 
-String _$wineMutationHash() => r'd383c459a66c9f516e3a284b7f84f419d9cd49e3';
+String _$wineMutationHash() => r'524dbd636f86214919f7c1588913932dc5e7fb93';
 
 abstract class _$WineMutation extends $Notifier<AsyncValue<void>> {
   AsyncValue<void> build();
