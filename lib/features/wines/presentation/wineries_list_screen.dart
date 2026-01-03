@@ -15,15 +15,21 @@ class WineriesListScreen extends ConsumerWidget {
     final wineriesAsync = ref.watch(wineriesControllerProvider);
     final showDeleted = ref.watch(adminViewSettingsProvider);
 
-    return WillPopScope(
-      onWillPop: () async {
-        // Возвращаем на предыдущий экран (предположительно buyer-home или seller-home)
-        // Определяем, на каком экране находится пользователь, и возвращаем соответствующе
-        context.go('/seller-home'); // или '/buyer-home' в зависимости от роли
-        return false;
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (bool didPop) async {
+        if (!didPop) {
+          context.go('/admin');
+        }
       },
       child: Scaffold(
         appBar: AppBar(
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {
+              context.go('/admin');
+            },
+          ),
           title: const Text('Винодельни'),
           actions: [
             IconButton(

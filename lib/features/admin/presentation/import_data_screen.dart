@@ -15,30 +15,38 @@ class ImportDataScreen extends ConsumerStatefulWidget {
 }
 
 class _ImportDataScreenState extends ConsumerState<ImportDataScreen> {
-  final DataImportService _dataImportService = DataImportService();
+  late final DataImportService _dataImportService;
   
   // Состояния для отслеживания процесса импорта
   bool _isImportingWineries = false;
  bool _isImportingWines = false;
-  bool _isImportingGrapeVarieties = false;
+ bool _isImportingGrapeVarieties = false;
+ bool _isImportingGrapeVarietiesFromAsset = false; // Новое состояние для импорта из встроенного файла
   
   // Сообщения о статусе
   String? _wineryImportStatus;
   String? _wineImportStatus;
   String? _grapeVarietyImportStatus;
+  String? _grapeVarietyAssetImportStatus; // Новый статус для импорта из встроенного файла
   
   // Имена выбранных файлов
   String? _selectedWineriesFile;
   String? _selectedWinesFile;
-  String? _selectedGrapeVarietiesFile;
+ String? _selectedGrapeVarietiesFile;
   
   // Прогресс импорта
   double _wineryProgress = 0.0;
   double _wineProgress = 0.0;
   double _grapeVarietyProgress = 0.0;
 
+  @override
+  void initState() {
+    super.initState();
+    _dataImportService = ref.read(dataImportServiceProvider);
+  }
+
   // Метод для скачивания шаблона CSV
-  Future<void> _downloadTemplate(String assetPath, String fileName) async {
+ Future<void> _downloadTemplate(String assetPath, String fileName) async {
     try {
       final data = await rootBundle.load(assetPath);
       final bytes = data.buffer.asUint8List();
@@ -75,8 +83,8 @@ class _ImportDataScreenState extends ConsumerState<ImportDataScreen> {
         ),
       );
     }
-  }
-
+ }
+ 
   // Метод для выбора файла виноделен
   Future<void> _selectWineriesFile() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
@@ -120,8 +128,8 @@ class _ImportDataScreenState extends ConsumerState<ImportDataScreen> {
         _selectedGrapeVarietiesFile = result.files.single.name;
       });
     }
-  }
-
+ }
+ 
  // Метод для импорта виноделен
   Future<void> _importWineries() async {
     if (_selectedWineriesFile == null) return;
@@ -287,6 +295,31 @@ class _ImportDataScreenState extends ConsumerState<ImportDataScreen> {
     }
   }
 
+ // Новый метод для импорта сортов винограда из встроенного CSV-файла
+ Future<void> _importGrapeVarietiesFromAsset() async {
+    setState(() {
+      _isImportingGrapeVarietiesFromAsset = true;
+      _grapeVarietyAssetImportStatus = null;
+    });
+
+    try {
+      final importResult = await _dataImportService.importGrapeVarietiesFromAsset();
+      
+      setState(() {
+        _grapeVarietyAssetImportStatus = _formatImportResult(importResult);
+      });
+    } catch (e) {
+      // Обработка ошибок, включая PostgrestException
+      setState(() {
+        _grapeVarietyAssetImportStatus = 'Ошибка импорта: ${e.toString()}';
+      });
+    } finally {
+      setState(() {
+        _isImportingGrapeVarietiesFromAsset = false;
+      });
+    }
+ }
+ 
  // Форматирование результата импорта для отображения
   String _formatImportResult(ImportResult result) {
     final buffer = StringBuffer();
@@ -378,7 +411,7 @@ class _ImportDataScreenState extends ConsumerState<ImportDataScreen> {
                         const SizedBox(height: 8),
                         LinearProgressIndicator(value: _wineryProgress),
                         const SizedBox(height: 4),
-                        Text('Прогресс: ${( _wineryProgress * 10 ).round()}%'),
+                        Text('Прогресс: ${( _wineryProgress * 1 ).round()}%'),
                       ],
                       if (_wineryImportStatus != null) ...[
                         const SizedBox(height: 16),
@@ -386,8 +419,8 @@ class _ImportDataScreenState extends ConsumerState<ImportDataScreen> {
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
                             color: _wineryImportStatus!.contains('Строк с ошибками: 0')
-                                ? Colors.green.shade100
-                                : Colors.red.shade100,
+                                ? Colors.green.shade50
+                                : Colors.red.shade50,
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(
                               color: _wineryImportStatus!.contains('Строк с ошибками: 0')
@@ -560,8 +593,8 @@ class _ImportDataScreenState extends ConsumerState<ImportDataScreen> {
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
                             color: _grapeVarietyImportStatus!.contains('Строк с ошибками: 0')
-                                ? Colors.green.shade100
-                                : Colors.red.shade100,
+                                ? Colors.green.shade50
+                                : Colors.red.shade50,
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(
                               color: _grapeVarietyImportStatus!.contains('Строк с ошибками: 0')
@@ -573,6 +606,66 @@ class _ImportDataScreenState extends ConsumerState<ImportDataScreen> {
                             _grapeVarietyImportStatus!,
                             style: TextStyle(
                               color: _grapeVarietyImportStatus!.contains('Строк с ошибками: 0')
+                                  ? Colors.green[800]
+                                  : Colors.red[800],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              
+              // Карточка импорта сортов винограда из встроенного файла
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Импорт Сортов Винограда из шаблона',
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Импорт всех доступных сортов винограда из встроенного шаблона',
+                        style: TextStyle(
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: !_isImportingGrapeVarietiesFromAsset ? _importGrapeVarietiesFromAsset : null,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.purple,
+                          foregroundColor: Colors.white,
+                        ),
+                        child: _isImportingGrapeVarietiesFromAsset
+                            ? const CircularProgressIndicator()
+                            : const Text('Импортировать все сорта'),
+                      ),
+                      if (_grapeVarietyAssetImportStatus != null) ...[
+                        const SizedBox(height: 16),
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: _grapeVarietyAssetImportStatus!.contains('Строк с ошибками: 0')
+                                ? Colors.green.shade100
+                                : Colors.red.shade100,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: _grapeVarietyAssetImportStatus!.contains('Строк с ошибками: 0')
+                                  ? Colors.green
+                                  : Colors.red,
+                            ),
+                          ),
+                          child: SelectableText(
+                            _grapeVarietyAssetImportStatus!,
+                            style: TextStyle(
+                              color: _grapeVarietyAssetImportStatus!.contains('Строк с ошибками: 0')
                                   ? Colors.green[800]
                                   : Colors.red[800],
                             ),

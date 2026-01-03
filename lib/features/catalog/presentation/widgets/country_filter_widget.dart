@@ -1,98 +1,85 @@
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:winepool_final/features/catalog/application/countries_provider.dart';
+import 'package:winepool_final/features/catalog/presentation/country_selection_screen.dart';
+import 'package:winepool_final/features/wines/domain/country.dart';
 
 Widget buildCountryFilter(BuildContext context, ValueNotifier<Map<String, dynamic>> selectedFilters) {
-  // Получаем список всех стран
-  final allCountries = [
-    {'code': 'FR', 'name': 'Франция'},
-    {'code': 'IT', 'name': 'Италия'},
-    {'code': 'ES', 'name': 'Испания'},
-    {'code': 'DE', 'name': 'Германия'},
-    {'code': 'US', 'name': 'США'},
-    {'code': 'AU', 'name': 'Австралия'},
-    {'code': 'AR', 'name': 'Аргентина'},
-    {'code': 'CL', 'name': 'Чили'},
-    {'code': 'ZA', 'name': 'ЮАР'},
-    {'code': 'NZ', 'name': 'Новая Зеландия'},
-    {'code': 'RU', 'name': 'Россия'},
-    {'code': 'GB', 'name': 'Великобритания'},
-    {'code': 'PT', 'name': 'Португалия'},
-    {'code': 'AU', 'name': 'Австрия'},
-    {'code': 'HU', 'name': 'Венгрия'},
-    {'code': 'CZ', 'name': 'Чехия'},
-    {'code': 'GR', 'name': 'Греция'},
-    {'code': 'BE', 'name': 'Бельгия'},
-    {'code': 'CH', 'name': 'Швейцария'},
-    {'code': 'JP', 'name': 'Япония'},
-    {'code': 'CN', 'name': 'Китай'},
-  ];
-  
-  return ValueListenableBuilder<Map<String, dynamic>>(
-    valueListenable: selectedFilters,
-    builder: (context, filters, child) {
-      // Получаем уже выбранные значения
-      final selectedValues = (filters['country'] as List<String>?) ?? [];
+  return Consumer(
+    builder: (context, ref, child) {
+      final countriesAsync = ref.watch(countriesListProvider);
       
-      // Состояние для текста поиска
-      final searchController = TextEditingController();
-      final filteredCountries = ValueNotifier<List<Map<String, String>>>(allCountries);
-      
-      // Обработчик изменения текста поиска
-      void onSearchTextChanged(String text) {
-        if (text.isEmpty) {
-          filteredCountries.value = allCountries;
-        } else {
-          filteredCountries.value = allCountries
-              .where((country) => country['name']!.toLowerCase().contains(text.toLowerCase()))
-              .toList();
-        }
-      }
-      
-      // Обновляем фильтрованный список при изменении начального значения
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        onSearchTextChanged(searchController.text);
-      });
-      
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          TextField(
-            controller: searchController,
-            decoration: const InputDecoration(
-              labelText: 'Поиск по стране',
-              prefixIcon: Icon(Icons.search),
-            ),
-            onChanged: (value) {
-              onSearchTextChanged(value);
-            },
-          ),
-          const SizedBox(height: 16),
-          Expanded(
-            child: ValueListenableBuilder<List<Map<String, String>>>(
-              valueListenable: filteredCountries,
-              builder: (context, countries, child) {
-                return ListView(
-                  children: [
-                    for (Map<String, String> country in countries)
-                      CheckboxListTile(
-                        title: Text(country['name']!),
-                        value: selectedValues.contains(country['code']),
-                        onChanged: (bool? value) {
-                          final newSelectedValues = List<String>.from(selectedValues);
-                          if (value == true) {
-                            newSelectedValues.add(country['code']!);
-                          } else {
-                            newSelectedValues.remove(country['code']!);
-                          }
-                          selectedFilters.value['country'] = newSelectedValues;
-                          selectedFilters.value = Map.from(selectedFilters.value);
-                        },
+      return countriesAsync.when(
+        data: (allCountries) {
+          // Получаем уже выбранные значения
+          final selectedValues = (selectedFilters.value['country'] as List<String>?) ?? [];
+          
+          // Формируем текст для отображения выбранных стран
+          String getSelectedCountriesText() {
+            if (selectedValues.isEmpty) return 'Страна';
+            
+            if (selectedValues.length == 1) {
+              final country = allCountries.firstWhere(
+                (country) => country.code == selectedValues.first,
+                orElse: () => Country(code: selectedValues.first, name: selectedValues.first),
+              );
+              return country.name;
+            }
+            
+            return '${selectedValues.length} стран';
+          }
+
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              GestureDetector(
+                onTap: () async {
+                  // Открываем новый экран выбора стран
+                  final result = await Navigator.push<List<String>>(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => CountrySelectionScreen(
+                        initialSelectedCountries: selectedValues,
                       ),
-                  ],
-                );
-              },
-            ),
-          ),
-        ],
+                    ),
+                  );
+                  
+                  if (result != null) {
+                    selectedFilters.value['country'] = result;
+                    selectedFilters.value = Map.from(selectedFilters.value);
+                  }
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey.shade300),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        getSelectedCountriesText(),
+                        style: TextStyle(
+                          color: selectedValues.isEmpty ? Colors.grey.shade600 : Colors.black87,
+                        ),
+                      ),
+                      Icon(
+                        Icons.arrow_drop_down,
+                        color: Colors.grey.shade600,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+            ],
+          );
+        },
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stack) => Center(
+          child: Text('Ошибка загрузки стран: $error'),
+        ),
       );
     },
   );

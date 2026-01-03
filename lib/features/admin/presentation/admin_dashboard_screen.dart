@@ -37,21 +37,7 @@ class AdminDashboardScreen extends ConsumerWidget {
                 minimumSize: const Size(double.infinity, 50),
               ),
               child: const Text(
-                'Управление винодельнями',
-                style: TextStyle(fontSize: 18),
-              ),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                // TODO: Implement wine management navigation
-              },
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
-                minimumSize: const Size(double.infinity, 50),
-              ),
-              child: const Text(
-                'Управление винами',
+                'Винодельни и вина',
                 style: TextStyle(fontSize: 18),
               ),
             ),

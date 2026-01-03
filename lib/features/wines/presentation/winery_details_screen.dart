@@ -17,183 +17,196 @@ class WineryDetailsScreen extends ConsumerWidget {
     // Получаем актуальные данные винодельни по ID
     final wineryAsync = ref.watch(fetchWineryByIdProvider(winery.id!));
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(winery.name ?? 'Винодельня'),
-      ),
-      body: wineryAsync.when(
-        data: (wineryData) {
-          return SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (wineryData.bannerUrl != null) ...[
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: Image.network(
-                        wineryData.bannerUrl!,
-                        height: 200,
-                        width: double.infinity,
-                        fit: BoxFit.cover,
-                        loadingBuilder: (context, child, loadingProgress) {
-                          if (loadingProgress == null) return child;
-                          return Container(
-                            height: 200,
-                            width: double.infinity,
-                            color: Colors.grey[300],
-                            child: const Center(child: ShimmerLoadingIndicator()),
-                          );
-                        },
-                        errorBuilder: (context, error, stackTrace) {
-                          return Container(
-                            height: 200,
-                            width: double.infinity,
-                            color: Colors.grey[300],
-                            child: const Icon(
-                              Icons.image_not_supported,
-                              size: 50,
-                              color: Colors.grey,
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                  ],
-                  if (wineryData.logoUrl != null) ...[
-                    Center(
-                      child: CircleAvatar(
-                        radius: 50,
-                        backgroundImage: NetworkImage(wineryData.logoUrl!),
-                        backgroundColor: Colors.grey[200],
-                        onBackgroundImageError: (exception, stackTrace) {
-                          // Показываем иконку, если не удалось загрузить логотип
-                        },
-                        child: wineryData.logoUrl == null
-                            ? const Icon(Icons.store, size: 50, color: Colors.grey)
-                            : null,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                  ],
-                  Text(
-                    wineryData.name ?? 'Без названия',
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
+    return PopScope(
+      onPopInvoked: (didPop) {
+        if (didPop) {
+          return;
+        } else {
+          context.go('/wineries');
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => context.go('/wineries'),
+          ),
+          title: Text(winery.name ?? 'Винодельня'),
+        ),
+        body: wineryAsync.when(
+          data: (wineryData) {
+            return SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (wineryData.bannerUrl != null) ...[
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Image.network(
+                          wineryData.bannerUrl!,
+                          height: 200,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                          loadingBuilder: (context, child, loadingProgress) {
+                            if (loadingProgress == null) return child;
+                            return Container(
+                              height: 200,
+                              width: double.infinity,
+                              color: Colors.grey[300],
+                              child: const Center(child: ShimmerLoadingIndicator()),
+                            );
+                          },
+                          errorBuilder: (context, error, stackTrace) {
+                            return Container(
+                              height: 200,
+                              width: double.infinity,
+                              color: Colors.grey[300],
+                              child: const Icon(
+                                Icons.image_not_supported,
+                                size: 50,
+                                color: Colors.grey,
+                              ),
+                            );
+                          },
                         ),
-                  ),
-                  const SizedBox(height: 8),
-                  if (wineryData.description != null) ...[
+                      ),
+                      const SizedBox(height: 16),
+                    ],
+                    if (wineryData.logoUrl != null) ...[
+                      Center(
+                        child: CircleAvatar(
+                          radius: 50,
+                          backgroundImage: NetworkImage(wineryData.logoUrl!),
+                          backgroundColor: Colors.grey[200],
+                          onBackgroundImageError: (exception, stackTrace) {
+                            // Показываем иконку, если не удалось загрузить логотип
+                          },
+                          child: wineryData.logoUrl == null
+                              ? const Icon(Icons.store, size: 50, color: Colors.grey)
+                              : null,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                    ],
                     Text(
-                      wineryData.description!,
-                      style: Theme.of(context).textTheme.bodyLarge,
+                      wineryData.name ?? 'Без названия',
+                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
                     ),
+                    const SizedBox(height: 8),
+                    if (wineryData.description != null) ...[
+                      Text(
+                        wineryData.description!,
+                        style: Theme.of(context).textTheme.bodyLarge,
+                      ),
+                      const SizedBox(height: 16),
+                    ],
+                    if (wineryData.winemaker != null || 
+                        wineryData.locationText != null || 
+                        wineryData.website != null ||
+                        wineryData.latitude != null ||
+                        wineryData.longitude != null ||
+                        wineryData.foundedYear != null ||
+                        wineryData.isPartner != null ||
+                        wineryData.phone != null ||
+                        wineryData.email != null ||
+                        wineryData.countryCode != null ||
+                        wineryData.regionName != null) ...[
+                      if (wineryData.winemaker != null) ...[
+                        _buildDetailCard(
+                          context,
+                          Icons.person,
+                          'Винодел',
+                          wineryData.winemaker ?? '',
+                        ),
+                      ],
+                      if (wineryData.countryCode != null || wineryData.regionName != null) ...[
+                        _buildDetailCard(
+                          context,
+                          Icons.location_on,
+                          'Регион',
+                          '${wineryData.countryCode ?? ''}${wineryData.countryCode != null && wineryData.regionName != null ? ', ' : ''}${wineryData.regionName ?? ''}',
+                        ),
+                      ],
+                      if (wineryData.locationText != null) ...[
+                        _buildDetailCard(
+                          context,
+                          Icons.place,
+                          'Местоположение',
+                          wineryData.locationText ?? '',
+                        ),
+                      ],
+                      if (wineryData.latitude != null && wineryData.longitude != null) ...[
+                        _buildDetailCard(
+                          context,
+                          Icons.location_pin,
+                          'Координаты',
+                          'Широта: ${wineryData.latitude}, Долгота: ${wineryData.longitude}',
+                        ),
+                      ],
+                      if (wineryData.foundedYear != null) ...[
+                        _buildDetailCard(
+                          context,
+                          Icons.event,
+                          'Год основания',
+                          wineryData.foundedYear.toString(),
+                        ),
+                      ],
+                      if (wineryData.isPartner != null) ...[
+                        _buildDetailCard(
+                          context,
+                          Icons.star,
+                          'Партнер',
+                          wineryData.isPartner! ? 'Да' : 'Нет',
+                        ),
+                      ],
+                      if (wineryData.phone != null) ...[
+                        _buildDetailCard(
+                          context,
+                          Icons.phone,
+                          'Телефон',
+                          wineryData.phone!,
+                        ),
+                      ],
+                      if (wineryData.email != null) ...[
+                        _buildDetailCard(
+                          context,
+                          Icons.email,
+                          'Email',
+                          wineryData.email!,
+                        ),
+                      ],
+                      if (wineryData.website != null) ...[
+                        _buildWebsiteCard(context, wineryData.website ?? ''),
+                      ],
+                    ],
                     const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () {
+                        GoRouter.of(context).go('/wineries/${winery.id}/wines');
+                      },
+                      child: const Text('Список вин'),
+                    ),
                   ],
-                  if (wineryData.winemaker != null || 
-                      wineryData.locationText != null || 
-                      wineryData.website != null ||
-                      wineryData.latitude != null ||
-                      wineryData.longitude != null ||
-                      wineryData.foundedYear != null ||
-                      wineryData.isPartner != null ||
-                      wineryData.phone != null ||
-                      wineryData.email != null ||
-                      wineryData.countryCode != null ||
-                      wineryData.regionName != null) ...[
-                    if (wineryData.winemaker != null) ...[
-                      _buildDetailCard(
-                        context,
-                        Icons.person,
-                        'Винодел',
-                        wineryData.winemaker ?? '',
-                      ),
-                    ],
-                    if (wineryData.countryCode != null || wineryData.regionName != null) ...[
-                      _buildDetailCard(
-                        context,
-                        Icons.location_on,
-                        'Регион',
-                        '${wineryData.countryCode ?? ''}${wineryData.countryCode != null && wineryData.regionName != null ? ', ' : ''}${wineryData.regionName ?? ''}',
-                      ),
-                    ],
-                    if (wineryData.locationText != null) ...[
-                      _buildDetailCard(
-                        context,
-                        Icons.place,
-                        'Местоположение',
-                        wineryData.locationText ?? '',
-                      ),
-                    ],
-                    if (wineryData.latitude != null && wineryData.longitude != null) ...[
-                      _buildDetailCard(
-                        context,
-                        Icons.location_pin,
-                        'Координаты',
-                        'Широта: ${wineryData.latitude}, Долгота: ${wineryData.longitude}',
-                      ),
-                    ],
-                    if (wineryData.foundedYear != null) ...[
-                      _buildDetailCard(
-                        context,
-                        Icons.event,
-                        'Год основания',
-                        wineryData.foundedYear.toString(),
-                      ),
-                    ],
-                    if (wineryData.isPartner != null) ...[
-                      _buildDetailCard(
-                        context,
-                        Icons.star,
-                        'Партнер',
-                        wineryData.isPartner! ? 'Да' : 'Нет',
-                      ),
-                    ],
-                    if (wineryData.phone != null) ...[
-                      _buildDetailCard(
-                        context,
-                        Icons.phone,
-                        'Телефон',
-                        wineryData.phone!,
-                      ),
-                    ],
-                    if (wineryData.email != null) ...[
-                      _buildDetailCard(
-                        context,
-                        Icons.email,
-                        'Email',
-                        wineryData.email!,
-                      ),
-                    ],
-                    if (wineryData.website != null) ...[
-                      _buildWebsiteCard(context, wineryData.website ?? ''),
-                    ],
-                  ],
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () {
-                      GoRouter.of(context).go('/wineries/${winery.id}/wines');
-                    },
-                    child: const Text('Список вин'),
-                  ),
-                ],
+                ),
               ),
+            );
+          },
+          loading: () => const Center(child: ShimmerLoadingIndicator()),
+          error: (error, stack) => SelectableText.rich(
+            TextSpan(
+              text: 'Ошибка загрузки данных: $error',
+              style: const TextStyle(color: Colors.red),
             ),
-          );
-        },
-        loading: () => const Center(child: ShimmerLoadingIndicator()),
-        error: (error, stack) => SelectableText.rich(
-          TextSpan(
-            text: 'Ошибка загрузки данных: $error',
-            style: const TextStyle(color: Colors.red),
           ),
         ),
       ),
     );
- }
-
+  }
+  
   Widget _buildDetailCard(
     BuildContext context,
     IconData icon,

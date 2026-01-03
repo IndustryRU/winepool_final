@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:winepool_final/features/wines/domain/wine.dart';
+//import 'package:winepool_final/features/wines/domain/wine.dart';
 import 'package:winepool_final/features/wines/presentation/wine_tile.dart';
 import 'package:winepool_final/features/wines/application/wines_controller.dart';
 import 'package:winepool_final/features/wines/domain/wine_characteristics.dart';
 import 'package:winepool_final/features/catalog/application/catalog_controller.dart';
-import 'package:winepool_final/features/catalog/presentation/widgets/filter_helpers.dart';
+//import 'package:winepool_final/features/catalog/presentation/widgets/filter_helpers.dart';
 import 'package:winepool_final/features/catalog/presentation/widgets/price_filter_widget.dart';
 import 'package:winepool_final/features/catalog/presentation/widgets/color_filter_widget.dart';
 import 'package:winepool_final/features/catalog/presentation/widgets/type_filter_widget.dart';
@@ -49,11 +49,11 @@ class CatalogScreen extends HookConsumerWidget {
       return () => animation.removeListener(listener);
     }, [animation]);
 
-    return WillPopScope(
-      onWillPop: () async {
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (bool didPop) async {
         // Используем GoRouter для навигации назад
         context.go('/catalog'); // Предполагаем, что каталог открывается из buyer-home
-        return false;
       },
       child: GestureDetector(
         onLongPressStart: (LongPressStartDetails details) {
@@ -140,8 +140,8 @@ class CatalogScreen extends HookConsumerWidget {
       ), // Закрывающая скобка для Scaffold
     ), // Закрывающая скобка для Transform.scale
  ), // Закрывающая скобка для GestureDetector
-); // Закрывающая скобка для WillPopScope
- }
+); // Закрывающая скобка для PopScope
+  }
 
 }
 
@@ -313,9 +313,9 @@ class FilterSlider extends HookConsumerWidget {
       // Читаем текущие значения цен из провайдера
       final currentGlobalFilters = ref.read(catalogFiltersProvider);
       final currentMinPrice = currentGlobalFilters['min_price']?.toDouble() ?? 0.0;
-      final currentMaxPrice = currentGlobalFilters['max_price']?.toDouble() ?? 10000.0;
+      final currentMaxPrice = currentGlobalFilters['max_price']?.toDouble() ?? 1000.0;
       
-      // СРАЗУ ИНИЦИАЛИЗИРУЕМ временную переменную актуальными значениями
+      // СРАЗУ ИНИЦИАЛИЗИУЕМ временную переменную актуальными значениями
       RangeValues currentPriceRange = RangeValues(currentMinPrice, currentMaxPrice);
       bool? currentShowUnavailable;
 
@@ -584,7 +584,7 @@ class FilterSlider extends HookConsumerWidget {
                                 if (newFilters['grape'].isEmpty) newFilters.remove('grape');
                                 if (newFilters['volume'].isEmpty) newFilters.remove('volume');
                                 if (newFilters['min_rating'] == 0.0) newFilters.remove('min_rating');
-                                if (newFilters['min_year'] == 1900 && newFilters['max_year'] == DateTime.now().year) {
+                                if (newFilters['min_year'] == 190 && newFilters['max_year'] == DateTime.now().year) {
                                   newFilters.remove('min_year');
                                   newFilters.remove('max_year');
                                 }
@@ -735,7 +735,7 @@ class FilterSlider extends HookConsumerWidget {
        return ValueListenableBuilder<List<String>>(
          valueListenable: tempRegions,
          builder: (context, regions, child) {
-           return buildRegionFilter(context, selectedFilters);
+           return const RegionFilterWidget();
          },
        );
      case 'grape':
@@ -1008,12 +1008,12 @@ void _showSortModal(
        case 'country':
          return buildCountryFilter(context, selectedFilters);
        case 'region':
-         return buildRegionFilter(context, selectedFilters);
+         return const RegionFilterWidget();
        case 'grape':
          return buildGrapeFilter(context, selectedFilters);
        case 'min_rating':
          return RatingFilterWidget(
-           initialRating: 0.0,
+           initialRating: selectedFilters.value['min_rating']?.toDouble() ?? 0.0,
            onRatingChanged: (rating) {
              selectedFilters.value['min_rating'] = rating;
              selectedFilters.value = Map.from(selectedFilters.value);
@@ -1074,7 +1074,7 @@ class FilterButton extends StatelessWidget {
 
 // Вспомогательная функция для получения заголовка фильтра
 String getFilterTitle(String filterKey) {
-  switch (filterKey) {
+ switch (filterKey) {
     case 'sort':
       return 'Порядок';
     case 'color':

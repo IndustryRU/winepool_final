@@ -11,16 +11,17 @@ import 'package:winepool_final/features/wines/data/grape_variety_repository.dart
 import 'package:winepool_final/features/wines/domain/wine.dart';
 import 'package:winepool_final/features/wines/domain/wine_characteristics.dart';
 import 'package:winepool_final/services/storage_service.dart';
+import '../domain/grape_variety.dart';
 
 class AddEditWineScreen extends HookConsumerWidget {
   const AddEditWineScreen({
     super.key,
     required this.wineryId,
     this.wine,
- });
+  });
 
   final String wineryId;
- final Wine? wine;
+  final Wine? wine;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -48,7 +49,7 @@ class AddEditWineScreen extends HookConsumerWidget {
     final saturationValue = useState<int>(wine?.saturation ?? 1);
 
     // Состояния для сортов винограда
-    final allGrapeVarieties = useState<List<String>>([]);
+    final allGrapeVarieties = useState<List<GrapeVariety>>([]);
     final selectedGrapeVarietyIds = useState<List<String>>([]);
     final grapeVarietiesLoading = useState<bool>(true);
 
@@ -57,7 +58,7 @@ class AddEditWineScreen extends HookConsumerWidget {
       Future.microtask(() async {
         try {
           final grapeVarieties = await ref.read(grapeVarietyRepositoryProvider).fetchAllGrapeVarieties();
-          allGrapeVarieties.value = grapeVarieties.map((gv) => gv.id!).toList();
+          allGrapeVarieties.value = grapeVarieties;
           if (isEditMode && wine?.grapeVarietyIds != null) {
             selectedGrapeVarietyIds.value = wine!.grapeVarietyIds!;
           }
@@ -169,7 +170,7 @@ class AddEditWineScreen extends HookConsumerWidget {
               if (!grapeVarietiesLoading.value)
                 MultiSelectDialogField(
                   items: allGrapeVarieties.value
-                      .map((id) => MultiSelectItem(id, id))
+                      .map((grapeVariety) => MultiSelectItem(grapeVariety.id!, grapeVariety.name!))
                       .toList(),
                   title: const Text("Сорта винограда"),
                   selectedColor: Theme.of(context).primaryColor,
@@ -387,5 +388,5 @@ class AddEditWineScreen extends HookConsumerWidget {
         ),
       ),
     );
- }
+  }
 }
