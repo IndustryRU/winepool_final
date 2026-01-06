@@ -94,6 +94,14 @@ class WineTile extends ConsumerWidget {
                           color: Colors.grey[600],
                         ),
                       ),
+                      if (wine.grapeVarieties != null && wine.grapeVarieties!.isNotEmpty)
+                        Text(
+                          wine.grapeVarieties!.map((g) => g.name).join(', '),
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey,
+                          ),
+                        ),
                       WineCharacteristicIconsColumn(wine: wine, iconSize: 16.0, isSearch: isSearch),
                       Row(
                         children: [

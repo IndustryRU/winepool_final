@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:winepool_final/features/catalog/application/regions_provider.dart';
 import 'package:winepool_final/features/catalog/application/catalog_filters_provider.dart';
@@ -39,16 +40,8 @@ class RegionFilterWidget extends ConsumerWidget {
 
         return GestureDetector(
           onTap: () async {
-            // Открываем новый экран выбора регионов
-            final result = await Navigator.push<List<String>>(
-              context,
-              MaterialPageRoute(
-                builder: (context) => RegionSelectionScreen(
-                  initialSelectedRegions: selectedValues,
-                  availableCountries: selectedCountries,
-                ),
-              ),
-            );
+            // Открываем новый экран выбора регионов через GoRouter
+            final result = await context.push<List<String>>('/wines-catalog/region-selection');
             
             if (result != null) {
               ref.read(catalogFiltersProvider.notifier).updateRegion(result);

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:winepool_final/features/catalog/application/countries_provider.dart';
 import 'package:winepool_final/features/catalog/presentation/country_selection_screen.dart';
@@ -34,15 +35,8 @@ Widget buildCountryFilter(BuildContext context, ValueNotifier<Map<String, dynami
             children: [
               GestureDetector(
                 onTap: () async {
-                  // Открываем новый экран выбора стран
-                  final result = await Navigator.push<List<String>>(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => CountrySelectionScreen(
-                        initialSelectedCountries: selectedValues,
-                      ),
-                    ),
-                  );
+                  // Открываем новый экран выбора стран через GoRouter
+                  final result = await context.push<List<String>>('/wines-catalog/country-selection');
                   
                   if (result != null) {
                     selectedFilters.value['country'] = result;

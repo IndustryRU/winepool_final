@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:winepool_final/features/wines/domain/winery.dart';
 import 'package:winepool_final/features/offers/domain/offer.dart';
+import 'package:winepool_final/features/wines/domain/grape_variety.dart';
 import 'wine_characteristics.dart';
 
 part 'wine.freezed.dart';
@@ -59,6 +60,31 @@ List<Offer>? _offersFromJson(dynamic json) {
   // Если json - это List, используем его напрямую
  else if (json is List) {
     return json.map((item) => Offer.fromJson(item as Map<String, dynamic>)).toList();
+  }
+  
+  // Если тип json не поддерживается
+  return null;
+}
+
+/// Функция для десериализации списка GrapeVariety
+List<GrapeVariety>? _grapeVarietiesFromJson(dynamic json) {
+  if (json == null) return null;
+  
+  // Если json - это строка, декодируем её в List
+  if (json is String) {
+    try {
+      final jsonData = jsonDecode(json);
+      if (jsonData is List) {
+        return jsonData.map((item) => GrapeVariety.fromJson(item as Map<String, dynamic>)).toList();
+      }
+    } catch (e) {
+      // Ошибка при декодировании строки JSON
+      return null;
+    }
+  }
+  // Если json - это List, используем его напрямую
+ else if (json is List) {
+    return json.map((item) => GrapeVariety.fromJson(item as Map<String, dynamic>)).toList();
   }
   
   // Если тип json не поддерживается
@@ -156,6 +182,12 @@ abstract class Wine with _$Wine {
       fromJson: _offersFromJson,
     )
     List<Offer>? offers,
+    @JsonKey(
+      name: 'grape_varieties',
+      includeToJson: false,
+      fromJson: _grapeVarietiesFromJson,
+    )
+    List<GrapeVariety>? grapeVarieties,
   }) = _Wine;
 
   factory Wine.fromJson(Map<String, dynamic> json) => _$WineFromJson(json);

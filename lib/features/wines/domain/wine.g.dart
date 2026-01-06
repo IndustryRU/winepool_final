@@ -38,6 +38,7 @@ _Wine _$WineFromJson(Map<String, dynamic> json) => _Wine(
   barcode: json['barcode'] as String?,
   awards: (json['awards'] as List<dynamic>?)?.map((e) => e as String).toList(),
   offers: _offersFromJson(json['offers']),
+  grapeVarieties: _grapeVarietiesFromJson(json['grape_varieties']),
 );
 
 Map<String, dynamic> _$WineToJson(_Wine instance) => <String, dynamic>{

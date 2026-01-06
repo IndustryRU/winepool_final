@@ -14,14 +14,14 @@ abstract class CatalogFiltersState with _$CatalogFiltersState {
     double? maxPrice,
     @Default([]) List<String> country,
     @Default([]) List<String> region,
-    @Default([]) List<String> grape,
+    @Default([]) List<String> grapeIds,
     double? minRating,
     @Default(1900) int minYear,
     int? maxYear,
     @Default([]) List<String> volume,
     @Default(false) bool showUnavailable,
     String? sortOption,
- }) = _CatalogFiltersState;
+  }) = _CatalogFiltersState;
 }
 
 @riverpod
@@ -95,7 +95,7 @@ class CatalogFiltersNotifier extends _$CatalogFiltersNotifier {
 
   void resetGrapeFilter() {
     state = state.copyWith(
-      grape: const [],
+      grapeIds: const [],
     );
   }
 
@@ -128,6 +128,19 @@ class CatalogFiltersNotifier extends _$CatalogFiltersNotifier {
     state = state.copyWith(
       region: regions,
     );
+  }
+
+  void toggleGrapeId(String grapeId) {
+    final currentGrapes = state.grapeIds;
+    if (currentGrapes.contains(grapeId)) {
+      state = state.copyWith(grapeIds: List.from(currentGrapes)..remove(grapeId));
+    } else {
+      state = state.copyWith(grapeIds: List.from(currentGrapes)..add(grapeId));
+    }
+  }
+
+  void clearGrapes() {
+    state = state.copyWith(grapeIds: []);
   }
 }
 

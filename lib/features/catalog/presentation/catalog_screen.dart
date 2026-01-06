@@ -294,7 +294,7 @@ class FilterSlider extends HookConsumerWidget {
     // Обновляем временные переменные текущими значениями фильтров
     tempPriceRange.value = RangeValues(
       (currentFilters['min_price']?.toDouble() ?? 0.0),
-      (currentFilters['max_price']?.toDouble() ?? 10000.0)
+      (currentFilters['max_price']?.toDouble() ?? 1000.0)
     );
     tempShowUnavailable.value = currentFilters['show_unavailable'] ?? false;
     tempColors.value = (currentFilters['color'] as List<dynamic>?)?.cast<String>() ?? [];
@@ -742,7 +742,7 @@ class FilterSlider extends HookConsumerWidget {
        return ValueListenableBuilder<List<String>>(
          valueListenable: tempGrapes,
          builder: (context, grapes, child) {
-           return buildGrapeFilter(context, selectedFilters);
+           return const GrapeFilterWidget();
          },
        );
      case 'min_rating':
@@ -828,7 +828,7 @@ class FilterSlider extends HookConsumerWidget {
      default:
        return Container();
    }
- }
+}
 
 void _showSortModal(
       BuildContext context,
@@ -1010,7 +1010,7 @@ void _showSortModal(
        case 'region':
          return const RegionFilterWidget();
        case 'grape':
-         return buildGrapeFilter(context, selectedFilters);
+         return const GrapeFilterWidget();
        case 'min_rating':
          return RatingFilterWidget(
            initialRating: selectedFilters.value['min_rating']?.toDouble() ?? 0.0,

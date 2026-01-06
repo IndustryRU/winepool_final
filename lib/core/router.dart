@@ -33,6 +33,9 @@ import 'package:winepool_final/features/cellar/presentation/add_tasting_screen.d
 import 'package:winepool_final/features/wines/presentation/wine_label_ocr_screen.dart';
 import 'package:winepool_final/features/admin/presentation/admin_dashboard_screen.dart';
 import 'package:winepool_final/features/admin/presentation/import_data_screen.dart';
+import 'package:winepool_final/features/catalog/presentation/grape_selection_screen.dart';
+import 'package:winepool_final/features/catalog/presentation/country_selection_screen.dart';
+import 'package:winepool_final/features/catalog/presentation/region_selection_screen.dart';
 
 // Создаем ключ над провайдером
 final _shellNavigatorKey = GlobalKey<NavigatorState>();
@@ -70,7 +73,25 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/wines-catalog',
-        builder: (_, __) => const CatalogScreen(),
+        name: 'wines-catalog',
+        builder: (context, state) => const CatalogScreen(),
+        routes: [
+          GoRoute(
+            path: 'country-selection',
+            name: 'country-selection',
+            builder: (context, state) => const CountrySelectionScreen(),
+          ),
+          GoRoute(
+            path: 'region-selection',
+            name: 'region-selection',
+            builder: (context, state) => const RegionSelectionScreen(),
+          ),
+          GoRoute(
+            path: 'grape-selection',
+            name: 'grape-selection',
+            builder: (context, state) => const GrapeSelectionScreen(),
+          ),
+        ],
       ),
       ShellRoute(
         navigatorKey: _shellNavigatorKey,

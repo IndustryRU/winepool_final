@@ -13,6 +13,7 @@ import 'package:winepool_final/features/reviews/presentation/add_review_screen.d
 import 'package:winepool_final/core/providers/supabase_provider.dart';
 import 'package:winepool_final/features/wines/presentation/widgets/wine_characteristic_icons.dart';
 import 'package:winepool_final/features/wines/domain/winery.dart';
+import 'package:winepool_final/features/wines/domain/grape_variety.dart';
 import '../../../common/widgets/shimmer_loading_indicator.dart';
 
 class OfferDetailsScreen extends HookConsumerWidget {
@@ -85,7 +86,7 @@ class OfferDetailsScreen extends HookConsumerWidget {
                   'Страна:',
                   wine.winery?.countryName ?? 'Не указана',
                 ),
-                _GrapeVarietiesRow(grapeVarietyIds: wine.grapeVarietyIds),
+                _GrapeVarietiesRow(grapeVarieties: wine.grapeVarieties),
                 _buildInfoRow('Год:', offer.vintage?.toString() ?? 'Не указан'),
                 _buildInfoRow('Рейтинг:', wine.averageRating?.toStringAsFixed(1) ?? '0.0'),
                 _buildInfoRow('Отзывы:', (wine.reviewsCount ?? 0).toString()),
@@ -390,34 +391,19 @@ class OfferDetailsScreen extends HookConsumerWidget {
 }
 
 class _GrapeVarietiesRow extends ConsumerWidget {
-  const _GrapeVarietiesRow({this.grapeVarietyIds});
+  const _GrapeVarietiesRow({this.grapeVarieties});
 
-  final List<String>? grapeVarietyIds;
+  final List<GrapeVariety>? grapeVarieties;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final ids = grapeVarietyIds;
-    if (ids == null || ids.isEmpty) {
+    final varieties = grapeVarieties;
+    if (varieties == null || varieties.isEmpty) {
       return _buildStaticInfoRow('Сорт винограда:', 'Не указан');
     }
 
-    final grapeVarietiesAsync =
-        ref.watch(fetchGrapeVarietiesByIdsProvider(ids));
-
-    return grapeVarietiesAsync.when(
-      data: (grapeVarieties) {
-        final names = grapeVarieties.map((e) => e.name).join(', ');
-        return _buildStaticInfoRow('Сорт винограда:', names);
-      },
-      loading: () => _buildStaticInfoRow(
-        'Сорт винограда:',
-        'Загрузка...',
-      ),
-      error: (error, stack) => _buildStaticInfoRow(
-        'Сорт винограда:',
-        'Ошибка',
-      ),
-    );
+    final names = varieties.map((e) => e.name ?? 'Неизвестный сорт').join(', ');
+    return _buildStaticInfoRow('Сорт винограда:', names);
   }
 
   Widget _buildStaticInfoRow(String label, String value) {
