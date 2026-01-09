@@ -15,6 +15,7 @@ abstract class CatalogFiltersState with _$CatalogFiltersState {
     @Default([]) List<String> country,
     @Default([]) List<String> region,
     @Default([]) List<String> grapeIds,
+    @Default([]) List<String> wineryIds, // Новое поле для фильтрации по винодельням
     double? minRating,
     @Default(1900) int minYear,
     int? maxYear,
@@ -43,7 +44,7 @@ class CatalogFiltersNotifier extends _$CatalogFiltersNotifier {
     );
   }
 
-  void setShowUnavailable(bool showUnavailable) {
+ void setShowUnavailable(bool showUnavailable) {
     state = state.copyWith(
       showUnavailable: showUnavailable,
     );
@@ -55,7 +56,7 @@ class CatalogFiltersNotifier extends _$CatalogFiltersNotifier {
 
   void resetFilters() {
     state = const CatalogFiltersState();
-  }
+ }
 
   void resetPriceFilter() {
     state = state.copyWith(
@@ -64,7 +65,7 @@ class CatalogFiltersNotifier extends _$CatalogFiltersNotifier {
     );
   }
 
-  void resetColorFilter() {
+ void resetColorFilter() {
     state = state.copyWith(
       color: const [],
     );
@@ -88,7 +89,7 @@ class CatalogFiltersNotifier extends _$CatalogFiltersNotifier {
     );
   }
 
-  void resetRegionFilter() {
+ void resetRegionFilter() {
     state = state.copyWith(
       region: const [],
     );
@@ -97,6 +98,12 @@ class CatalogFiltersNotifier extends _$CatalogFiltersNotifier {
   void resetGrapeFilter() {
     state = state.copyWith(
       grapeIds: const [],
+    );
+  }
+
+  void resetWineryFilter() {
+    state = state.copyWith(
+      wineryIds: const [],
     );
   }
 
@@ -113,7 +120,7 @@ class CatalogFiltersNotifier extends _$CatalogFiltersNotifier {
     );
   }
 
-  void resetBottleSizeFilter() {
+ void resetBottleSizeFilter() {
     state = state.copyWith(
       bottleSizeIds: const [],
     );
@@ -150,15 +157,29 @@ class CatalogFiltersNotifier extends _$CatalogFiltersNotifier {
     state = state.copyWith(grapeIds: []);
   }
 
+  // Методы для работы с фильтром по винодельням
+  void toggleWineryId(String wineryId) {
+    final currentWineries = state.wineryIds;
+    if (currentWineries.contains(wineryId)) {
+      state = state.copyWith(wineryIds: List.from(currentWineries)..remove(wineryId));
+    } else {
+      state = state.copyWith(wineryIds: List.from(currentWineries)..add(wineryId));
+    }
+  }
+
+  void clearWineries() {
+    state = state.copyWith(wineryIds: []);
+  }
+
   // Методы для работы с фильтром по объему бутылки
-  void toggleBottleSizeId(String id) {
+ void toggleBottleSizeId(String id) {
     final currentIds = state.bottleSizeIds;
     if (currentIds.contains(id)) {
       state = state.copyWith(bottleSizeIds: List.from(currentIds)..remove(id));
     } else {
       state = state.copyWith(bottleSizeIds: List.from(currentIds)..add(id));
     }
-  }
+ }
 
   void clearBottleSizes() {
     state = state.copyWith(bottleSizeIds: []);
@@ -171,12 +192,12 @@ class CatalogFiltersNotifier extends _$CatalogFiltersNotifier {
     );
   }
 
-  void addVintage(int vintage) {
+ void addVintage(int vintage) {
     final currentVintages = state.vintages;
     if (!currentVintages.contains(vintage)) {
       state = state.copyWith(vintages: List.from(currentVintages)..add(vintage));
     }
-  }
+ }
 
   void removeVintage(int vintage) {
     final currentVintages = state.vintages;
@@ -185,7 +206,7 @@ class CatalogFiltersNotifier extends _$CatalogFiltersNotifier {
     }
   }
 
-  void toggleVintage(int vintage) {
+ void toggleVintage(int vintage) {
     final currentVintages = state.vintages;
     if (currentVintages.contains(vintage)) {
       state = state.copyWith(vintages: List.from(currentVintages)..remove(vintage));

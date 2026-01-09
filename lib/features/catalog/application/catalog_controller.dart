@@ -113,6 +113,14 @@ class CatalogFilters extends _$CatalogFilters {
     print('Updated state after resetting grape filter: $state');
   }
 
+  void clearWineries() {
+    print('--- CLEAR WINERIES CALLED ---');
+    final newState = Map<String, dynamic>.from(state);
+    newState.remove('winery_ids');
+    state = newState;
+    print('Updated state after clearing wineries: $state');
+  }
+
  void resetRatingFilter() {
     print('--- RESET RATING FILTER CALLED ---');
     final newState = Map<String, dynamic>.from(state);
