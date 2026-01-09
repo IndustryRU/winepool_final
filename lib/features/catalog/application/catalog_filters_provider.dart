@@ -1,11 +1,16 @@
+import 'dart:developer';
+
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 part 'catalog_filters_provider.g.dart';
 part 'catalog_filters_provider.freezed.dart';
 
 @freezed
 abstract class CatalogFiltersState with _$CatalogFiltersState {
+  @JsonSerializable(fieldRename: FieldRename.snake)
   const factory CatalogFiltersState({
     @Default([]) List<String> color,
     @Default([]) List<String> type,
@@ -24,6 +29,8 @@ abstract class CatalogFiltersState with _$CatalogFiltersState {
     String? sortOption,
     @Default([]) List<int> vintages,  // Новое поле для фильтрации по винтажам
   }) = _CatalogFiltersState;
+
+  factory CatalogFiltersState.fromJson(Map<String, dynamic> json) => _$CatalogFiltersStateFromJson(json);
 }
 
 @riverpod
@@ -56,7 +63,7 @@ class CatalogFiltersNotifier extends _$CatalogFiltersNotifier {
 
   void resetFilters() {
     state = const CatalogFiltersState();
- }
+   }
 
   void resetPriceFilter() {
     state = state.copyWith(
@@ -101,7 +108,7 @@ class CatalogFiltersNotifier extends _$CatalogFiltersNotifier {
     );
   }
 
-  void resetWineryFilter() {
+ void resetWineryFilter() {
     state = state.copyWith(
       wineryIds: const [],
     );
@@ -171,6 +178,11 @@ class CatalogFiltersNotifier extends _$CatalogFiltersNotifier {
     state = state.copyWith(wineryIds: []);
   }
 
+ void setWineries(List<String> wineryIds) {
+    log('CatalogFiltersNotifier: setWineries CALLED with: $wineryIds');
+    state = state.copyWith(wineryIds: wineryIds);
+  }
+
   // Методы для работы с фильтром по объему бутылки
  void toggleBottleSizeId(String id) {
     final currentIds = state.bottleSizeIds;
@@ -180,7 +192,7 @@ class CatalogFiltersNotifier extends _$CatalogFiltersNotifier {
       state = state.copyWith(bottleSizeIds: List.from(currentIds)..add(id));
     }
  }
-
+  
   void clearBottleSizes() {
     state = state.copyWith(bottleSizeIds: []);
   }
@@ -198,7 +210,201 @@ class CatalogFiltersNotifier extends _$CatalogFiltersNotifier {
       state = state.copyWith(vintages: List.from(currentVintages)..add(vintage));
     }
  }
+  
+  void removeVintage(int vintage) {
+    final currentVintages = state.vintages;
+    if (currentVintages.contains(vintage)) {
+      state = state.copyWith(vintages: List.from(currentVintages)..remove(vintage));
+    }
+  }
 
+ void toggleVintage(int vintage) {
+    final currentVintages = state.vintages;
+    if (currentVintages.contains(vintage)) {
+      state = state.copyWith(vintages: List.from(currentVintages)..remove(vintage));
+    } else {
+      state = state.copyWith(vintages: List.from(currentVintages)..add(vintage));
+    }
+  }
+}
+
+@riverpod
+class TemporaryFiltersNotifier extends _$TemporaryFiltersNotifier {
+  @override
+  CatalogFiltersState build() {
+    return const CatalogFiltersState();
+  }
+
+  void updateFilters(CatalogFiltersState newFilters) {
+    state = newFilters;
+  }
+
+  void setPriceRange(double minPrice, double maxPrice) {
+    state = state.copyWith(
+      minPrice: minPrice,
+      maxPrice: maxPrice,
+    );
+  }
+
+ void setShowUnavailable(bool showUnavailable) {
+    state = state.copyWith(
+      showUnavailable: showUnavailable,
+    );
+  }
+
+  void setAllFilters(CatalogFiltersState newFilters) {
+    state = newFilters;
+  }
+
+  void resetFilters() {
+    state = const CatalogFiltersState();
+   }
+
+  void resetPriceFilter() {
+    state = state.copyWith(
+      minPrice: null,
+      maxPrice: null,
+    );
+  }
+
+ void resetColorFilter() {
+    state = state.copyWith(
+      color: const [],
+    );
+  }
+
+  void resetTypeFilter() {
+    state = state.copyWith(
+      type: const [],
+    );
+  }
+
+  void resetSugarFilter() {
+    state = state.copyWith(
+      sugar: const [],
+    );
+  }
+
+  void resetCountryFilter() {
+    state = state.copyWith(
+      country: const [],
+    );
+  }
+
+ void resetRegionFilter() {
+    state = state.copyWith(
+      region: const [],
+    );
+  }
+
+  void resetGrapeFilter() {
+    state = state.copyWith(
+      grapeIds: const [],
+    );
+  }
+
+ void resetWineryFilter() {
+    state = state.copyWith(
+      wineryIds: const [],
+    );
+  }
+
+  void resetRatingFilter() {
+    state = state.copyWith(
+      minRating: null,
+    );
+  }
+
+  void resetYearFilter() {
+    state = state.copyWith(
+      minYear: 1900,
+      maxYear: null,
+    );
+  }
+
+ void resetBottleSizeFilter() {
+    state = state.copyWith(
+      bottleSizeIds: const [],
+    );
+  }
+
+  void resetShowUnavailableFilter() {
+    state = state.copyWith(
+      showUnavailable: false,
+    );
+  }
+
+  void resetVintageFilter() {
+    state = state.copyWith(
+      vintages: const [],
+    );
+  }
+
+  void updateRegion(List<String> regions) {
+    state = state.copyWith(
+      region: regions,
+    );
+  }
+
+  void toggleGrapeId(String grapeId) {
+    final currentGrapes = state.grapeIds;
+    if (currentGrapes.contains(grapeId)) {
+      state = state.copyWith(grapeIds: List.from(currentGrapes)..remove(grapeId));
+    } else {
+      state = state.copyWith(grapeIds: List.from(currentGrapes)..add(grapeId));
+    }
+  }
+
+  void clearGrapes() {
+    state = state.copyWith(grapeIds: []);
+  }
+
+  // Методы для работы с фильтром по винодельням
+  void toggleWineryId(String wineryId) {
+    final currentWineries = state.wineryIds;
+    if (currentWineries.contains(wineryId)) {
+      state = state.copyWith(wineryIds: List.from(currentWineries)..remove(wineryId));
+    } else {
+      state = state.copyWith(wineryIds: List.from(currentWineries)..add(wineryId));
+    }
+  }
+
+  void clearWineries() {
+    state = state.copyWith(wineryIds: []);
+  }
+
+ void setWineries(List<String> wineryIds) {
+    state = state.copyWith(wineryIds: wineryIds);
+  }
+
+  // Методы для работы с фильтром по объему бутылки
+ void toggleBottleSizeId(String id) {
+    final currentIds = state.bottleSizeIds;
+    if (currentIds.contains(id)) {
+      state = state.copyWith(bottleSizeIds: List.from(currentIds)..remove(id));
+    } else {
+      state = state.copyWith(bottleSizeIds: List.from(currentIds)..add(id));
+    }
+ }
+  
+  void clearBottleSizes() {
+    state = state.copyWith(bottleSizeIds: []);
+  }
+
+ // Новые методы для работы с винтажами
+  void setVintages(List<int> vintages) {
+    state = state.copyWith(
+      vintages: vintages,
+    );
+  }
+
+ void addVintage(int vintage) {
+    final currentVintages = state.vintages;
+    if (!currentVintages.contains(vintage)) {
+      state = state.copyWith(vintages: List.from(currentVintages)..add(vintage));
+    }
+ }
+  
   void removeVintage(int vintage) {
     final currentVintages = state.vintages;
     if (currentVintages.contains(vintage)) {

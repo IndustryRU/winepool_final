@@ -41,7 +41,7 @@ final class CatalogFiltersProvider
   }
 }
 
-String _$catalogFiltersHash() => r'52e4b5b7848aa84263d6cc8145bc2a4b731dd9bf';
+String _$catalogFiltersHash() => r'6986ca9c29081089caa73d13975cc1f5f3c80d3d';
 
 abstract class _$CatalogFilters extends $Notifier<Map<String, dynamic>> {
   Map<String, dynamic> build();

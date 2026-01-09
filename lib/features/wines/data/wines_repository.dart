@@ -268,143 +268,115 @@ class WinesRepository {
           return data.map((e) => Wine.fromJson(e as Map<String, dynamic>)).toList();
         }
 
-       Future<List<Wine>> fetchWines(Map<String, dynamic> filters, {bool includeDeleted = false}) async {
-          try {
-            debugPrint('--- FETCH WINES CALLED WITH FILTERS ---');
-            debugPrint('Filters: $filters');
-            
-            // Создаем запрос с фильтрами, включая связанные таблицы
-            dynamic query = _supabaseClient
-                .from('wines')
-                .select('*, wineries(*, country:countries(*)), grape_varieties(*), offers!inner(*)');
-
-            // Применяем фильтры к основной таблице wines
-            if (filters.containsKey('color')) {
-              final colors = filters['color'] as List<String>;
-              if (colors.isNotEmpty) {
-                query = query.inFilter('color', colors);
-              }
-            }
-            if (filters.containsKey('type')) {
-              final types = filters['type'] as List<String>;
-              if (types.isNotEmpty) {
-                query = query.inFilter('type', types);
-              }
-            }
-            if (filters.containsKey('sugar')) {
-              final sugars = filters['sugar'] as List<String>;
-              if (sugars.isNotEmpty) {
-                query = query.inFilter('sugar', sugars);
-              }
-            }
-            if (filters.containsKey('min_price')) {
-              query = query.gte('offers.price', filters['min_price']);
-            }
-            if (filters.containsKey('max_price')) {
-              query = query.lte('offers.price', filters['max_price']);
-            }
-            if (filters.containsKey('country')) {
-              final countries = filters['country'] as List<String>;
-              if (countries.isNotEmpty) {
-                query = query.inFilter('wineries.country_code', countries);
-              }
-            }
-            if (filters.containsKey('region')) {
-              final regions = filters['region'] as List<String>;
-              if (regions.isNotEmpty) {
-                query = query.inFilter('wineries.region', regions);
-              }
-            } // Закрывающая скобка для блока if (filters.containsKey('region'))
-            if (filters.containsKey('grape')) {
-              // Для фильтрации по сортам винограда нужно соединить с таблицей wine_grape_varieties
-              final grapes = filters['grape'] as List<String>;
-              if (grapes.isNotEmpty) {
-                // Сначала получаем ID вин, которые содержат указанные сорта винограда
-                final wineGrapeVarietyIds = await _supabaseClient
-                    .from('wine_grape_varieties')
-                    .select('wine_id')
-                    .inFilter('grape_variety_id', grapes);
-                
-                if (wineGrapeVarietyIds.isNotEmpty) {
-                  final List<dynamic> data = wineGrapeVarietyIds as List<dynamic>;
-                  final wineIds = data.map((item) => item['wine_id'] as String).toList();
-                  query = query.inFilter('id', wineIds);
-                } else {
-                  // Если не найдено вин с такими сортами, возвращаем пустой список
-                  return [];
-                }
-              }
-            }
-            if (filters.containsKey('min_rating')) {
-              query = query.gte('average_rating', filters['min_rating']);
-            }
-            // Удалены фильтры по min_year и max_year, так как поле vintage больше не существует в таблице wines
-            
-            // Удаляем старую логику фильтрации по volume
-            // if (filters.containsKey('volume')) {
-            //   final volumes = filters['volume'] as List<String>;
-            //   if (volumes.isNotEmpty) {
-            //     query = query.inFilter('volume', volumes);
-            //   }
-            // }
-            
-            // Добавляем фильтр по объему бутылки
-            if (filters.containsKey('bottleSizeIds')) {
-              final bottleSizeIds = filters['bottleSizeIds'] as List<String>;
-              if (bottleSizeIds.isNotEmpty) {
-                query = query.inFilter('offers.bottle_size_id', bottleSizeIds);
-              }
-            }
-            
-            if (filters.containsKey('show_unavailable') && !(filters['show_unavailable'] as bool)) {
-              // Предполагаем, что есть поле is_available или подобное
-              // query = query.eq('is_available', true);
-            }
-
-            // Применяем сортировку
-            if (filters.containsKey('sort_option')) {
-              final sortOption = filters['sort_option'] as String;
-              switch (sortOption) {
-                case 'popular':
-                  query = query.order('average_rating', ascending: false);
-                  break;
-                case 'newest':
-                  query = query.order('created_at', ascending: false);
-                  break;
-                case 'price_asc':
-                  query = query.order('offers.price', ascending: true);
-                  break;
-                case 'price_desc':
-                  query = query.order('offers.price', ascending: false);
-                  break;
-                case 'rating_desc':
-                  query = query.order('average_rating', ascending: false);
-                  break;
-              }
-            } else {
-              // Сортировка по умолчанию
-              query = query.order('created_at', ascending: false);
-            }
-
-            final response = await query;
-
-            debugPrint('--- FETCH WINES WITH FILTERS RESPONSE ---');
-            debugPrint(response.toString());
-            debugPrint('--- END FETCH WINES WITH FILTERS RESPONSE ---');
-
-            final List<dynamic> data = response as List<dynamic>;
-
-            // Отфильтруем на клиенте, если includeDeleted = false
-            if (!includeDeleted) {
-              final filteredResponse = data.where((item) => item['is_deleted'] == false).toList();
-              return filteredResponse.map((e) => Wine.fromJson(e as Map<String, dynamic>)).toList();
-            }
-            
-            return data.map((e) => Wine.fromJson(e as Map<String, dynamic>)).toList();
-          } catch (e) {
-            debugPrint('Error in fetchWines: $e');
-            rethrow;
-          }
+       Future<List<Wine>> fetchWinesWithFilters({
+         required List<String> color,
+         required List<String> type,
+         required List<String> sugar,
+         double? minPrice,
+         double? maxPrice,
+         required List<String> country,
+         required List<String> region,
+         required List<String> grapeIds,
+         required List<String> wineryIds,
+         double? minRating,
+         required List<String> bottleSizeIds,
+         required bool showUnavailable,
+         String? sortOption,
+         bool includeDeleted = false,
+       }) async {
+         log('WinesRepository: Fetching with wineryIds: $wineryIds');
+         try {
+           debugPrint('--- FETCH WINES CALLED WITH FILTERS ---');
+           
+           dynamic query = _supabaseClient
+               .from('wines')
+               .select('*, wineries(*, country:countries(*)), grape_varieties(*), offers!inner(*)');
+ 
+           if (color.isNotEmpty) {
+             query = query.inFilter('color', color);
+           }
+           if (type.isNotEmpty) {
+             query = query.inFilter('type', type);
+           }
+           if (sugar.isNotEmpty) {
+             query = query.inFilter('sugar', sugar);
+           }
+           if (minPrice != null) {
+             query = query.gte('offers.price', minPrice);
+           }
+           if (maxPrice != null) {
+             query = query.lte('offers.price', maxPrice);
+           }
+           if (country.isNotEmpty) {
+             query = query.inFilter('wineries.country_code', country);
+           }
+           if (region.isNotEmpty) {
+             query = query.inFilter('wineries.region', region);
+           }
+           if (wineryIds.isNotEmpty) {
+             query = query.inFilter('winery_id', wineryIds);
+           }
+           if (grapeIds.isNotEmpty) {
+             final wineGrapeVarietyResponse = await _supabaseClient
+                 .from('wine_grape_varieties')
+                 .select('wine_id')
+                 .inFilter('grape_variety_id', grapeIds);
+             
+             if (wineGrapeVarietyResponse.isNotEmpty) {
+                final List<dynamic> data = wineGrapeVarietyResponse as List<dynamic>;
+                final wineIds = data.map((item) => item['wine_id'] as String).toList();
+                query = query.inFilter('id', wineIds);
+             } else {
+               return [];
+             }
+           }
+           if (minRating != null) {
+             query = query.gte('average_rating', minRating);
+           }
+           if (bottleSizeIds.isNotEmpty) {
+             query = query.inFilter('offers.bottle_size_id', bottleSizeIds);
+           }
+           
+           if (!showUnavailable) {
+             // query = query.eq('is_available', true);
+           }
+ 
+           if (sortOption != null) {
+             switch (sortOption) {
+               case 'popular':
+                 query = query.order('average_rating', ascending: false);
+                 break;
+               case 'newest':
+                 query = query.order('created_at', ascending: false);
+                 break;
+               case 'price_asc':
+                 query = query.order('offers.price', ascending: true);
+                 break;
+               case 'price_desc':
+                 query = query.order('offers.price', ascending: false);
+                 break;
+               case 'rating_desc':
+                 query = query.order('average_rating', ascending: false);
+                 break;
+             }
+           } else {
+             query = query.order('created_at', ascending: false);
+           }
+ 
+           final response = await query;
+ 
+           final List<dynamic> data = response as List<dynamic>;
+ 
+           if (!includeDeleted) {
+             final filteredResponse = data.where((item) => item['is_deleted'] == false).toList();
+             return filteredResponse.map((e) => Wine.fromJson(e as Map<String, dynamic>)).toList();
+           }
+           
+           return data.map((e) => Wine.fromJson(e as Map<String, dynamic>)).toList();
+         } catch (e) {
+           debugPrint('Error in fetchWinesWithFilters: $e');
+           rethrow;
+         }
        }
 
        Future<Map<String, dynamic>> searchAll(String query, [Set<String> categories = const {}, bool includeDeleted = false]) async {

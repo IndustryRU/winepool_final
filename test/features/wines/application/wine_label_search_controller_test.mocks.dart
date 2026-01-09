@@ -149,16 +149,39 @@ class MockWinesRepository extends _i1.Mock implements _i3.WinesRepository {
           as _i4.Future<List<_i2.Wine>>);
 
   @override
-  _i4.Future<List<_i2.Wine>> fetchWines(
-    Map<String, dynamic>? filters, {
+  _i4.Future<List<_i2.Wine>> fetchWinesWithFilters({
+    required List<String>? color,
+    required List<String>? type,
+    required List<String>? sugar,
+    double? minPrice,
+    double? maxPrice,
+    required List<String>? country,
+    required List<String>? region,
+    required List<String>? grapeIds,
+    required List<String>? wineryIds,
+    double? minRating,
+    required List<String>? bottleSizeIds,
+    required bool? showUnavailable,
+    String? sortOption,
     bool? includeDeleted = false,
   }) =>
       (super.noSuchMethod(
-            Invocation.method(
-              #fetchWines,
-              [filters],
-              {#includeDeleted: includeDeleted},
-            ),
+            Invocation.method(#fetchWinesWithFilters, [], {
+              #color: color,
+              #type: type,
+              #sugar: sugar,
+              #minPrice: minPrice,
+              #maxPrice: maxPrice,
+              #country: country,
+              #region: region,
+              #grapeIds: grapeIds,
+              #wineryIds: wineryIds,
+              #minRating: minRating,
+              #bottleSizeIds: bottleSizeIds,
+              #showUnavailable: showUnavailable,
+              #sortOption: sortOption,
+              #includeDeleted: includeDeleted,
+            }),
             returnValue: _i4.Future<List<_i2.Wine>>.value(<_i2.Wine>[]),
           )
           as _i4.Future<List<_i2.Wine>>);

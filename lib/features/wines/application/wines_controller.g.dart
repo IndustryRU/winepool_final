@@ -275,80 +275,6 @@ final class NewWinesProvider
 
 String _$newWinesHash() => r'dca3b106462081e296e9b632d15cf6b2ad2ebd35';
 
-@ProviderFor(winesWithFilters)
-const winesWithFiltersProvider = WinesWithFiltersFamily._();
-
-final class WinesWithFiltersProvider
-    extends
-        $FunctionalProvider<
-          AsyncValue<List<Wine>>,
-          List<Wine>,
-          FutureOr<List<Wine>>
-        >
-    with $FutureModifier<List<Wine>>, $FutureProvider<List<Wine>> {
-  const WinesWithFiltersProvider._({
-    required WinesWithFiltersFamily super.from,
-    required Map<String, dynamic> super.argument,
-  }) : super(
-         retry: null,
-         name: r'winesWithFiltersProvider',
-         isAutoDispose: true,
-         dependencies: null,
-         $allTransitiveDependencies: null,
-       );
-
-  @override
-  String debugGetCreateSourceHash() => _$winesWithFiltersHash();
-
-  @override
-  String toString() {
-    return r'winesWithFiltersProvider'
-        ''
-        '($argument)';
-  }
-
-  @$internal
-  @override
-  $FutureProviderElement<List<Wine>> $createElement($ProviderPointer pointer) =>
-      $FutureProviderElement(pointer);
-
-  @override
-  FutureOr<List<Wine>> create(Ref ref) {
-    final argument = this.argument as Map<String, dynamic>;
-    return winesWithFilters(ref, argument);
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return other is WinesWithFiltersProvider && other.argument == argument;
-  }
-
-  @override
-  int get hashCode {
-    return argument.hashCode;
-  }
-}
-
-String _$winesWithFiltersHash() => r'49dfc214538ef9c102e4d02219a8a051395440bf';
-
-final class WinesWithFiltersFamily extends $Family
-    with $FunctionalFamilyOverride<FutureOr<List<Wine>>, Map<String, dynamic>> {
-  const WinesWithFiltersFamily._()
-    : super(
-        retry: null,
-        name: r'winesWithFiltersProvider',
-        dependencies: null,
-        $allTransitiveDependencies: null,
-        isAutoDispose: true,
-      );
-
-  WinesWithFiltersProvider call(Map<String, dynamic> filters) =>
-      WinesWithFiltersProvider._(argument: filters, from: this);
-
-  @override
-  String toString() => r'winesWithFiltersProvider';
-}
-
 @ProviderFor(winesWithActiveFilters)
 const winesWithActiveFiltersProvider = WinesWithActiveFiltersProvider._();
 
@@ -386,7 +312,7 @@ final class WinesWithActiveFiltersProvider
 }
 
 String _$winesWithActiveFiltersHash() =>
-    r'91bca05dde33c2a711cc8bce7083c9e98e0f12bd';
+    r'f442e637b38a7ec78d82835181173ba33a213823';
 
 @ProviderFor(WineMutation)
 const wineMutationProvider = WineMutationProvider._();

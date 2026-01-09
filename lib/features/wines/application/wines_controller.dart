@@ -1,6 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:winepool_final/features/admin/providers/admin_view_settings_provider.dart';
-import 'package:winepool_final/features/catalog/application/catalog_controller.dart';
+import 'package:winepool_final/features/catalog/application/catalog_filters_provider.dart';
 import 'package:winepool_final/features/offers/application/offers_controller.dart';
 import 'package:winepool_final/features/wines/data/wines_repository.dart';
 import 'package:winepool_final/features/wines/domain/wine.dart';
@@ -80,23 +80,26 @@ Future<List<Wine>> newWines(Ref ref) async {
 }
 
 @riverpod
-Future<List<Wine>> winesWithFilters(Ref ref, Map<String, dynamic> filters) async {
-  final showDeleted = ref.watch(adminViewSettingsProvider);
-  final winesRepository = ref.watch(winesRepositoryProvider);
-  final result = await winesRepository.fetchWines(filters, includeDeleted: showDeleted);
-  return result;
-}
-
-// Новый провайдер, который наблюдает за catalogFiltersProvider
-@riverpod
 Future<List<Wine>> winesWithActiveFilters(Ref ref) async {
   final filters = ref.watch(catalogFiltersProvider);
- final showDeleted = ref.watch(adminViewSettingsProvider);
-  print('--- WINES WITH ACTIVE FILTERS PROVIDER REFRESHED ---');
- print('Filters: $filters');
-  final winesRepository = ref.watch(winesRepositoryProvider);
-  final result = await winesRepository.fetchWines(filters, includeDeleted: showDeleted);
-  return result;
+  final showDeleted = ref.watch(adminViewSettingsProvider);
+
+  return ref.watch(winesRepositoryProvider).fetchWinesWithFilters(
+        color: filters.color,
+        type: filters.type,
+        sugar: filters.sugar,
+        minPrice: filters.minPrice,
+        maxPrice: filters.maxPrice,
+        country: filters.country,
+        region: filters.region,
+        grapeIds: filters.grapeIds,
+        wineryIds: filters.wineryIds,
+        minRating: filters.minRating,
+        bottleSizeIds: filters.bottleSizeIds,
+        showUnavailable: filters.showUnavailable,
+        sortOption: filters.sortOption,
+        includeDeleted: showDeleted,
+      );
 }
 
 @Riverpod(keepAlive: true)

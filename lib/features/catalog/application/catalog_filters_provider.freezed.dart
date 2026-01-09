@@ -11,6 +11,7 @@ part of 'catalog_filters_provider.dart';
 
 // dart format off
 T _$identity<T>(T value) => value;
+
 /// @nodoc
 mixin _$CatalogFiltersState {
 
@@ -23,6 +24,8 @@ mixin _$CatalogFiltersState {
 @pragma('vm:prefer-inline')
 $CatalogFiltersStateCopyWith<CatalogFiltersState> get copyWith => _$CatalogFiltersStateCopyWithImpl<CatalogFiltersState>(this as CatalogFiltersState, _$identity);
 
+  /// Serializes this CatalogFiltersState to a JSON map.
+  Map<String, dynamic> toJson();
 
 
 @override
@@ -30,7 +33,7 @@ bool operator ==(Object other) {
   return identical(this, other) || (other.runtimeType == runtimeType&&other is CatalogFiltersState&&const DeepCollectionEquality().equals(other.color, color)&&const DeepCollectionEquality().equals(other.type, type)&&const DeepCollectionEquality().equals(other.sugar, sugar)&&(identical(other.minPrice, minPrice) || other.minPrice == minPrice)&&(identical(other.maxPrice, maxPrice) || other.maxPrice == maxPrice)&&const DeepCollectionEquality().equals(other.country, country)&&const DeepCollectionEquality().equals(other.region, region)&&const DeepCollectionEquality().equals(other.grapeIds, grapeIds)&&const DeepCollectionEquality().equals(other.wineryIds, wineryIds)&&(identical(other.minRating, minRating) || other.minRating == minRating)&&(identical(other.minYear, minYear) || other.minYear == minYear)&&(identical(other.maxYear, maxYear) || other.maxYear == maxYear)&&const DeepCollectionEquality().equals(other.bottleSizeIds, bottleSizeIds)&&(identical(other.showUnavailable, showUnavailable) || other.showUnavailable == showUnavailable)&&(identical(other.sortOption, sortOption) || other.sortOption == sortOption)&&const DeepCollectionEquality().equals(other.vintages, vintages));
 }
 
-
+@JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(color),const DeepCollectionEquality().hash(type),const DeepCollectionEquality().hash(sugar),minPrice,maxPrice,const DeepCollectionEquality().hash(country),const DeepCollectionEquality().hash(region),const DeepCollectionEquality().hash(grapeIds),const DeepCollectionEquality().hash(wineryIds),minRating,minYear,maxYear,const DeepCollectionEquality().hash(bottleSizeIds),showUnavailable,sortOption,const DeepCollectionEquality().hash(vintages));
 
@@ -221,10 +224,10 @@ return $default(_that.color,_that.type,_that.sugar,_that.minPrice,_that.maxPrice
 
 /// @nodoc
 
-
+@JsonSerializable(fieldRename: FieldRename.snake)
 class _CatalogFiltersState implements CatalogFiltersState {
   const _CatalogFiltersState({final  List<String> color = const [], final  List<String> type = const [], final  List<String> sugar = const [], this.minPrice, this.maxPrice, final  List<String> country = const [], final  List<String> region = const [], final  List<String> grapeIds = const [], final  List<String> wineryIds = const [], this.minRating, this.minYear = 1900, this.maxYear, final  List<String> bottleSizeIds = const [], this.showUnavailable = false, this.sortOption, final  List<int> vintages = const []}): _color = color,_type = type,_sugar = sugar,_country = country,_region = region,_grapeIds = grapeIds,_wineryIds = wineryIds,_bottleSizeIds = bottleSizeIds,_vintages = vintages;
-  
+  factory _CatalogFiltersState.fromJson(Map<String, dynamic> json) => _$CatalogFiltersStateFromJson(json);
 
  final  List<String> _color;
 @override@JsonKey() List<String> get color {
@@ -305,14 +308,17 @@ class _CatalogFiltersState implements CatalogFiltersState {
 @pragma('vm:prefer-inline')
 _$CatalogFiltersStateCopyWith<_CatalogFiltersState> get copyWith => __$CatalogFiltersStateCopyWithImpl<_CatalogFiltersState>(this, _$identity);
 
-
+@override
+Map<String, dynamic> toJson() {
+  return _$CatalogFiltersStateToJson(this, );
+}
 
 @override
 bool operator ==(Object other) {
   return identical(this, other) || (other.runtimeType == runtimeType&&other is _CatalogFiltersState&&const DeepCollectionEquality().equals(other._color, _color)&&const DeepCollectionEquality().equals(other._type, _type)&&const DeepCollectionEquality().equals(other._sugar, _sugar)&&(identical(other.minPrice, minPrice) || other.minPrice == minPrice)&&(identical(other.maxPrice, maxPrice) || other.maxPrice == maxPrice)&&const DeepCollectionEquality().equals(other._country, _country)&&const DeepCollectionEquality().equals(other._region, _region)&&const DeepCollectionEquality().equals(other._grapeIds, _grapeIds)&&const DeepCollectionEquality().equals(other._wineryIds, _wineryIds)&&(identical(other.minRating, minRating) || other.minRating == minRating)&&(identical(other.minYear, minYear) || other.minYear == minYear)&&(identical(other.maxYear, maxYear) || other.maxYear == maxYear)&&const DeepCollectionEquality().equals(other._bottleSizeIds, _bottleSizeIds)&&(identical(other.showUnavailable, showUnavailable) || other.showUnavailable == showUnavailable)&&(identical(other.sortOption, sortOption) || other.sortOption == sortOption)&&const DeepCollectionEquality().equals(other._vintages, _vintages));
 }
 
-
+@JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_color),const DeepCollectionEquality().hash(_type),const DeepCollectionEquality().hash(_sugar),minPrice,maxPrice,const DeepCollectionEquality().hash(_country),const DeepCollectionEquality().hash(_region),const DeepCollectionEquality().hash(_grapeIds),const DeepCollectionEquality().hash(_wineryIds),minRating,minYear,maxYear,const DeepCollectionEquality().hash(_bottleSizeIds),showUnavailable,sortOption,const DeepCollectionEquality().hash(_vintages));
 
