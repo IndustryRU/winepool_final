@@ -18,9 +18,10 @@ abstract class CatalogFiltersState with _$CatalogFiltersState {
     double? minRating,
     @Default(1900) int minYear,
     int? maxYear,
-    @Default([]) List<String> volume,
+    @Default([]) List<String> bottleSizeIds, // Поле для фильтрации по объему бутылки
     @Default(false) bool showUnavailable,
     String? sortOption,
+    @Default([]) List<int> vintages,  // Новое поле для фильтрации по винтажам
   }) = _CatalogFiltersState;
 }
 
@@ -112,15 +113,21 @@ class CatalogFiltersNotifier extends _$CatalogFiltersNotifier {
     );
   }
 
-  void resetVolumeFilter() {
+  void resetBottleSizeFilter() {
     state = state.copyWith(
-      volume: const [],
+      bottleSizeIds: const [],
     );
   }
 
   void resetShowUnavailableFilter() {
     state = state.copyWith(
       showUnavailable: false,
+    );
+  }
+
+  void resetVintageFilter() {
+    state = state.copyWith(
+      vintages: const [],
     );
   }
 
@@ -141,6 +148,50 @@ class CatalogFiltersNotifier extends _$CatalogFiltersNotifier {
 
   void clearGrapes() {
     state = state.copyWith(grapeIds: []);
+  }
+
+  // Методы для работы с фильтром по объему бутылки
+  void toggleBottleSizeId(String id) {
+    final currentIds = state.bottleSizeIds;
+    if (currentIds.contains(id)) {
+      state = state.copyWith(bottleSizeIds: List.from(currentIds)..remove(id));
+    } else {
+      state = state.copyWith(bottleSizeIds: List.from(currentIds)..add(id));
+    }
+  }
+
+  void clearBottleSizes() {
+    state = state.copyWith(bottleSizeIds: []);
+  }
+
+  // Новые методы для работы с винтажами
+  void setVintages(List<int> vintages) {
+    state = state.copyWith(
+      vintages: vintages,
+    );
+  }
+
+  void addVintage(int vintage) {
+    final currentVintages = state.vintages;
+    if (!currentVintages.contains(vintage)) {
+      state = state.copyWith(vintages: List.from(currentVintages)..add(vintage));
+    }
+  }
+
+  void removeVintage(int vintage) {
+    final currentVintages = state.vintages;
+    if (currentVintages.contains(vintage)) {
+      state = state.copyWith(vintages: List.from(currentVintages)..remove(vintage));
+    }
+  }
+
+  void toggleVintage(int vintage) {
+    final currentVintages = state.vintages;
+    if (currentVintages.contains(vintage)) {
+      state = state.copyWith(vintages: List.from(currentVintages)..remove(vintage));
+    } else {
+      state = state.copyWith(vintages: List.from(currentVintages)..add(vintage));
+    }
   }
 }
 

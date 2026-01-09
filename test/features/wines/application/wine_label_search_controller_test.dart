@@ -34,7 +34,7 @@ void main() {
   group('wineLabelSearchProvider integration tests', () {
     test('Тест на точный поиск по названию в кавычках', () async {
       // Подготовка данных
-      final expectedWine = Wine(id: '1', name: 'Черный полковник', winery: Winery(id: '1', name: 'Солнечная Долина'), vintage: 2020, color: WineColor.red, sugar: WineSugar.sweet, createdAt: DateTime.now(), updatedAt: DateTime.now(), isDeleted: false);
+      final expectedWine = Wine(id: '1', name: 'Черный полковник', winery: Winery(id: '1', name: 'Солнечная Долина'), color: WineColor.red, sugar: WineSugar.sweet, createdAt: DateTime.now(), updatedAt: DateTime.now(), isDeleted: false);
 
       // Мокаем поведение репозитория. _multiStageSearch сначала ищет по имени.
       when(mockWinesRepository.searchWines('Черный полковник')).thenAnswer((_) async => [expectedWine]);
@@ -50,7 +50,7 @@ void main() {
 
     test('Тест на поиск по известному имени (из "базы")', () async {
       // Подготовка данных
-      final expectedWine = Wine(id: '2', name: 'Chateau Margaux', winery: Winery(id: '2', name: 'Chateau Margaux'), vintage: 2015, color: WineColor.red, sugar: WineSugar.dry, createdAt: DateTime.now(), updatedAt: DateTime.now(), isDeleted: false);
+      final expectedWine = Wine(id: '2', name: 'Chateau Margaux', winery: Winery(id: '2', name: 'Chateau Margaux'), color: WineColor.red, sugar: WineSugar.dry, createdAt: DateTime.now(), updatedAt: DateTime.now(), isDeleted: false);
       
       // Мокаем. processText найдет 'chateau margaux' и передаст его в searchWines
       when(mockWinesRepository.searchWines('chateau margaux')).thenAnswer((_) async => [expectedWine]);

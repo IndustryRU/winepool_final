@@ -218,11 +218,7 @@ class DataImportService {
               case 'winery_name':
                 wineryName = value;
                 break;
-              case 'vintage':
-                if (value != null && value.isNotEmpty) {
-                  wineData['vintage'] = int.tryParse(value);
-                }
-                break;
+              // Удаляем обработку поля vintage, так как оно больше не используется в модели Wine
               case 'grape_variety':
                 if (value != null && value.isNotEmpty) {
                   wineData['grape_variety'] = value;

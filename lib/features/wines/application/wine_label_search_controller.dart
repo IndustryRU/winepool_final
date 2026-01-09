@@ -72,7 +72,7 @@ Future<List<Wine>> _multiStageSearch(WinesRepository repository, WineLabelData w
   // Используем метод fetchWines с фильтрами
   final filters = <String, dynamic>{};
   // Убираем фильтрацию по grape_variety, т.к. она теперь хранится отдельно и требует JOIN
-  if (wineLabelData.vintage != null) filters['vintage'] = wineLabelData.vintage;
+  // Удаляем фильтрацию по vintage, так как поле больше не существует в модели Wine
   if (wineLabelData.color != null) filters['color'] = wineLabelData.color!.name;
   if (wineLabelData.sugar != null) filters['sugar'] = wineLabelData.sugar!.name;
 
@@ -82,9 +82,7 @@ Future<List<Wine>> _multiStageSearch(WinesRepository repository, WineLabelData w
     results = nameResults.where((wine) {
       bool matches = true;
       // Убираем фильтрацию по grape_variety, т.к. она теперь хранится отдельно
-      if (filters['vintage'] != null && wine.vintage != filters['vintage']) {
-        matches = false;
-      }
+      // Удаляем проверку по vintage, так как поле больше не существует в модели Wine
       if (filters['color'] != null && wine.color != null && wine.color!.name != filters['color']) {
         matches = false;
       }
@@ -110,9 +108,7 @@ Future<List<Wine>> _multiStageSearch(WinesRepository repository, WineLabelData w
         results = results.where((wine) {
           bool matches = true;
           // Убираем фильтрацию по grape_variety, т.к. она теперь хранится отдельно
-          if (filters['vintage'] != null && wine.vintage != filters['vintage']) {
-            matches = false;
-          }
+          // Удаляем проверку по vintage, так как поле больше не существует в модели Wine
           if (filters['color'] != null && wine.color != null && wine.color!.name != filters['color']) {
             matches = false;
           }
@@ -220,12 +216,12 @@ _ScoredWine _calculateRelevanceScore(Wine wine, WineLabelData wineLabelData) {
   //   }
   // }
 
-  // Совпадение по году урожая
-  if (wineLabelData.vintage != null && wine.vintage != null) {
-    if (wine.vintage == wineLabelData.vintage) {
-      score += 10;
-    }
-  }
+  // Совпадение по году урожая - удаляем, так как поле больше не существует в модели Wine
+  // if (wineLabelData.vintage != null && wine.vintage != null) {
+  //   if (wine.vintage == wineLabelData.vintage) {
+  //     score += 10;
+  //   }
+  // }
 
   // Совпадение по цвету
   if (wineLabelData.color != null && wine.color != null) {
@@ -244,7 +240,7 @@ _ScoredWine _calculateRelevanceScore(Wine wine, WineLabelData wineLabelData) {
       score -= 10; // Штраф за несовпадение
     }
  }
-
+ 
   return _ScoredWine(wine, score);
 }
 

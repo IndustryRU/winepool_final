@@ -1,6 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:winepool_final/features/auth/domain/profile.dart';
 import 'package:winepool_final/features/wines/domain/wine.dart';
+import 'bottle_size.dart';
 
 part 'offer.freezed.dart';
 part 'offer.g.dart';
@@ -14,7 +15,8 @@ abstract class Offer with _$Offer {
     @JsonKey(name: 'wine_id') String? wineId,
     double? price,
     int? vintage,
-    double? bottleSize,
+    @JsonKey(name: 'bottle_size_id') String? bottleSizeId,
+    @JsonKey(name: 'bottle_size', includeToJson: false) BottleSize? bottleSize,
     @JsonKey(name: 'created_at') DateTime? createdAt,
     @Default(true) bool isActive,
     @JsonKey(name: 'wines', includeToJson: false) Wine? wine,

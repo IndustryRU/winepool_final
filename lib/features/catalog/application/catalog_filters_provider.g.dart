@@ -42,7 +42,7 @@ final class CatalogFiltersNotifierProvider
 }
 
 String _$catalogFiltersNotifierHash() =>
-    r'65d501947e3e70b0f53f98e00f25404b3fd5bae9';
+    r'83ee194b2e151e1ca632ecc472659149c9ef56ec';
 
 abstract class _$CatalogFiltersNotifier extends $Notifier<CatalogFiltersState> {
   CatalogFiltersState build();

@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:winepool_final/features/offers/application/offers_controller.dart';
 import 'package:winepool_final/features/offers/domain/offer.dart';
+import 'package:winepool_final/features/offers/domain/bottle_size.dart';
+import '../application/all_bottle_sizes_provider.dart';
 
 class EditOfferScreen extends HookConsumerWidget {
   const EditOfferScreen({super.key, required this.offer});
@@ -11,10 +13,15 @@ class EditOfferScreen extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Генерируем список годов от текущего до 1950
+    final currentYear = DateTime.now().year;
+    final years = List<int>.generate(currentYear - 1949, (index) => currentYear - index);
+    
     final priceController = useTextEditingController(text: offer.price?.toString());
-    final vintageController = useTextEditingController(text: offer.vintage?.toString());
-    final bottleSizeController = useTextEditingController(text: offer.bottleSize?.toString());
+    final selectedVintage = useState<int?>(offer.vintage);
+    final selectedBottleSize = useState<BottleSize?>(offer.bottleSize);
     final formKey = useMemoized(() => GlobalKey<FormState>());
+    final bottleSizesState = ref.watch(allBottleSizesProvider);
 
     ref.listen(offersMutationProvider, (previous, next) {
       if (next is AsyncError) {
@@ -107,22 +114,50 @@ class EditOfferScreen extends HookConsumerWidget {
                 },
               ),
               const SizedBox(height: 16),
-              TextFormField(
-                controller: vintageController,
+              DropdownButtonFormField<int>(
+                value: selectedVintage.value,
                 decoration: const InputDecoration(
                   labelText: 'Год урожая',
                   border: OutlineInputBorder(),
                 ),
-                keyboardType: TextInputType.number,
+                items: years.map((year) {
+                  return DropdownMenuItem(
+                    value: year,
+                    child: Text(year.toString()),
+                  );
+                }).toList(),
+                onChanged: (int? newValue) {
+                  selectedVintage.value = newValue;
+                },
               ),
               const SizedBox(height: 16),
-              TextFormField(
-                controller: bottleSizeController,
-                decoration: const InputDecoration(
-                  labelText: 'Объем бутылки (л)',
-                  border: OutlineInputBorder(),
+              bottleSizesState.when(
+                data: (bottleSizes) {
+                  return DropdownButtonFormField<BottleSize>(
+                    value: selectedBottleSize.value,
+                    decoration: const InputDecoration(
+                      labelText: 'Объем бутылки',
+                      border: OutlineInputBorder(),
+                    ),
+                    items: bottleSizes.map((bottleSize) {
+                      return DropdownMenuItem(
+                        value: bottleSize,
+                        child: Text(bottleSize.sizeL ?? ''),
+                      );
+                    }).toList(),
+                    onChanged: (BottleSize? newValue) {
+                      selectedBottleSize.value = newValue;
+                    },
+                  );
+                },
+                loading: () => const Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Center(child: CircularProgressIndicator()),
                 ),
-                keyboardType: TextInputType.number,
+                error: (error, stack) => Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Center(child: Text('Ошибка загрузки объемов: $error')),
+                ),
               ),
               const SizedBox(height: 24),
               ElevatedButton(
@@ -130,10 +165,12 @@ class EditOfferScreen extends HookConsumerWidget {
                   print('--- Save Button Pressed ---');
                   if (formKey.currentState!.validate()) {
                     print('--- Form Validated ---');
+                    // Создаем обновленное предложение с bottleSizeId
                     final updatedOffer = offer.copyWith(
                       price: double.parse(priceController.text),
-                      vintage: int.parse(vintageController.text),
-                      bottleSize: double.parse(bottleSizeController.text),
+                      vintage: selectedVintage.value,
+                      bottleSize: selectedBottleSize.value,
+                      bottleSizeId: selectedBottleSize.value?.id, // Добавляем ID размера бутылки
                     );
                     print('--- Updating Offer ---');
                     await ref.read(offersControllerProvider.notifier).updateOffer(updatedOffer);

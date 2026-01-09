@@ -1,0 +1,2 @@
+ALTER TABLE public.wines
+DROP COLUMN IF EXISTS vintage;

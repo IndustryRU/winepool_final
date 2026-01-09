@@ -36,6 +36,8 @@ import 'package:winepool_final/features/admin/presentation/import_data_screen.da
 import 'package:winepool_final/features/catalog/presentation/grape_selection_screen.dart';
 import 'package:winepool_final/features/catalog/presentation/country_selection_screen.dart';
 import 'package:winepool_final/features/catalog/presentation/region_selection_screen.dart';
+import 'package:winepool_final/features/catalog/presentation/vintage_selection_screen.dart';
+import 'package:winepool_final/features/catalog/presentation/bottle_size_selection_screen.dart';
 
 // Создаем ключ над провайдером
 final _shellNavigatorKey = GlobalKey<NavigatorState>();
@@ -43,7 +45,7 @@ final _shellNavigatorKey = GlobalKey<NavigatorState>();
 final goRouterProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authControllerProvider);
 
-  return GoRouter(
+ return GoRouter(
     debugLogDiagnostics: true,
     initialLocation: '/login',
     routes: [
@@ -90,6 +92,16 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             path: 'grape-selection',
             name: 'grape-selection',
             builder: (context, state) => const GrapeSelectionScreen(),
+          ),
+          GoRoute(
+            path: 'vintage-selection',
+            name: 'vintage-selection',
+            builder: (context, state) => const VintageSelectionScreen(),
+          ),
+          GoRoute(
+            path: 'bottle-size-selection',
+            name: 'bottle-size-selection',
+            builder: (context, state) => const BottleSizeSelectionScreen(),
           ),
         ],
       ),

@@ -19,7 +19,7 @@ class WinesRepository {
     debugPrint('--- FETCHING ALL WINES FROM SUPABASE ---');
     var query = _supabaseClient
         .from('wines')
-        .select('*, wineries:winery_id(*, country:country_code(*)), grape_varieties(*)')
+        .select('*, wineries(*, country:countries(*)), grape_varieties(*)')
         .order('created_at', ascending: false);
 
     final response = await query;
@@ -39,10 +39,10 @@ class WinesRepository {
     return data.map((e) => Wine.fromJson(e as Map<String, dynamic>)).toList();
   }
 
-  Future<List<Wine>> fetchAllWinesNoFilter({bool includeDeleted = false}) async {
+ Future<List<Wine>> fetchAllWinesNoFilter({bool includeDeleted = false}) async {
     var query = _supabaseClient
         .from('wines')
-        .select('*, wineries:winery_id(*, country:country_code(*)), grape_varieties(*)');
+        .select('*, wineries(*, country:countries(*)), grape_varieties(*)');
 
     final response = await query;
     final List<dynamic> data = response as List<dynamic>;
@@ -56,11 +56,11 @@ class WinesRepository {
     return data.map((e) => Wine.fromJson(e as Map<String, dynamic>)).toList();
   }
 
-  Future<Wine> fetchWine(String wineId) async {
+ Future<Wine> fetchWine(String wineId) async {
     // Загружаем вино и его сорта винограда
     final response = await _supabaseClient
         .from('wines')
-        .select('*, wineries:winery_id(*, country:country_code(*)), grape_varieties(*)')
+        .select('*, wineries(*, country:countries(*)), grape_varieties(*)')
         .eq('id', wineId)
         .eq('is_deleted', false)
         .single();
@@ -74,7 +74,7 @@ class WinesRepository {
     return wine.copyWith(grapeVarietyIds: grapeVarietyIds);
   }
 
-  Future<List<String>> _getGrapeVarietyIdsForWine(String wineId) async {
+ Future<List<String>> _getGrapeVarietyIdsForWine(String wineId) async {
     final response = await _supabaseClient
         .from('wine_grape_varieties')
         .select('grape_variety_id')
@@ -86,7 +86,7 @@ class WinesRepository {
   Future<List<Wine>> fetchWinesByWinery(String wineryId, {bool includeDeleted = false}) async {
     var query = _supabaseClient
         .from('wines')
-        .select('*, wineries:winery_id(*, country:country_code(*)), grape_varieties(*)')
+        .select('*, wineries(*, country:countries(*)), grape_varieties(*)')
         .eq('winery_id', wineryId);
 
     final response = await query;
@@ -183,7 +183,7 @@ class WinesRepository {
        Future<List<Wine>> fetchPopularWines({bool includeDeleted = false}) async {
           var query = _supabaseClient
               .from('wines')
-              .select('*, wineries:winery_id(*, country:country_code(*)), grape_varieties(*)')
+              .select('*, wineries(*, country:countries(*)), grape_varieties(*)')
               .order('average_rating', ascending: false)
               .limit(10);
 
@@ -216,7 +216,7 @@ class WinesRepository {
        Future<List<Wine>> fetchNewWines({bool includeDeleted = false}) async {
           var query = _supabaseClient
               .from('wines')
-              .select('*, wineries:winery_id(*, country:country_code(*)), grape_varieties(*)')
+              .select('*, wineries(*, country:countries(*)), grape_varieties(*)')
               .order('created_at', ascending: false)
               .limit(10);
 
@@ -249,7 +249,7 @@ class WinesRepository {
        Future<List<Wine>> searchWines(String query, {bool includeDeleted = false}) async {
           var queryBuilder = _supabaseClient
               .from('wines')
-              .select('*, wineries:winery_id(*, country:country_code(*)), grape_varieties(*)')
+              .select('*, wineries(*, country:countries(*)), grape_varieties(*)')
               .ilike('name', '%$query%');
 
           final response = await queryBuilder;
@@ -276,7 +276,7 @@ class WinesRepository {
             // Создаем запрос с фильтрами, включая связанные таблицы
             dynamic query = _supabaseClient
                 .from('wines')
-                .select('*, wineries:winery_id(*, country:country_code(*)), grape_varieties(*), offers!inner(*)');
+                .select('*, wineries(*, country:countries(*)), grape_varieties(*), offers!inner(*)');
 
             // Применяем фильтры к основной таблице wines
             if (filters.containsKey('color')) {
@@ -338,18 +338,24 @@ class WinesRepository {
             if (filters.containsKey('min_rating')) {
               query = query.gte('average_rating', filters['min_rating']);
             }
-            if (filters.containsKey('min_year')) {
-              query = query.gte('vintage', filters['min_year']);
-            }
-            if (filters.containsKey('max_year')) {
-              query = query.lte('vintage', filters['max_year']);
-            }
-            if (filters.containsKey('volume')) {
-              final volumes = filters['volume'] as List<String>;
-              if (volumes.isNotEmpty) {
-                query = query.inFilter('volume', volumes);
+            // Удалены фильтры по min_year и max_year, так как поле vintage больше не существует в таблице wines
+            
+            // Удаляем старую логику фильтрации по volume
+            // if (filters.containsKey('volume')) {
+            //   final volumes = filters['volume'] as List<String>;
+            //   if (volumes.isNotEmpty) {
+            //     query = query.inFilter('volume', volumes);
+            //   }
+            // }
+            
+            // Добавляем фильтр по объему бутылки
+            if (filters.containsKey('bottleSizeIds')) {
+              final bottleSizeIds = filters['bottleSizeIds'] as List<String>;
+              if (bottleSizeIds.isNotEmpty) {
+                query = query.inFilter('offers.bottle_size_id', bottleSizeIds);
               }
             }
+            
             if (filters.containsKey('show_unavailable') && !(filters['show_unavailable'] as bool)) {
               // Предполагаем, что есть поле is_available или подобное
               // query = query.eq('is_available', true);
@@ -413,7 +419,7 @@ class WinesRepository {
            if (searchCategories.contains('wines_name')) {
              final wineResults = await _supabaseClient
                  .from('wines')
-                 .select('*, wineries:winery_id(*, country:country_code(*)), grape_varieties(*)')
+                 .select('*, wineries(*, country:countries(*)), grape_varieties(*)')
                  .ilike('name', '%$query%')
                  .limit(10);
              
@@ -436,7 +442,7 @@ class WinesRepository {
                // Затем находим вина, связанные с этими сортами
                final wineResults = await _supabaseClient
                    .from('wines')
-                   .select('*, wineries:winery_id(*, country:country_code(*)), grape_varieties(*)')
+                   .select('*, wineries(*, country:countries(*)), grape_varieties(*)')
                    .inFilter('id', await _getWineIdsByGrapeVarietyIds(grapeVarietyIds))
                    .limit(10);
                

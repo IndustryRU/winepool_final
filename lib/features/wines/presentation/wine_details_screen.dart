@@ -285,42 +285,42 @@ class WineDetailsScreen extends ConsumerWidget {
  }
  
  Widget _buildGrapeVarietiesDetailItem(BuildContext context, WidgetRef ref, List<String> grapeVarietyIds) {
-   final grapeVarietiesAsync = ref.watch(fetchGrapeVarietiesByIdsProvider(grapeVarietyIds));
-   
-   return grapeVarietiesAsync.when(
-     data: (grapeVarieties) {
-       final grapeNames = grapeVarieties.map((gv) => gv.name ?? '').join(', ');
-       return _buildDetailItem('Сорта винограда', grapeNames);
-     },
-     loading: () => _buildDetailItem('Сорта винограда', 'Загрузка...'),
-     error: (error, stack) => _buildDetailItem('Сорта винограда', 'Ошибка загрузки'),
-   );
+    final grapeVarietiesAsync = ref.watch(fetchGrapeVarietiesByIdsProvider(grapeVarietyIds));
+    
+    return grapeVarietiesAsync.when(
+      data: (grapeVarieties) {
+        final grapeNames = grapeVarieties.map((gv) => gv.name ?? '').join(', ');
+        return _buildDetailItem('Сорта винограда', grapeNames);
+      },
+      loading: () => _buildDetailItem('Сорта винограда', 'Загрузка...'),
+      error: (error, stack) => _buildDetailItem('Сорта винограда', 'Ошибка загрузки'),
+    );
  }
-
+ 
  Widget _buildDetailItem(String label, String value) {
-   return Padding(
-     padding: const EdgeInsets.symmetric(vertical: 4.0),
-     child: Row(
-       crossAxisAlignment: CrossAxisAlignment.start,
-       children: [
-         SizedBox(
-           width: 100,
-           child: Text(
-             label,
-             style: const TextStyle(fontWeight: FontWeight.bold),
-           ),
-         ),
-         Expanded(
-           child: Text(
-             value,
-             style: const TextStyle(),
-           ),
-         ),
-       ],
-     ),
-   );
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 100,
+            child: Text(
+              label,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
+          Expanded(
+            child: Text(
+              value,
+              style: const TextStyle(),
+            ),
+          ),
+        ],
+      ),
+    );
  }
-
+ 
 void _showAddToCellarBottomSheet(BuildContext context, WidgetRef ref) {
     showModalBottomSheet<void>(
       context: context,
@@ -365,7 +365,7 @@ void _showAddToCellarBottomSheet(BuildContext context, WidgetRef ref) {
       },
     );
  }
-
+ 
 void _showStorageFormDialog(BuildContext context, WidgetRef ref) {
     final TextEditingController quantityController = TextEditingController();
     final TextEditingController priceController = TextEditingController();

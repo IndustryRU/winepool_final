@@ -6,6 +6,8 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:winepool_final/features/wines/presentation/wine_tile.dart';
 import 'package:winepool_final/features/wines/application/wines_controller.dart';
 import 'package:winepool_final/features/wines/domain/wine_characteristics.dart';
+import 'package:winepool_final/features/catalog/application/catalog_controller.dart' as old_controller;
+import 'package:winepool_final/features/catalog/application/catalog_filters_provider.dart' as new_provider;
 import 'package:winepool_final/features/catalog/application/catalog_controller.dart';
 //import 'package:winepool_final/features/catalog/presentation/widgets/filter_helpers.dart';
 import 'package:winepool_final/features/catalog/presentation/widgets/price_filter_widget.dart';
@@ -17,7 +19,7 @@ import 'package:winepool_final/features/catalog/presentation/widgets/region_filt
 import 'package:winepool_final/features/catalog/presentation/widgets/grape_filter_widget.dart';
 import 'package:winepool_final/features/catalog/presentation/widgets/rating_filter_widget.dart';
 import 'package:winepool_final/features/catalog/presentation/widgets/year_filter_widget.dart';
-import 'package:winepool_final/features/catalog/presentation/widgets/volume_filter_widget.dart';
+import 'package:winepool_final/features/catalog/presentation/widgets/bottle_size_filter_widget.dart';
 import 'package:winepool_final/common/widgets/shimmer_loading_indicator.dart';
 
 // Провайдер для фильтров
@@ -31,7 +33,7 @@ class CatalogScreen extends HookConsumerWidget {
   const CatalogScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+ Widget build(BuildContext context, WidgetRef ref) {
     final filters = ref.watch(catalogFiltersProvider);
     final winesAsync = ref.watch(winesWithActiveFiltersProvider);
     final scale = useState<double>(1.0);
@@ -153,7 +155,7 @@ const List<String> filterKeys = [
   'price',
   'country',
   'region',
-  'grape',
+ 'grape',
   'min_rating',
  'year',
  'volume',
@@ -236,7 +238,7 @@ class FilterSlider extends HookConsumerWidget {
     );
   }
 
-  // Метод для проверки активности фильтра
+ // Метод для проверки активности фильтра
   bool _isFilterActive(Map<String, dynamic> currentFilters, String filterKey) {
     switch (filterKey) {
       case 'color':
@@ -308,7 +310,13 @@ class FilterSlider extends HookConsumerWidget {
     tempMaxYear.value = (currentFilters['max_year'] as num?)?.toInt() ?? DateTime.now().year;
     tempVolumes.value = (currentFilters['volume'] as List<dynamic>?)?.cast<String>() ?? [];
 
-    if (filterKey == 'price') {
+    if (filterKey == 'year') {
+      // Для фильтра винтажа открываем новый экран выбора винтажа
+      context.push('/wines-catalog/vintage-selection');
+    } else if (filterKey == 'volume') {
+      // Для фильтра объема бутылки открываем новый экран выбора объема
+      context.push('/wines-catalog/bottle-size-selection');
+    } else if (filterKey == 'price') {
       // Для ценного фильтра открываем модальное окно и ждем возвращаемого значения
       // Читаем текущие значения цен из провайдера
       final currentGlobalFilters = ref.read(catalogFiltersProvider);
@@ -463,7 +471,7 @@ class FilterSlider extends HookConsumerWidget {
                               onPressed: () {
                                 // Остальная логика сброса для других фильтров
                                 // СБРОСИТЬ ВСЕ ЛОКАЛЬНЫЕ TEMP ПЕРЕМЕННЫЕ ДО ИХ НАЧАЛЬНЫХ/ДЕФОЛТНЫХ ЗНАЧЕНИЙ
-                                tempPriceRange.value = RangeValues(0, 100000);
+                                tempPriceRange.value = RangeValues(0, 1000);
                                 tempShowUnavailable.value = false;
                                 tempColors.value = [];
                                 tempTypes.value = [];
@@ -531,9 +539,6 @@ class FilterSlider extends HookConsumerWidget {
                                   case 'min_rating':
                                     ref.read(catalogFiltersProvider.notifier).resetRatingFilter();
                                     tempRating.value = 0.0;
-                                    break;
-                                  case 'year':
-                                    ref.read(catalogFiltersProvider.notifier).resetYearFilter();
                                     break;
                                   case 'volume':
                                     ref.read(catalogFiltersProvider.notifier).resetVolumeFilter();
@@ -613,7 +618,7 @@ class FilterSlider extends HookConsumerWidget {
       );
     }
  }
-
+  
  Widget _buildFilterContentWithCallbacks(
    BuildContext context,
    String filterKey,
@@ -753,6 +758,9 @@ class FilterSlider extends HookConsumerWidget {
          },
        );
      case 'year':
+       final currentFilters = ref.read(catalogFiltersProvider);
+       final currentMinYear = currentFilters['min_year']?.toInt() ?? 1900;
+       final currentMaxYear = currentFilters['max_year']?.toInt() ?? DateTime.now().year;
        return Column(
          crossAxisAlignment: CrossAxisAlignment.start,
          children: [
@@ -798,33 +806,7 @@ class FilterSlider extends HookConsumerWidget {
          ],
        );
      case 'volume':
-       return ValueListenableBuilder<List<String>>(
-         valueListenable: tempVolumes,
-         builder: (context, volumes, child) {
-           return Column(
-             crossAxisAlignment: CrossAxisAlignment.start,
-             children: [
-               for (String volume in ['0.375', '0.75', '1.5', '3', '6'])
-                 CheckboxListTile(
-                   title: Text('${volume} л'),
-                   value: volumes.contains(volume),
-                   onChanged: (bool? value) {
-                     setState(() {
-                       final newVolumes = List<String>.from(volumes);
-                       if (value == true) {
-                         newVolumes.add(volume);
-                       } else {
-                         newVolumes.remove(volume);
-                       }
-                       tempVolumes.value = newVolumes;
-                     });
-                   },
-                 ),
-               ],
-           
-           );
-         },
-       );
+       return const BottleSizeFilterWidget();
      default:
        return Container();
    }
@@ -1022,7 +1004,7 @@ void _showSortModal(
        case 'year':
          return buildYearFilter(context, selectedFilters);
        case 'volume':
-         return buildVolumeFilter(context, selectedFilters);
+         return const BottleSizeFilterWidget();
        default:
          return Container();
      }

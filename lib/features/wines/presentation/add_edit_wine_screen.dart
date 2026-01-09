@@ -34,7 +34,6 @@ class AddEditWineScreen extends HookConsumerWidget {
     final selectedColor = useState<WineColor?>(wine?.color);
     final selectedType = useState<WineType?>(wine?.type);
     final selectedSugar = useState<WineSugar?>(wine?.sugar);
-    final vintageController = useTextEditingController(text: wine?.vintage?.toString() ?? '');
     final alcoholLevelController = useTextEditingController(
       text: wine?.alcoholLevel?.toString(),
     );
@@ -257,12 +256,6 @@ class AddEditWineScreen extends HookConsumerWidget {
                   return null;
                 },
               ),
-              // Убираем TextFormField для 'Рейтинг'
-              TextFormField(
-                controller: vintageController,
-                decoration: const InputDecoration(labelText: 'Год'),
-                keyboardType: TextInputType.number,
-              ),
               TextFormField(
                 controller: servingTemperatureController,
                 decoration: const InputDecoration(labelText: 'Температура подачи'),
@@ -350,7 +343,6 @@ class AddEditWineScreen extends HookConsumerWidget {
                         color: selectedColor.value,
                         type: selectedType.value,
                         sugar: selectedSugar.value,
-                        vintage: int.tryParse(vintageController.text ?? ''),
                         alcoholLevel: alcoholLevelController.text.isEmpty ? null : double.tryParse(alcoholLevelController.text),
                         // rating убрано
                         servingTemperature: servingTemperatureController.text.isEmpty ? null : servingTemperatureController.text,

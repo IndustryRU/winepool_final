@@ -95,7 +95,7 @@ class OfferDetailsScreen extends HookConsumerWidget {
                 const SizedBox(height: 16),
                 _buildSectionTitle('Детали предложения'),
                 _buildInfoRow('Цена:', offer.price != null ? '${offer.price!.toStringAsFixed(0)} ₽' : 'Не указана'),
-                _buildInfoRow('Объем бутылки:', offer.bottleSize != null ? '${offer.bottleSize!} л' : 'Не указан'),
+                _buildInfoRow('Объем бутылки:', offer.bottleSize?.sizeL != null ? '${offer.bottleSize!.sizeL}' : 'Не указан'),
                 _buildInfoRow('Продавец:', offer.seller?.shopName ?? 'Не указан'),
                 const SizedBox(height: 24),
                 Consumer(
@@ -252,7 +252,7 @@ class OfferDetailsScreen extends HookConsumerWidget {
     );
   }
 
-  Widget _buildSectionTitle(String title) {
+ Widget _buildSectionTitle(String title) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0),
       child: Text(
@@ -265,7 +265,7 @@ class OfferDetailsScreen extends HookConsumerWidget {
     );
   }
 
-  Widget _buildInfoRow(String label, String value) {
+ Widget _buildInfoRow(String label, String value) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0),
       child: Row(
@@ -293,7 +293,7 @@ class OfferDetailsScreen extends HookConsumerWidget {
     );
   }
 
-  Widget _buildInfoRowWithIcon(Widget icon, String label, String value) {
+ Widget _buildInfoRowWithIcon(Widget icon, String label, String value) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0),
       child: Row(
@@ -329,7 +329,7 @@ class OfferDetailsScreen extends HookConsumerWidget {
     );
   }
 
-  Widget _buildWineImage(String? imageUrl, ValueNotifier<double> scale, BuildContext context) {
+ Widget _buildWineImage(String? imageUrl, ValueNotifier<double> scale, BuildContext context) {
     final bool isValidUrl = imageUrl != null && imageUrl.startsWith('http');
     final alignment = useState<Alignment>(Alignment.center);
     final controller = useAnimationController(duration: const Duration(milliseconds: 100));
@@ -406,7 +406,7 @@ class _GrapeVarietiesRow extends ConsumerWidget {
     return _buildStaticInfoRow('Сорт винограда:', names);
   }
 
-  Widget _buildStaticInfoRow(String label, String value) {
+ Widget _buildStaticInfoRow(String label, String value) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0),
       child: Row(

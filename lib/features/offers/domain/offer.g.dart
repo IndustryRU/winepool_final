@@ -12,7 +12,10 @@ _Offer _$OfferFromJson(Map<String, dynamic> json) => _Offer(
   wineId: json['wine_id'] as String?,
   price: (json['price'] as num?)?.toDouble(),
   vintage: (json['vintage'] as num?)?.toInt(),
-  bottleSize: (json['bottle_size'] as num?)?.toDouble(),
+  bottleSizeId: json['bottle_size_id'] as String?,
+  bottleSize: json['bottle_size'] == null
+      ? null
+      : BottleSize.fromJson(json['bottle_size'] as Map<String, dynamic>),
   createdAt: json['created_at'] == null
       ? null
       : DateTime.parse(json['created_at'] as String),
@@ -31,7 +34,7 @@ Map<String, dynamic> _$OfferToJson(_Offer instance) => <String, dynamic>{
   'wine_id': instance.wineId,
   'price': instance.price,
   'vintage': instance.vintage,
-  'bottle_size': instance.bottleSize,
+  'bottle_size_id': instance.bottleSizeId,
   'created_at': instance.createdAt?.toIso8601String(),
   'is_active': instance.isActive,
 };

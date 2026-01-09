@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Offer {
 
- String get id;@JsonKey(name: 'seller_id') String? get sellerId;@JsonKey(name: 'wine_id') String? get wineId; double? get price; int? get vintage; double? get bottleSize;@JsonKey(name: 'created_at') DateTime? get createdAt; bool get isActive;@JsonKey(name: 'wines', includeToJson: false) Wine? get wine;@JsonKey(name: 'profiles', includeToJson: false) Profile? get seller;
+ String get id;@JsonKey(name: 'seller_id') String? get sellerId;@JsonKey(name: 'wine_id') String? get wineId; double? get price; int? get vintage;@JsonKey(name: 'bottle_size_id') String? get bottleSizeId;@JsonKey(name: 'bottle_size', includeToJson: false) BottleSize? get bottleSize;@JsonKey(name: 'created_at') DateTime? get createdAt; bool get isActive;@JsonKey(name: 'wines', includeToJson: false) Wine? get wine;@JsonKey(name: 'profiles', includeToJson: false) Profile? get seller;
 /// Create a copy of Offer
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $OfferCopyWith<Offer> get copyWith => _$OfferCopyWithImpl<Offer>(this as Offer, 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Offer&&(identical(other.id, id) || other.id == id)&&(identical(other.sellerId, sellerId) || other.sellerId == sellerId)&&(identical(other.wineId, wineId) || other.wineId == wineId)&&(identical(other.price, price) || other.price == price)&&(identical(other.vintage, vintage) || other.vintage == vintage)&&(identical(other.bottleSize, bottleSize) || other.bottleSize == bottleSize)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.isActive, isActive) || other.isActive == isActive)&&(identical(other.wine, wine) || other.wine == wine)&&(identical(other.seller, seller) || other.seller == seller));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Offer&&(identical(other.id, id) || other.id == id)&&(identical(other.sellerId, sellerId) || other.sellerId == sellerId)&&(identical(other.wineId, wineId) || other.wineId == wineId)&&(identical(other.price, price) || other.price == price)&&(identical(other.vintage, vintage) || other.vintage == vintage)&&(identical(other.bottleSizeId, bottleSizeId) || other.bottleSizeId == bottleSizeId)&&(identical(other.bottleSize, bottleSize) || other.bottleSize == bottleSize)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.isActive, isActive) || other.isActive == isActive)&&(identical(other.wine, wine) || other.wine == wine)&&(identical(other.seller, seller) || other.seller == seller));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,sellerId,wineId,price,vintage,bottleSize,createdAt,isActive,wine,seller);
+int get hashCode => Object.hash(runtimeType,id,sellerId,wineId,price,vintage,bottleSizeId,bottleSize,createdAt,isActive,wine,seller);
 
 @override
 String toString() {
-  return 'Offer(id: $id, sellerId: $sellerId, wineId: $wineId, price: $price, vintage: $vintage, bottleSize: $bottleSize, createdAt: $createdAt, isActive: $isActive, wine: $wine, seller: $seller)';
+  return 'Offer(id: $id, sellerId: $sellerId, wineId: $wineId, price: $price, vintage: $vintage, bottleSizeId: $bottleSizeId, bottleSize: $bottleSize, createdAt: $createdAt, isActive: $isActive, wine: $wine, seller: $seller)';
 }
 
 
@@ -48,11 +48,11 @@ abstract mixin class $OfferCopyWith<$Res>  {
   factory $OfferCopyWith(Offer value, $Res Function(Offer) _then) = _$OfferCopyWithImpl;
 @useResult
 $Res call({
- String id,@JsonKey(name: 'seller_id') String? sellerId,@JsonKey(name: 'wine_id') String? wineId, double? price, int? vintage, double? bottleSize,@JsonKey(name: 'created_at') DateTime? createdAt, bool isActive,@JsonKey(name: 'wines', includeToJson: false) Wine? wine,@JsonKey(name: 'profiles', includeToJson: false) Profile? seller
+ String id,@JsonKey(name: 'seller_id') String? sellerId,@JsonKey(name: 'wine_id') String? wineId, double? price, int? vintage,@JsonKey(name: 'bottle_size_id') String? bottleSizeId,@JsonKey(name: 'bottle_size', includeToJson: false) BottleSize? bottleSize,@JsonKey(name: 'created_at') DateTime? createdAt, bool isActive,@JsonKey(name: 'wines', includeToJson: false) Wine? wine,@JsonKey(name: 'profiles', includeToJson: false) Profile? seller
 });
 
 
-$WineCopyWith<$Res>? get wine;$ProfileCopyWith<$Res>? get seller;
+$BottleSizeCopyWith<$Res>? get bottleSize;$WineCopyWith<$Res>? get wine;$ProfileCopyWith<$Res>? get seller;
 
 }
 /// @nodoc
@@ -65,15 +65,16 @@ class _$OfferCopyWithImpl<$Res>
 
 /// Create a copy of Offer
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? sellerId = freezed,Object? wineId = freezed,Object? price = freezed,Object? vintage = freezed,Object? bottleSize = freezed,Object? createdAt = freezed,Object? isActive = null,Object? wine = freezed,Object? seller = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? sellerId = freezed,Object? wineId = freezed,Object? price = freezed,Object? vintage = freezed,Object? bottleSizeId = freezed,Object? bottleSize = freezed,Object? createdAt = freezed,Object? isActive = null,Object? wine = freezed,Object? seller = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,sellerId: freezed == sellerId ? _self.sellerId : sellerId // ignore: cast_nullable_to_non_nullable
 as String?,wineId: freezed == wineId ? _self.wineId : wineId // ignore: cast_nullable_to_non_nullable
 as String?,price: freezed == price ? _self.price : price // ignore: cast_nullable_to_non_nullable
 as double?,vintage: freezed == vintage ? _self.vintage : vintage // ignore: cast_nullable_to_non_nullable
-as int?,bottleSize: freezed == bottleSize ? _self.bottleSize : bottleSize // ignore: cast_nullable_to_non_nullable
-as double?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as int?,bottleSizeId: freezed == bottleSizeId ? _self.bottleSizeId : bottleSizeId // ignore: cast_nullable_to_non_nullable
+as String?,bottleSize: freezed == bottleSize ? _self.bottleSize : bottleSize // ignore: cast_nullable_to_non_nullable
+as BottleSize?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,isActive: null == isActive ? _self.isActive : isActive // ignore: cast_nullable_to_non_nullable
 as bool,wine: freezed == wine ? _self.wine : wine // ignore: cast_nullable_to_non_nullable
 as Wine?,seller: freezed == seller ? _self.seller : seller // ignore: cast_nullable_to_non_nullable
@@ -81,6 +82,18 @@ as Profile?,
   ));
 }
 /// Create a copy of Offer
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$BottleSizeCopyWith<$Res>? get bottleSize {
+    if (_self.bottleSize == null) {
+    return null;
+  }
+
+  return $BottleSizeCopyWith<$Res>(_self.bottleSize!, (value) {
+    return _then(_self.copyWith(bottleSize: value));
+  });
+}/// Create a copy of Offer
 /// with the given fields replaced by the non-null parameter values.
 @override
 @pragma('vm:prefer-inline')
@@ -186,10 +199,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'seller_id')  String? sellerId, @JsonKey(name: 'wine_id')  String? wineId,  double? price,  int? vintage,  double? bottleSize, @JsonKey(name: 'created_at')  DateTime? createdAt,  bool isActive, @JsonKey(name: 'wines', includeToJson: false)  Wine? wine, @JsonKey(name: 'profiles', includeToJson: false)  Profile? seller)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'seller_id')  String? sellerId, @JsonKey(name: 'wine_id')  String? wineId,  double? price,  int? vintage, @JsonKey(name: 'bottle_size_id')  String? bottleSizeId, @JsonKey(name: 'bottle_size', includeToJson: false)  BottleSize? bottleSize, @JsonKey(name: 'created_at')  DateTime? createdAt,  bool isActive, @JsonKey(name: 'wines', includeToJson: false)  Wine? wine, @JsonKey(name: 'profiles', includeToJson: false)  Profile? seller)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Offer() when $default != null:
-return $default(_that.id,_that.sellerId,_that.wineId,_that.price,_that.vintage,_that.bottleSize,_that.createdAt,_that.isActive,_that.wine,_that.seller);case _:
+return $default(_that.id,_that.sellerId,_that.wineId,_that.price,_that.vintage,_that.bottleSizeId,_that.bottleSize,_that.createdAt,_that.isActive,_that.wine,_that.seller);case _:
   return orElse();
 
 }
@@ -207,10 +220,10 @@ return $default(_that.id,_that.sellerId,_that.wineId,_that.price,_that.vintage,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'seller_id')  String? sellerId, @JsonKey(name: 'wine_id')  String? wineId,  double? price,  int? vintage,  double? bottleSize, @JsonKey(name: 'created_at')  DateTime? createdAt,  bool isActive, @JsonKey(name: 'wines', includeToJson: false)  Wine? wine, @JsonKey(name: 'profiles', includeToJson: false)  Profile? seller)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'seller_id')  String? sellerId, @JsonKey(name: 'wine_id')  String? wineId,  double? price,  int? vintage, @JsonKey(name: 'bottle_size_id')  String? bottleSizeId, @JsonKey(name: 'bottle_size', includeToJson: false)  BottleSize? bottleSize, @JsonKey(name: 'created_at')  DateTime? createdAt,  bool isActive, @JsonKey(name: 'wines', includeToJson: false)  Wine? wine, @JsonKey(name: 'profiles', includeToJson: false)  Profile? seller)  $default,) {final _that = this;
 switch (_that) {
 case _Offer():
-return $default(_that.id,_that.sellerId,_that.wineId,_that.price,_that.vintage,_that.bottleSize,_that.createdAt,_that.isActive,_that.wine,_that.seller);case _:
+return $default(_that.id,_that.sellerId,_that.wineId,_that.price,_that.vintage,_that.bottleSizeId,_that.bottleSize,_that.createdAt,_that.isActive,_that.wine,_that.seller);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -227,10 +240,10 @@ return $default(_that.id,_that.sellerId,_that.wineId,_that.price,_that.vintage,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'seller_id')  String? sellerId, @JsonKey(name: 'wine_id')  String? wineId,  double? price,  int? vintage,  double? bottleSize, @JsonKey(name: 'created_at')  DateTime? createdAt,  bool isActive, @JsonKey(name: 'wines', includeToJson: false)  Wine? wine, @JsonKey(name: 'profiles', includeToJson: false)  Profile? seller)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'seller_id')  String? sellerId, @JsonKey(name: 'wine_id')  String? wineId,  double? price,  int? vintage, @JsonKey(name: 'bottle_size_id')  String? bottleSizeId, @JsonKey(name: 'bottle_size', includeToJson: false)  BottleSize? bottleSize, @JsonKey(name: 'created_at')  DateTime? createdAt,  bool isActive, @JsonKey(name: 'wines', includeToJson: false)  Wine? wine, @JsonKey(name: 'profiles', includeToJson: false)  Profile? seller)?  $default,) {final _that = this;
 switch (_that) {
 case _Offer() when $default != null:
-return $default(_that.id,_that.sellerId,_that.wineId,_that.price,_that.vintage,_that.bottleSize,_that.createdAt,_that.isActive,_that.wine,_that.seller);case _:
+return $default(_that.id,_that.sellerId,_that.wineId,_that.price,_that.vintage,_that.bottleSizeId,_that.bottleSize,_that.createdAt,_that.isActive,_that.wine,_that.seller);case _:
   return null;
 
 }
@@ -242,7 +255,7 @@ return $default(_that.id,_that.sellerId,_that.wineId,_that.price,_that.vintage,_
 
 @JsonSerializable(fieldRename: FieldRename.snake)
 class _Offer implements Offer {
-  const _Offer({required this.id, @JsonKey(name: 'seller_id') this.sellerId, @JsonKey(name: 'wine_id') this.wineId, this.price, this.vintage, this.bottleSize, @JsonKey(name: 'created_at') this.createdAt, this.isActive = true, @JsonKey(name: 'wines', includeToJson: false) this.wine, @JsonKey(name: 'profiles', includeToJson: false) this.seller});
+  const _Offer({required this.id, @JsonKey(name: 'seller_id') this.sellerId, @JsonKey(name: 'wine_id') this.wineId, this.price, this.vintage, @JsonKey(name: 'bottle_size_id') this.bottleSizeId, @JsonKey(name: 'bottle_size', includeToJson: false) this.bottleSize, @JsonKey(name: 'created_at') this.createdAt, this.isActive = true, @JsonKey(name: 'wines', includeToJson: false) this.wine, @JsonKey(name: 'profiles', includeToJson: false) this.seller});
   factory _Offer.fromJson(Map<String, dynamic> json) => _$OfferFromJson(json);
 
 @override final  String id;
@@ -250,7 +263,8 @@ class _Offer implements Offer {
 @override@JsonKey(name: 'wine_id') final  String? wineId;
 @override final  double? price;
 @override final  int? vintage;
-@override final  double? bottleSize;
+@override@JsonKey(name: 'bottle_size_id') final  String? bottleSizeId;
+@override@JsonKey(name: 'bottle_size', includeToJson: false) final  BottleSize? bottleSize;
 @override@JsonKey(name: 'created_at') final  DateTime? createdAt;
 @override@JsonKey() final  bool isActive;
 @override@JsonKey(name: 'wines', includeToJson: false) final  Wine? wine;
@@ -269,16 +283,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Offer&&(identical(other.id, id) || other.id == id)&&(identical(other.sellerId, sellerId) || other.sellerId == sellerId)&&(identical(other.wineId, wineId) || other.wineId == wineId)&&(identical(other.price, price) || other.price == price)&&(identical(other.vintage, vintage) || other.vintage == vintage)&&(identical(other.bottleSize, bottleSize) || other.bottleSize == bottleSize)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.isActive, isActive) || other.isActive == isActive)&&(identical(other.wine, wine) || other.wine == wine)&&(identical(other.seller, seller) || other.seller == seller));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Offer&&(identical(other.id, id) || other.id == id)&&(identical(other.sellerId, sellerId) || other.sellerId == sellerId)&&(identical(other.wineId, wineId) || other.wineId == wineId)&&(identical(other.price, price) || other.price == price)&&(identical(other.vintage, vintage) || other.vintage == vintage)&&(identical(other.bottleSizeId, bottleSizeId) || other.bottleSizeId == bottleSizeId)&&(identical(other.bottleSize, bottleSize) || other.bottleSize == bottleSize)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.isActive, isActive) || other.isActive == isActive)&&(identical(other.wine, wine) || other.wine == wine)&&(identical(other.seller, seller) || other.seller == seller));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,sellerId,wineId,price,vintage,bottleSize,createdAt,isActive,wine,seller);
+int get hashCode => Object.hash(runtimeType,id,sellerId,wineId,price,vintage,bottleSizeId,bottleSize,createdAt,isActive,wine,seller);
 
 @override
 String toString() {
-  return 'Offer(id: $id, sellerId: $sellerId, wineId: $wineId, price: $price, vintage: $vintage, bottleSize: $bottleSize, createdAt: $createdAt, isActive: $isActive, wine: $wine, seller: $seller)';
+  return 'Offer(id: $id, sellerId: $sellerId, wineId: $wineId, price: $price, vintage: $vintage, bottleSizeId: $bottleSizeId, bottleSize: $bottleSize, createdAt: $createdAt, isActive: $isActive, wine: $wine, seller: $seller)';
 }
 
 
@@ -289,11 +303,11 @@ abstract mixin class _$OfferCopyWith<$Res> implements $OfferCopyWith<$Res> {
   factory _$OfferCopyWith(_Offer value, $Res Function(_Offer) _then) = __$OfferCopyWithImpl;
 @override @useResult
 $Res call({
- String id,@JsonKey(name: 'seller_id') String? sellerId,@JsonKey(name: 'wine_id') String? wineId, double? price, int? vintage, double? bottleSize,@JsonKey(name: 'created_at') DateTime? createdAt, bool isActive,@JsonKey(name: 'wines', includeToJson: false) Wine? wine,@JsonKey(name: 'profiles', includeToJson: false) Profile? seller
+ String id,@JsonKey(name: 'seller_id') String? sellerId,@JsonKey(name: 'wine_id') String? wineId, double? price, int? vintage,@JsonKey(name: 'bottle_size_id') String? bottleSizeId,@JsonKey(name: 'bottle_size', includeToJson: false) BottleSize? bottleSize,@JsonKey(name: 'created_at') DateTime? createdAt, bool isActive,@JsonKey(name: 'wines', includeToJson: false) Wine? wine,@JsonKey(name: 'profiles', includeToJson: false) Profile? seller
 });
 
 
-@override $WineCopyWith<$Res>? get wine;@override $ProfileCopyWith<$Res>? get seller;
+@override $BottleSizeCopyWith<$Res>? get bottleSize;@override $WineCopyWith<$Res>? get wine;@override $ProfileCopyWith<$Res>? get seller;
 
 }
 /// @nodoc
@@ -306,15 +320,16 @@ class __$OfferCopyWithImpl<$Res>
 
 /// Create a copy of Offer
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? sellerId = freezed,Object? wineId = freezed,Object? price = freezed,Object? vintage = freezed,Object? bottleSize = freezed,Object? createdAt = freezed,Object? isActive = null,Object? wine = freezed,Object? seller = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? sellerId = freezed,Object? wineId = freezed,Object? price = freezed,Object? vintage = freezed,Object? bottleSizeId = freezed,Object? bottleSize = freezed,Object? createdAt = freezed,Object? isActive = null,Object? wine = freezed,Object? seller = freezed,}) {
   return _then(_Offer(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,sellerId: freezed == sellerId ? _self.sellerId : sellerId // ignore: cast_nullable_to_non_nullable
 as String?,wineId: freezed == wineId ? _self.wineId : wineId // ignore: cast_nullable_to_non_nullable
 as String?,price: freezed == price ? _self.price : price // ignore: cast_nullable_to_non_nullable
 as double?,vintage: freezed == vintage ? _self.vintage : vintage // ignore: cast_nullable_to_non_nullable
-as int?,bottleSize: freezed == bottleSize ? _self.bottleSize : bottleSize // ignore: cast_nullable_to_non_nullable
-as double?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as int?,bottleSizeId: freezed == bottleSizeId ? _self.bottleSizeId : bottleSizeId // ignore: cast_nullable_to_non_nullable
+as String?,bottleSize: freezed == bottleSize ? _self.bottleSize : bottleSize // ignore: cast_nullable_to_non_nullable
+as BottleSize?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,isActive: null == isActive ? _self.isActive : isActive // ignore: cast_nullable_to_non_nullable
 as bool,wine: freezed == wine ? _self.wine : wine // ignore: cast_nullable_to_non_nullable
 as Wine?,seller: freezed == seller ? _self.seller : seller // ignore: cast_nullable_to_non_nullable
@@ -323,6 +338,18 @@ as Profile?,
 }
 
 /// Create a copy of Offer
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$BottleSizeCopyWith<$Res>? get bottleSize {
+    if (_self.bottleSize == null) {
+    return null;
+  }
+
+  return $BottleSizeCopyWith<$Res>(_self.bottleSize!, (value) {
+    return _then(_self.copyWith(bottleSize: value));
+  });
+}/// Create a copy of Offer
 /// with the given fields replaced by the non-null parameter values.
 @override
 @pragma('vm:prefer-inline')

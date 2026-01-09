@@ -161,7 +161,6 @@ abstract class Wine with _$Wine {
       toJson: _wineSugarToString,
     )
     WineSugar? sugar,
-    int? vintage,
     @JsonKey(name: 'alcohol_level') double? alcoholLevel,
     // Удалено поле rating
     @JsonKey(name: 'average_rating') double? averageRating,
@@ -188,7 +187,7 @@ abstract class Wine with _$Wine {
       fromJson: _grapeVarietiesFromJson,
     )
     List<GrapeVariety>? grapeVarieties,
-  }) = _Wine;
+ }) = _Wine;
 
   factory Wine.fromJson(Map<String, dynamic> json) => _$WineFromJson(json);
 }
