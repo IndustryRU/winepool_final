@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:winepool_final/features/catalog/application/catalog_filters_provider.dart';
 
-/// Виджет для отображения отдельного фильтра в панели фильтров каталога.
+/// Виджет для отображения отдельного фильтра в панели фilters каталога.
 ///
 /// Этот виджет отвечает за отображение состояния (активен/неактивен),
 /// количество выбранных элементов (если применимо) и действия при нажатии.
@@ -30,7 +30,7 @@ class CatalogFilterChip extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+ Widget build(BuildContext context, WidgetRef ref) {
     // Подписываемся на состояние фильтров, чтобы получить информацию об активности и количестве выбранных элементов.
     // Используем поля из CatalogFiltersState напрямую
     final filterState = ref.watch(catalogFiltersProvider.select((state) {
@@ -107,16 +107,13 @@ class CatalogFilterChip extends ConsumerWidget {
 
     log('--- CatalogFilterChip REBUILT --- Type: $filterType, IsActive: $isActive, Count: $count');
 
-    return badges.Badge(
-      // Показываем бейдж с количеством только если счетчик > 0
-      showBadge: count > 0,
-      badgeContent: Text(count.toString()),
-      child: ElevatedButton(
-        onPressed: onTap,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: isActive ? Colors.green[300] : Colors.grey[20],
-          foregroundColor: Colors.black87,
-          elevation: 0, // Убираем тень у кнопки фильтра
+    return InputChip(
+      label: badges.Badge(
+        // Показываем бейдж с количеством только если счетчик > 0
+        showBadge: count > 0,
+        badgeContent: Text(count.toString(), style: const TextStyle(fontSize: 10)),
+        badgeStyle: badges.BadgeStyle(
+          badgeColor: Colors.grey[200]!,
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -133,16 +130,57 @@ class CatalogFilterChip extends ConsumerWidget {
               const SizedBox(width: 4),
             ],
             Text(_getFilterTitle(filterType)),
-            // Кнопка удаления отображается только если фильтр активен и onDelete предоставлен
-            if (isActive && onDelete != null) ...[
-              IconButton(
-                icon: const Icon(Icons.close, size: 16),
-                onPressed: onDelete,
-              ),
-            ],
           ],
         ),
       ),
+      selected: isActive,
+      selectedColor: Colors.grey[600],
+      deleteIconColor: Colors.white,
+      labelStyle: TextStyle(color: isActive ? Colors.white : Colors.black),
+      showCheckmark: false,
+      onPressed: onTap,
+      onDeleted: isActive ? onDelete ?? () {
+        switch (filterType) {
+          case CatalogFilterType.winery:
+            ref.read(catalogFiltersProvider.notifier).setWineries([]);
+            break;
+          case CatalogFilterType.region:
+            ref.read(catalogFiltersProvider.notifier).resetRegionFilter();
+            break;
+          case CatalogFilterType.grape:
+            ref.read(catalogFiltersProvider.notifier).clearGrapes();
+            break;
+          case CatalogFilterType.color:
+            ref.read(catalogFiltersProvider.notifier).resetColorFilter();
+            break;
+          case CatalogFilterType.type:
+            ref.read(catalogFiltersProvider.notifier).resetTypeFilter();
+            break;
+          case CatalogFilterType.sugar:
+            ref.read(catalogFiltersProvider.notifier).resetSugarFilter();
+            break;
+          case CatalogFilterType.price:
+            ref.read(catalogFiltersProvider.notifier).resetPriceFilter();
+            break;
+          case CatalogFilterType.country:
+            ref.read(catalogFiltersProvider.notifier).resetCountryFilter();
+            break;
+          case CatalogFilterType.rating:
+            ref.read(catalogFiltersProvider.notifier).resetRatingFilter();
+            break;
+          case CatalogFilterType.year:
+            ref.read(catalogFiltersProvider.notifier).resetYearFilter();
+            break;
+          case CatalogFilterType.volume:
+            ref.read(catalogFiltersProvider.notifier).clearBottleSizes();
+            break;
+          case CatalogFilterType.sort:
+            // Для сортировки просто сбрасываем значение
+            final currentState = ref.read(catalogFiltersProvider);
+            ref.read(catalogFiltersProvider.notifier).updateFilters(currentState.copyWith(sortOption: null));
+            break;
+        }
+      } : null,
     );
   }
 

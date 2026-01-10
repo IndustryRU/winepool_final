@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:winepool_final/features/catalog/application/catalog_filters_provider.dart';
 import 'package:winepool_final/features/catalog/application/wineries_provider.dart';
 import 'package:winepool_final/core/widgets/custom_search_field.dart';
@@ -17,35 +18,65 @@ class WineryFilterWidget extends ConsumerWidget {
     final selectedCount = ref.watch(catalogFiltersProvider.select((f) => f.wineryIds.length));
     log('--- WineryFilterWidget REBUILT --- Selected count: $selectedCount');
 
-    final isSelected = selectedCount > 0;
-
-    return badges.Badge(
-      // Показываем бейдж с количеством только если счетчик > 0
-      showBadge: isSelected,
-      badgeContent: Text(selectedCount.toString()),
-      child: ElevatedButton(
-        onPressed: () => _showWineryFilterBottomSheet(context, ref),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: isSelected ? Colors.green[300] : Colors.grey[20],
-          foregroundColor: Colors.black87,
-          elevation: 0, // Убираем тень у кнопки фильтра
+    return Column(
+      children: [
+        // Ручка для смахивания
+        Padding(
+          padding: const EdgeInsets.only(top: 16, bottom: 8), // Переместили отступы сюда
+          child: Center(
+            child: Container(
+              width: 40,
+              height: 4,
+              // margin удален из Container
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+          ),
         ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(Icons.business, size: 16), // Иконка для винодельни
-            const SizedBox(width: 4),
-            const Text('Винодельня'),
-            // Кнопка удаления отображается только если фильтр активен
-            if (isSelected) ...[
+        // Заголовок и кнопки
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: Row(
+            children: [
+              Text(
+                'Винодельни',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+              ),
+              const Spacer(),
               IconButton(
-                icon: const Icon(Icons.close, size: 16),
-                onPressed: () => ref.read(catalogFiltersProvider.notifier).clearWineries(),
+                onPressed: () {
+                  ref.read(catalogFiltersProvider.notifier).setWineries([]);
+                  Navigator.of(context).pop();
+                },
+                icon: const Icon(Icons.refresh),
+              ),
+              IconButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                icon: const Icon(Icons.check),
               ),
             ],
-          ],
+          ),
         ),
-      ),
+        // Пустое пространство
+        const Expanded(child: SizedBox()),
+        // Нижняя ссылка
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: InkWell(
+            onTap: () {
+              context.go('/wines-catalog/winery-selection');
+            },
+            child: Text(
+              'Все винодельни',
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.blue),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -178,7 +209,7 @@ class _WineryFilterContent extends ConsumerWidget {
           );
       },
     );
- }
+  }
 }
 
 class _WineryListItem extends StatelessWidget {

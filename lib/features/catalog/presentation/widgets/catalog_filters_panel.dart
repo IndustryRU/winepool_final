@@ -19,6 +19,7 @@ class CatalogFiltersPanel extends ConsumerWidget {
     // Порядок определяет порядок отображения чипов
     const filterTypes = [
       CatalogFilterType.sort,
+      CatalogFilterType.winery, // Переместили сюда
       CatalogFilterType.color,
       CatalogFilterType.type,
       CatalogFilterType.sugar,
@@ -29,7 +30,6 @@ class CatalogFiltersPanel extends ConsumerWidget {
       CatalogFilterType.rating,
       CatalogFilterType.year,
       CatalogFilterType.volume,
-      CatalogFilterType.winery,
     ];
 
     return Container(
@@ -52,22 +52,16 @@ class CatalogFiltersPanel extends ConsumerWidget {
                       context: context,
                       isScrollControlled: true,
                       builder: (BuildContext context) {
-                        return const FractionallySizedBox(
-                          heightFactor: 0.8,
-                          child: WineryFilterWidget(),
+                        return SizedBox(
+                          height: MediaQuery.of(context).size.height * (2 / 3),
+                          width: double.infinity, // На всю ширину
+                          child: const WineryFilterWidget(),
                         );
                       },
                     );
                   }
                   // TODO: Добавить обработку для других типов фильтров
                 },
-                onDelete: filterType == CatalogFilterType.winery
-                    ? () {
-                        // Логика сброса фильтра "Винодельня"
-                        // будет реализована позже в рамках рефакторинга CatalogScreen
-                        print('Deleted winery filter');
-                      }
-                    : null,
               ),
             ),
         ],
