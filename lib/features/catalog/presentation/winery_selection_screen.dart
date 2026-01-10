@@ -6,10 +6,11 @@ import 'dart:developer';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:collection/collection.dart';
+import 'package:winepool_final/core/widgets/custom_search_field.dart';
+import 'package:winepool_final/features/wines/domain/winery.dart';
 
 import '../application/catalog_filters_provider.dart';
 import '../application/wineries_provider.dart';
-import '../domain/winery.dart';
 
 class WinerySelectionScreen extends HookConsumerWidget {
   const WinerySelectionScreen({super.key});
@@ -56,16 +57,12 @@ class WinerySelectionScreen extends HookConsumerWidget {
         children: [
           Padding(
             padding: const EdgeInsets.all(16.0),
-            child: TextField(
+            child: CustomSearchField(
               onChanged: (value) {
                 searchQuery.value = value;
               },
-              decoration: const InputDecoration(
-                labelText: 'Поиск виноделен',
-                prefixIcon: Icon(Icons.search),
-                border: OutlineInputBorder(),
-              ),
-            ),
+              hintText: 'Поиск виноделен...',
+            ), // Закрывающая скобка для CustomSearchField
           ),
           Expanded(
             child: ref.watch(allWineriesProvider).when(
@@ -78,17 +75,18 @@ class WinerySelectionScreen extends HookConsumerWidget {
                       return nameLower.contains(searchLower);
                     }).toList();
 
-                    return ListView.builder(
+                    return ListView.separated(
                       itemCount: filteredWineries.length,
+                      separatorBuilder: (context, index) => const SizedBox(height: 2),
                       itemBuilder: (context, index) {
                         final winery = filteredWineries[index];
                         // 4. Управляем состоянием Checkbox через локальное `selectedWineryIds`
                         final isSelected = localSelectedIds.value.contains(winery.id);
 
-                        return CheckboxListTile(
-                          title: Text(winery.name ?? 'Имя не указано'),
-                          value: isSelected,
-                          onChanged: (bool? selected) {
+                        return _WineryListItem(
+                          winery: winery,
+                          isSelected: isSelected,
+                          onSelectionChanged: (selected) {
                             if (winery.id == null) return;
 
                             final currentIds = List<String>.from(localSelectedIds.value);
@@ -108,6 +106,75 @@ class WinerySelectionScreen extends HookConsumerWidget {
                 ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _WineryListItem extends StatelessWidget {
+  final Winery winery;
+  final bool isSelected;
+  final void Function(bool?) onSelectionChanged;
+
+  const _WineryListItem({
+    required this.winery,
+    required this.isSelected,
+    required this.onSelectionChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () => onSelectionChanged(!isSelected),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: Colors.grey[200],
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: (winery.logoUrl != null && winery.logoUrl!.isNotEmpty)
+                    ? Image.network(
+                        winery.logoUrl!,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          // Плейсхолдер в случае ошибки загрузки
+                          return const Icon(Icons.business, color: Colors.grey);
+                        },
+                      )
+                    : const Icon(Icons.business, color: Colors.grey), // Плейсхолдер, если URL пуст
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Text(
+                winery.name ?? 'Имя не указано',
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            Checkbox(
+              value: isSelected,
+              onChanged: onSelectionChanged,
+              side: MaterialStateBorderSide.resolveWith(
+                (states) => const BorderSide(
+                  color: Colors.black,
+                  width: 1.0,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -6,10 +6,14 @@ part of 'winery.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_Winery _$WineryFromJson(Map<String, dynamic> json) =>
-    _Winery(id: json['id'] as String?, name: json['name'] as String?);
+_Winery _$WineryFromJson(Map<String, dynamic> json) => _Winery(
+  id: json['id'] as String?,
+  name: json['name'] as String?,
+  logoUrl: json['logo_url'] as String?,
+);
 
 Map<String, dynamic> _$WineryToJson(_Winery instance) => <String, dynamic>{
   'id': instance.id,
   'name': instance.name,
+  'logo_url': instance.logoUrl,
 };

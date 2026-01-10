@@ -8,6 +8,7 @@ abstract class Winery with _$Winery {
   const factory Winery({
     String? id,
     @JsonKey(name: 'name') String? name,
+    @JsonKey(name: 'logo_url') String? logoUrl,
   }) = _Winery;
 
   factory Winery.fromJson(Map<String, dynamic> json) => _$WineryFromJson(json);

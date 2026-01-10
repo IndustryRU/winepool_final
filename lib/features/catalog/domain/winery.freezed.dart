@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Winery {
 
- String? get id;@JsonKey(name: 'name') String? get name;
+ String? get id;@JsonKey(name: 'name') String? get name;@JsonKey(name: 'logo_url') String? get logoUrl;
 /// Create a copy of Winery
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $WineryCopyWith<Winery> get copyWith => _$WineryCopyWithImpl<Winery>(this as Win
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Winery&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Winery&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.logoUrl, logoUrl) || other.logoUrl == logoUrl));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name);
+int get hashCode => Object.hash(runtimeType,id,name,logoUrl);
 
 @override
 String toString() {
-  return 'Winery(id: $id, name: $name)';
+  return 'Winery(id: $id, name: $name, logoUrl: $logoUrl)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $WineryCopyWith<$Res>  {
   factory $WineryCopyWith(Winery value, $Res Function(Winery) _then) = _$WineryCopyWithImpl;
 @useResult
 $Res call({
- String? id,@JsonKey(name: 'name') String? name
+ String? id,@JsonKey(name: 'name') String? name,@JsonKey(name: 'logo_url') String? logoUrl
 });
 
 
@@ -65,10 +65,11 @@ class _$WineryCopyWithImpl<$Res>
 
 /// Create a copy of Winery
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? name = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? name = freezed,Object? logoUrl = freezed,}) {
   return _then(_self.copyWith(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String?,name: freezed == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String?,logoUrl: freezed == logoUrl ? _self.logoUrl : logoUrl // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }
@@ -154,10 +155,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? id, @JsonKey(name: 'name')  String? name)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? id, @JsonKey(name: 'name')  String? name, @JsonKey(name: 'logo_url')  String? logoUrl)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Winery() when $default != null:
-return $default(_that.id,_that.name);case _:
+return $default(_that.id,_that.name,_that.logoUrl);case _:
   return orElse();
 
 }
@@ -175,10 +176,10 @@ return $default(_that.id,_that.name);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? id, @JsonKey(name: 'name')  String? name)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? id, @JsonKey(name: 'name')  String? name, @JsonKey(name: 'logo_url')  String? logoUrl)  $default,) {final _that = this;
 switch (_that) {
 case _Winery():
-return $default(_that.id,_that.name);case _:
+return $default(_that.id,_that.name,_that.logoUrl);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -195,10 +196,10 @@ return $default(_that.id,_that.name);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? id, @JsonKey(name: 'name')  String? name)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? id, @JsonKey(name: 'name')  String? name, @JsonKey(name: 'logo_url')  String? logoUrl)?  $default,) {final _that = this;
 switch (_that) {
 case _Winery() when $default != null:
-return $default(_that.id,_that.name);case _:
+return $default(_that.id,_that.name,_that.logoUrl);case _:
   return null;
 
 }
@@ -210,11 +211,12 @@ return $default(_that.id,_that.name);case _:
 @JsonSerializable()
 
 class _Winery implements Winery {
-  const _Winery({this.id, @JsonKey(name: 'name') this.name});
+  const _Winery({this.id, @JsonKey(name: 'name') this.name, @JsonKey(name: 'logo_url') this.logoUrl});
   factory _Winery.fromJson(Map<String, dynamic> json) => _$WineryFromJson(json);
 
 @override final  String? id;
 @override@JsonKey(name: 'name') final  String? name;
+@override@JsonKey(name: 'logo_url') final  String? logoUrl;
 
 /// Create a copy of Winery
 /// with the given fields replaced by the non-null parameter values.
@@ -229,16 +231,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Winery&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Winery&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.logoUrl, logoUrl) || other.logoUrl == logoUrl));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name);
+int get hashCode => Object.hash(runtimeType,id,name,logoUrl);
 
 @override
 String toString() {
-  return 'Winery(id: $id, name: $name)';
+  return 'Winery(id: $id, name: $name, logoUrl: $logoUrl)';
 }
 
 
@@ -249,7 +251,7 @@ abstract mixin class _$WineryCopyWith<$Res> implements $WineryCopyWith<$Res> {
   factory _$WineryCopyWith(_Winery value, $Res Function(_Winery) _then) = __$WineryCopyWithImpl;
 @override @useResult
 $Res call({
- String? id,@JsonKey(name: 'name') String? name
+ String? id,@JsonKey(name: 'name') String? name,@JsonKey(name: 'logo_url') String? logoUrl
 });
 
 
@@ -266,10 +268,11 @@ class __$WineryCopyWithImpl<$Res>
 
 /// Create a copy of Winery
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? name = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? name = freezed,Object? logoUrl = freezed,}) {
   return _then(_Winery(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String?,name: freezed == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String?,logoUrl: freezed == logoUrl ? _self.logoUrl : logoUrl // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }

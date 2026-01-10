@@ -7,6 +7,7 @@ import 'package:winepool_final/features/wines/application/wines_controller.dart'
 import 'package:winepool_final/features/wines/domain/wine.dart';
 import 'package:winepool_final/features/wines/presentation/widgets/wine_characteristic_icons.dart';
 import 'package:winepool_final/common/widgets/shimmer_loading_indicator.dart';
+import 'package:winepool_final/core/widgets/custom_search_field.dart';
 
 class BuyerHomeScreen extends HookConsumerWidget {
  const BuyerHomeScreen({super.key});
@@ -168,22 +169,13 @@ class BuyerHomeScreen extends HookConsumerWidget {
   Widget _buildSearchField(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: TextField(
-        decoration: InputDecoration(
-          hintText: 'Поиск вина, винодельни или сорта...',
-          prefixIcon: const Icon(Icons.search),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(25),
-            borderSide: BorderSide.none,
-          ),
-          filled: true,
-          fillColor: Colors.grey[200],
-        ),
+      child: CustomSearchField(
         onTap: () => context.push('/search'),
+        hintText: 'Поиск вина, винодельни или сорта...',
       ),
     );
  }
-
+ 
   // Слайдер категорий
   Widget _buildCategorySlider(BuildContext context) {
     final categories = [
@@ -244,7 +236,7 @@ class BuyerHomeScreen extends HookConsumerWidget {
       ),
     );
  }
-
+ 
   // Заголовок секции
   Widget _buildSectionHeader(String title) {
     return Padding(
@@ -267,7 +259,7 @@ class BuyerHomeScreen extends HookConsumerWidget {
       ),
     );
   }
-
+  
   // Горизонтальный список вин
   Widget _buildHorizontalWineList() {
     return SizedBox(
@@ -322,7 +314,7 @@ class BuyerHomeScreen extends HookConsumerWidget {
       ),
     );
  }
-
+ 
   // Горизонтальный список популярных вин
   Widget _buildPopularWineList(List<Wine> wines) {
     if (wines.isEmpty) {
@@ -406,7 +398,7 @@ class BuyerHomeScreen extends HookConsumerWidget {
       ),
     );
   }
-
+  
   // Горизонтальный список новинок вин
   Widget _buildNewWineList(List<Wine> wines) {
     if (wines.isEmpty) {
