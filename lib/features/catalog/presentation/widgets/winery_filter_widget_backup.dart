@@ -20,31 +20,20 @@ class WineryFilterWidget extends ConsumerWidget {
     final isSelected = selectedCount > 0;
 
     return badges.Badge(
-      // Показываем бейдж с количеством только если счетчик > 0
       showBadge: isSelected,
-      badgeContent: Text(selectedCount.toString()),
-      child: ElevatedButton(
+      position: badges.BadgePosition.topEnd(top: -12, end: -8),
+      badgeContent: Text(
+        selectedCount.toString(),
+        style: const TextStyle(color: Colors.white, fontSize: 10),
+      ),
+      child: InputChip(
+        label: const Text('Винодельня'),
+        selected: isSelected,
         onPressed: () => _showWineryFilterBottomSheet(context, ref),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: isSelected ? Colors.green[300] : Colors.grey[20],
-          foregroundColor: Colors.black87,
-          elevation: 0, // Убираем тень у кнопки фильтра
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(Icons.business, size: 16), // Иконка для винодельни
-            const SizedBox(width: 4),
-            const Text('Винодельня'),
-            // Кнопка удаления отображается только если фильтр активен
-            if (isSelected) ...[
-              IconButton(
-                icon: const Icon(Icons.close, size: 16),
-                onPressed: () => ref.read(catalogFiltersProvider.notifier).clearWineries(),
-              ),
-            ],
-          ],
-        ),
+        deleteIcon: const Icon(Icons.close, size: 18),
+        onDeleted: isSelected
+            ? () => ref.read(catalogFiltersProvider.notifier).clearWineries()
+            : null,
       ),
     );
   }
