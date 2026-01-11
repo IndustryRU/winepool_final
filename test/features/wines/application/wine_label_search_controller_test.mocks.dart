@@ -9,6 +9,8 @@ import 'package:mockito/mockito.dart' as _i1;
 import 'package:winepool_final/features/wines/data/wines_repository.dart'
     as _i3;
 import 'package:winepool_final/features/wines/domain/wine.dart' as _i2;
+import 'package:winepool_final/features/wines/domain/wine_characteristics.dart'
+    as _i5;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -150,18 +152,18 @@ class MockWinesRepository extends _i1.Mock implements _i3.WinesRepository {
 
   @override
   _i4.Future<List<_i2.Wine>> fetchWinesWithFilters({
-    required List<String>? color,
-    required List<String>? type,
-    required List<String>? sugar,
+    List<_i5.WineColor>? color,
+    List<_i5.WineType>? type,
+    List<_i5.WineSugar>? sugar,
     double? minPrice,
     double? maxPrice,
-    required List<String>? country,
-    required List<String>? region,
-    required List<String>? grapeIds,
-    required List<String>? wineryIds,
+    List<String>? country,
+    List<String>? region,
+    List<String>? grapeIds,
+    List<String>? wineryIds,
     double? minRating,
-    required List<String>? bottleSizeIds,
-    required bool? showUnavailable,
+    List<String>? bottleSizeIds,
+    bool? showUnavailable = false,
     String? sortOption,
     bool? includeDeleted = false,
   }) =>

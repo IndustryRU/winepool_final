@@ -1,0 +1,6 @@
+CREATE OR REPLACE FUNCTION get_available_colors()
+RETURNS SETOF wine_color AS $$
+BEGIN
+ RETURN QUERY SELECT DISTINCT color FROM wines WHERE color IS NOT NULL;
+END;
+$$ LANGUAGE plpgsql;

@@ -4,6 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:winepool_final/features/wines/domain/country.dart';
 import '../domain/wine.dart';
+import '../domain/wine_characteristics.dart';
 import '../../../core/providers.dart';
 
 final winesRepositoryProvider = Provider<WinesRepository>((ref) {
@@ -269,21 +270,30 @@ class WinesRepository {
         }
 
        Future<List<Wine>> fetchWinesWithFilters({
-         required List<String> color,
-         required List<String> type,
-         required List<String> sugar,
+         List<WineColor>? color,
+         List<WineType>? type,
+         List<WineSugar>? sugar,
          double? minPrice,
          double? maxPrice,
-         required List<String> country,
-         required List<String> region,
-         required List<String> grapeIds,
-         required List<String> wineryIds,
+         List<String>? country,
+         List<String>? region,
+         List<String>? grapeIds,
+         List<String>? wineryIds,
          double? minRating,
-         required List<String> bottleSizeIds,
-         required bool showUnavailable,
+         List<String>? bottleSizeIds,
+         bool showUnavailable = false,
          String? sortOption,
          bool includeDeleted = false,
        }) async {
+         color = color ?? [];
+         type = type ?? [];
+         sugar = sugar ?? [];
+         country = country ?? [];
+         region = region ?? [];
+         grapeIds = grapeIds ?? [];
+         wineryIds = wineryIds ?? [];
+         bottleSizeIds = bottleSizeIds ?? [];
+
          log('WinesRepository: Fetching with wineryIds: $wineryIds');
          try {
            debugPrint('--- FETCH WINES CALLED WITH FILTERS ---');
@@ -291,15 +301,19 @@ class WinesRepository {
            dynamic query = _supabaseClient
                .from('wines')
                .select('*, wineries(*, country:countries(*)), grape_varieties(*), offers!inner(*)');
- 
+
+           // Преобразуем enum-ы в строки для фильтрации
            if (color.isNotEmpty) {
-             query = query.inFilter('color', color);
+             final colorStrings = color.map((c) => c.name).toList();
+             query = query.inFilter('color', colorStrings);
            }
            if (type.isNotEmpty) {
-             query = query.inFilter('type', type);
+             final typeStrings = type.map((t) => t.name).toList();
+             query = query.inFilter('type', typeStrings);
            }
            if (sugar.isNotEmpty) {
-             query = query.inFilter('sugar', sugar);
+             final sugarStrings = sugar.map((s) => s.toDbValue()).toList();
+             query = query.inFilter('sugar', sugarStrings);
            }
            if (minPrice != null) {
              query = query.gte('offers.price', minPrice);
@@ -340,7 +354,7 @@ class WinesRepository {
            if (!showUnavailable) {
              // query = query.eq('is_available', true);
            }
- 
+
            if (sortOption != null) {
              switch (sortOption) {
                case 'popular':
@@ -362,11 +376,11 @@ class WinesRepository {
            } else {
              query = query.order('created_at', ascending: false);
            }
- 
+
            final response = await query;
- 
+
            final List<dynamic> data = response as List<dynamic>;
- 
+
            if (!includeDeleted) {
              final filteredResponse = data.where((item) => item['is_deleted'] == false).toList();
              return filteredResponse.map((e) => Wine.fromJson(e as Map<String, dynamic>)).toList();

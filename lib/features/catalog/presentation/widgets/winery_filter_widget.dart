@@ -7,13 +7,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:winepool_final/features/catalog/application/catalog_filters_provider.dart';
 import 'package:winepool_final/features/catalog/application/wineries_provider.dart';
+import 'package:winepool_final/features/catalog/application/temporary_winery_ids_provider.dart';
 import 'package:winepool_final/core/widgets/custom_search_field.dart';
 import 'package:winepool_final/features/wines/domain/winery.dart';
+import 'package:winepool_final/features/catalog/presentation/widgets/winery_list_item.dart';
+import 'package:winepool_final/common/widgets/shimmer_loading_indicator.dart';
 
 class WineryFilterWidget extends ConsumerWidget {
   const WineryFilterWidget({super.key});
 
-  @override
+ @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedCount = ref.watch(catalogFiltersProvider.select((f) => f.wineryIds.length));
     log('--- WineryFilterWidget REBUILT --- Selected count: $selectedCount');
@@ -47,6 +50,8 @@ class WineryFilterWidget extends ConsumerWidget {
               const Spacer(),
               IconButton(
                 onPressed: () {
+                  // Сбрасываем временное состояние и применяем его к основному
+                  ref.read(temporaryWineryIdsProvider.notifier).clear();
                   ref.read(catalogFiltersProvider.notifier).setWineries([]);
                   Navigator.of(context).pop();
                 },
@@ -54,6 +59,9 @@ class WineryFilterWidget extends ConsumerWidget {
               ),
               IconButton(
                 onPressed: () {
+                  // Применяем временное состояние к основному
+                  final temporaryIds = ref.read(temporaryWineryIdsProvider);
+                  ref.read(catalogFiltersProvider.notifier).setWineries(temporaryIds);
                   Navigator.of(context).pop();
                 },
                 icon: const Icon(Icons.check),
@@ -61,8 +69,100 @@ class WineryFilterWidget extends ConsumerWidget {
             ],
           ),
         ),
-        // Пустое пространство
-        const Expanded(child: SizedBox()),
+        // --- Список популярных виноделен (вместо Expanded) ---
+        Expanded(
+          child: Consumer(
+            builder: (context, ref, child) {
+              final partnerWineriesAsync = ref.watch(partnerWineriesProvider);
+              final temporaryWineryIds = ref.watch(temporaryWineryIdsProvider);
+
+              return partnerWineriesAsync.when(
+                loading: () => const ShimmerLoadingIndicator(),
+                error: (error, stack) => Center(child: Text('Ошибка: $error')),
+                data: (wineries) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.fromLTRB(16, 8, 16, 8),
+                        child: Text('Популярные винодельни', style: TextStyle(fontWeight: FontWeight.bold)),
+                      ),
+                      Expanded(
+                        child: ListView.builder(
+                          itemCount: wineries.length,
+                          itemBuilder: (context, index) {
+                            final winery = wineries[index];
+                            return WineryListItem(
+                              winery: winery,
+                              isSelected: temporaryWineryIds.contains(winery.id ?? ''),
+                              onChanged: (isSelected) {
+                                if (winery.id == null || winery.id!.isEmpty) return;
+                                
+                                final notifier = ref.read(temporaryWineryIdsProvider.notifier);
+                                if (isSelected == true) {
+                                  notifier.add(winery.id!);
+                                } else {
+                                  notifier.remove(winery.id!);
+                                }
+                              },
+                            );
+                          },
+                        ),
+                      ),
+                      // --- Блок с выбранными чипами ---
+                      // Получаем все винодельни, чтобы найти по ID
+                      Builder(
+                        builder: (context) {
+                          final allWineriesAsync = ref.watch(allWineriesProvider);
+
+                          // Отфильтровываем ID, которые не входят в список популярных
+                          final popularWineryIds = wineries.map((w) => w.id).toSet();
+                          final selectedNotPopularIds = temporaryWineryIds.where((id) => !popularWineryIds.contains(id)).toList();
+
+                          if (selectedNotPopularIds.isNotEmpty && allWineriesAsync is AsyncData<List<Winery>>) {
+                            final allWineriesData = allWineriesAsync.value;
+                            final selectedWineries = selectedNotPopularIds.map((id) {
+                              return allWineriesData.firstWhere((w) => w.id == id, orElse: () => Winery(id: id, name: 'Загрузка...'));
+                            }).toList();
+
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Divider(),
+                                const Padding(
+                                  padding: EdgeInsets.fromLTRB(16, 8, 16, 8),
+                                  child: Text('Выбранные', style: TextStyle(fontWeight: FontWeight.bold)),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                                  child: Wrap(
+                                    spacing: 8.0,
+                                    runSpacing: 4.0,
+                                    children: selectedWineries.map((winery) {
+                                      return Chip(
+                                        label: Text(winery.name ?? ''),
+                                        onDeleted: () {
+                                          ref.read(temporaryWineryIdsProvider.notifier).remove(winery.id ?? '');
+                                        },
+                                      );
+                                    }).toList(),
+                                  ),
+                                ),
+                              ],
+                            );
+                          } else {
+                            // Если нет выбранных не-популярных, возвращаем пустой виджет
+                            return const SizedBox.shrink();
+                          }
+                        }
+                      )
+                    ],
+                  );
+                },
+              );
+            },
+          ),
+        ),
         // Нижняя ссылка
         Padding(
           padding: const EdgeInsets.all(16.0),
@@ -153,7 +253,7 @@ class _WineryFilterContent extends ConsumerWidget {
               const SizedBox(height: 16),
               Expanded(
                 child: ref.watch(allWineriesProvider).when(
-                      loading: () => const Center(child: CircularProgressIndicator()),
+                      loading: () => const ShimmerLoadingIndicator(),
                       error: (error, stack) => Center(child: Text('Ошибка: $error')),
                       data: (wineries) {
                         final filteredWineries = wineries.where((winery) {
@@ -170,10 +270,10 @@ class _WineryFilterContent extends ConsumerWidget {
                             final winery = filteredWineries[index];
                             final isSelected = localSelectedIds.value.contains(winery.id);
         
-                            return _WineryListItem(
+                            return WineryListItem(
                               winery: winery,
                               isSelected: isSelected,
-                              onSelectionChanged: (selected) {
+                              onChanged: (selected) {
                                 if (winery.id == null) return;
         
                                 final currentIds = List<String>.from(localSelectedIds.value);
@@ -208,75 +308,6 @@ class _WineryFilterContent extends ConsumerWidget {
             ],
           );
       },
-    );
-  }
-}
-
-class _WineryListItem extends StatelessWidget {
-  final Winery winery;
-  final bool isSelected;
-  final void Function(bool?) onSelectionChanged;
-
-  const _WineryListItem({
-    required this.winery,
-    required this.isSelected,
-    required this.onSelectionChanged,
-  });
-
-  @override
- Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () => onSelectionChanged(!isSelected),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        decoration: BoxDecoration(
-          color: Colors.grey[200],
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: (winery.logoUrl != null && winery.logoUrl!.isNotEmpty)
-                    ? Image.network(
-                        winery.logoUrl!,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          // Плейсхолдер в случае ошибки загрузки
-                          return const Icon(Icons.business, color: Colors.grey);
-                        },
-                      )
-                    : const Icon(Icons.business, color: Colors.grey), // Плейсхолдер, если URL пуст
-              ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Text(
-                winery.name ?? 'Имя не указано',
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            Checkbox(
-              value: isSelected,
-              onChanged: onSelectionChanged,
-              side: MaterialStateBorderSide.resolveWith(
-                (states) => const BorderSide(
-                  color: Colors.black,
-                  width: 1.0,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

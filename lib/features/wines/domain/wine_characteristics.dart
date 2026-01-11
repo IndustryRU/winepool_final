@@ -5,6 +5,7 @@ enum WineColor {
   white,
   @JsonValue('rosé')
   rose,
+  orange, // Добавляем недостающий цвет
   unknown
 }
 
@@ -17,9 +18,9 @@ enum WineType {
 
 enum WineSugar {
   dry,
-  @JsonValue('semi-dry')
+  @JsonValue('semi_dry') // Вот так!
   semiDry,
-  @JsonValue('semi-sweet')
+  @JsonValue('semi_sweet') // И вот так!
   semiSweet,
   sweet,
   unknown
@@ -32,7 +33,8 @@ extension WineColorExtension on WineColor {
       case WineColor.red: return 'Красное';
       case WineColor.white: return 'Белое';
       case WineColor.rose: return 'Розовое';
-      case WineColor.unknown: return 'Неизвестно';
+      case WineColor.orange: return 'Оранжевое';
+      case WineColor.unknown: return 'Неизвестный';
     }
   }
 }
@@ -44,7 +46,7 @@ extension WineTypeExtension on WineType {
       case WineType.still: return 'Тихое';
       case WineType.sparkling: return 'Игристое';
       case WineType.fortified: return 'Крепленое';
-      case WineType.unknown: return 'Неизвестно';
+      case WineType.unknown: return 'Неизвестный';
     }
   }
 }
@@ -57,7 +59,21 @@ extension WineSugarExtension on WineSugar {
       case WineSugar.semiDry: return 'Полусухое';
       case WineSugar.semiSweet: return 'Полусладкое';
       case WineSugar.sweet: return 'Сладкое';
-      case WineSugar.unknown: return 'Неизвестно';
+      case WineSugar.unknown: return 'Неизвестный';
+    }
+  }
+}
+
+// Extension для преобразования WineSugar в snake_case для базы данных
+extension WineSugarDbExtension on WineSugar {
+  String toDbValue() {
+    switch (this) {
+      case WineSugar.semiDry:
+        return 'semi_dry';
+      case WineSugar.semiSweet:
+        return 'semi_sweet';
+      default:
+        return this.name;
     }
   }
 }

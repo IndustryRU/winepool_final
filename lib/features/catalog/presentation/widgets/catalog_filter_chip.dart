@@ -119,7 +119,10 @@ class CatalogFilterChip extends ConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             // Иконка для специфических типов фильтров
-            if (filterType == CatalogFilterType.price) ...[
+            if (filterType == CatalogFilterType.winery) ...[
+              const Icon(Icons.business, size: 16),
+              const SizedBox(width: 4),
+            ] else if (filterType == CatalogFilterType.price) ...[
               const Icon(Icons.monetization_on_outlined, size: 16),
               const SizedBox(width: 4),
             ] else if (filterType == CatalogFilterType.rating) ...[

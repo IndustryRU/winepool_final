@@ -14,9 +14,9 @@ import 'package:winepool_final/features/catalog/application/catalog_filters_prov
 import 'package:winepool_final/features/catalog/application/catalog_controller.dart';
 //import 'package:winepool_final/features/catalog/presentation/widgets/filter_helpers.dart';
 import 'package:winepool_final/features/catalog/presentation/widgets/price_filter_widget.dart';
-import 'package:winepool_final/features/catalog/presentation/widgets/color_filter_widget.dart';
-import 'package:winepool_final/features/catalog/presentation/widgets/type_filter_widget.dart';
-import 'package:winepool_final/features/catalog/presentation/widgets/sugar_filter_widget.dart';
+//import 'package:winepool_final/features/catalog/presentation/widgets/color_filter_widget.dart';
+//import 'package:winepool_final/features/catalog/presentation/widgets/type_filter_widget.dart';
+//import 'package:winepool_final/features/catalog/presentation/widgets/sugar_filter_widget.dart';
 import 'package:winepool_final/features/catalog/presentation/widgets/country_filter_widget.dart';
 import 'package:winepool_final/features/catalog/presentation/widgets/region_filter_widget.dart';
 import 'package:winepool_final/features/catalog/presentation/widgets/grape_filter_widget.dart';
@@ -687,7 +687,7 @@ Widget _buildFilterContentWithCallbacks(
             children: [
               for (WineColor color in [WineColor.red, WineColor.white, WineColor.rose])
                 CheckboxListTile(
-                  title: Text(color.nameRu),
+                  title: Text(color.name),
                   value: colors.contains(color.name),
                   onChanged: (bool? value) {
                     setState(() {
@@ -714,7 +714,7 @@ Widget _buildFilterContentWithCallbacks(
             children: [
               for (WineType type in WineType.values.where((t) => t != WineType.unknown))
                 CheckboxListTile(
-                  title: Text(type.nameRu),
+                  title: Text(type.name),
                   value: types.contains(type.name),
                   onChanged: (bool? value) {
                     setState(() {
@@ -741,7 +741,7 @@ Widget _buildFilterContentWithCallbacks(
             children: [
               for (WineSugar sugar in WineSugar.values.where((s) => s != WineSugar.unknown))
                 CheckboxListTile(
-                  title: Text(sugar.nameRu),
+                  title: Text(sugar.name),
                   value: sugars.contains(sugar.name),
                   onChanged: (bool? value) {
                     setState(() {
@@ -990,11 +990,11 @@ void _showSortModal(
   ) {
      switch (filterKey) {
        case 'color':
-         return buildColorFilter(context, selectedFilters);
+         //return buildColorFilter(context, selectedFilters);
        case 'type':
-         return buildTypeFilter(context, selectedFilters);
+        // return buildTypeFilter(context, selectedFilters);
        case 'sugar':
-         return buildSugarFilter(context, selectedFilters);
+       //  return buildSugarFilter(context, selectedFilters);
        case 'price':
          if (onPriceRangeChanged != null) {
            // Передаем текущие значения из провайдера в PriceFilterWidget

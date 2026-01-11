@@ -14,7 +14,7 @@ import 'package:winepool_final/core/providers/supabase_provider.dart';
 import 'package:winepool_final/features/wines/presentation/widgets/wine_characteristic_icons.dart';
 import 'package:winepool_final/features/wines/domain/winery.dart';
 import 'package:winepool_final/features/wines/domain/grape_variety.dart';
-import '../../../common/widgets/shimmer_loading_indicator.dart';
+import 'package:winepool_final/common/widgets/shimmer_loading_indicator.dart';
 
 class OfferDetailsScreen extends HookConsumerWidget {
   final String offerId;
@@ -69,12 +69,12 @@ class OfferDetailsScreen extends HookConsumerWidget {
                 _buildInfoRowWithIcon(
                   WineColorIcon(color: wine.color, size: 24.0),
                   'Цвет:',
-                  wine.color?.nameRu ?? 'Не указан',
+                  wine.color?.name ?? 'Не указан',
                 ),
                 _buildInfoRowWithIcon(
                   WineSugarIcon(sugar: wine.sugar, size: 24.0),
                   'Сахар:',
-                  wine.sugar?.nameRu ?? 'Не указан',
+                  wine.sugar?.name ?? 'Не указан',
                 ),
                 _buildInfoRowWithIcon(
                   WineAlcoholIcon(alcoholLevel: wine.alcoholLevel, size: 24.0),
@@ -395,7 +395,7 @@ class _GrapeVarietiesRow extends ConsumerWidget {
 
   final List<GrapeVariety>? grapeVarieties;
 
-  @override
+ @override
   Widget build(BuildContext context, WidgetRef ref) {
     final varieties = grapeVarieties;
     if (varieties == null || varieties.isEmpty) {

@@ -206,7 +206,7 @@ class AddEditWineScreen extends HookConsumerWidget {
                     .map((color) {
                   return DropdownMenuItem(
                     value: color,
-                    child: Text(color.nameRu),
+                    child: Text(color.name),
                   );
                 }).toList(),
                 onChanged: (newValue) {
@@ -221,7 +221,7 @@ class AddEditWineScreen extends HookConsumerWidget {
                     .map((type) {
                   return DropdownMenuItem(
                     value: type,
-                    child: Text(type.nameRu),
+                    child: Text(type.name),
                   );
                 }).toList(),
                 onChanged: (newValue) {
@@ -236,7 +236,7 @@ class AddEditWineScreen extends HookConsumerWidget {
                     .map((sugar) {
                   return DropdownMenuItem(
                     value: sugar,
-                    child: Text(sugar.nameRu),
+                    child: Text(sugar.name),
                   );
                 }).toList(),
                 onChanged: (newValue) {

@@ -40,7 +40,7 @@ Future<HomeScreenData> homeScreenAggregate(Ref ref) async {
 @riverpod
 Future<List<Wine>> winesController(Ref ref) async {
   final showDeleted = ref.watch(adminViewSettingsProvider);
-  print('--- BUILDING WINES CONTROLLER ---');
+ print('--- BUILDING WINES CONTROLLER ---');
   final winesRepository = ref.watch(winesRepositoryProvider);
   final wines = await winesRepository.fetchAllWines(includeDeleted: showDeleted);
   print('--- FETCHED WINES ---');
@@ -85,17 +85,17 @@ Future<List<Wine>> winesWithActiveFilters(Ref ref) async {
   final showDeleted = ref.watch(adminViewSettingsProvider);
 
   return ref.watch(winesRepositoryProvider).fetchWinesWithFilters(
-        color: filters.color,
-        type: filters.type,
-        sugar: filters.sugar,
+        color: filters.color.isEmpty ? null : filters.color,
+        type: filters.type.isEmpty ? null : filters.type,
+        sugar: filters.sugar.isEmpty ? null : filters.sugar,
         minPrice: filters.minPrice,
         maxPrice: filters.maxPrice,
-        country: filters.country,
-        region: filters.region,
-        grapeIds: filters.grapeIds,
-        wineryIds: filters.wineryIds,
+        country: filters.country.isEmpty ? null : filters.country,
+        region: filters.region.isEmpty ? null : filters.region,
+        grapeIds: filters.grapeIds.isEmpty ? null : filters.grapeIds,
+        wineryIds: filters.wineryIds.isEmpty ? null : filters.wineryIds,
         minRating: filters.minRating,
-        bottleSizeIds: filters.bottleSizeIds,
+        bottleSizeIds: filters.bottleSizeIds.isEmpty ? null : filters.bottleSizeIds,
         showUnavailable: filters.showUnavailable,
         sortOption: filters.sortOption,
         includeDeleted: showDeleted,
