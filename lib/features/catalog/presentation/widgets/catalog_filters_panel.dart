@@ -5,8 +5,11 @@ import 'package:winepool_final/features/catalog/presentation/widgets/winery_filt
 import 'package:winepool_final/features/catalog/application/catalog_filters_provider.dart';
 import 'package:winepool_final/features/catalog/presentation/widgets/simple_filter_widget.dart';
 import 'package:winepool_final/features/wines/domain/wine_characteristics.dart';
-import 'package:winepool_final/features/catalog/application/wineries_provider.dart';
+import 'package:winepool_final/features/catalog/application/filter_options_provider.dart';
 import 'package:winepool_final/common/widgets/shimmer_loading_indicator.dart';
+import 'package:winepool_final/features/offers/domain/bottle_size.dart';
+import 'package:winepool_final/features/offers/application/all_bottle_sizes_provider.dart';
+import 'package:winepool_final/features/catalog/presentation/widgets/rating_filter_widget.dart';
 import 'dart:developer';
 
 /// Виджет панели фильтров для экрана каталога.
@@ -16,7 +19,7 @@ import 'dart:developer';
 /// соответствующее модальное окно при нажатии.
 class CatalogFiltersPanel extends ConsumerWidget {
   /// Конструктор виджета.
- const CatalogFiltersPanel({super.key});
+  const CatalogFiltersPanel({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -106,17 +109,144 @@ class CatalogFiltersPanel extends ConsumerWidget {
                       context: context,
                       isScrollControlled: true,
                       builder: (BuildContext context) {
+                        return Consumer(
+                          builder: (context, ref, _) {
+                            final availableSugarsAsync = ref.watch(availableSugarsProvider);
+                            return SizedBox(
+                              height: MediaQuery.of(context).size.height * (2 / 3),
+                              width: double.infinity,
+                              child: availableSugarsAsync.when(
+                                loading: () => const ShimmerLoadingIndicator(),
+                                error: (err, stack) => Center(child: Text('Ошибка: $err')),
+                                data: (availableSugars) {
+                                  return SimpleFilterWidget(
+                                    title: 'Сахар',
+                                    allOptions: availableSugars,
+                                    selectedOptions: ref.watch(catalogFiltersProvider).sugar,
+                                    onApply: (selected) {
+                                      ref.read(catalogFiltersProvider.notifier).updateFilters(
+                                            ref.read(catalogFiltersProvider).copyWith(
+                                                  sugar: selected.cast<WineSugar>(),
+                                                ),
+                                          );
+                                    },
+                                  );
+                                },
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    );
+                  } else if (filterType == CatalogFilterType.type) {
+                    showModalBottomSheet<void>(
+                      context: context,
+                      isScrollControlled: true,
+                      builder: (BuildContext context) {
+                        return Consumer(
+                          builder: (context, ref, _) {
+                            final availableTypesAsync = ref.watch(availableTypesProvider);
+                            return SizedBox(
+                              height: MediaQuery.of(context).size.height * (2 / 3),
+                              width: double.infinity,
+                              child: availableTypesAsync.when(
+                                loading: () => const ShimmerLoadingIndicator(),
+                                error: (err, stack) => Center(child: Text('Ошибка: $err')),
+                                data: (availableTypes) {
+                                  return SimpleFilterWidget(
+                                    title: 'Тип',
+                                    allOptions: availableTypes,
+                                    selectedOptions: ref.watch(catalogFiltersProvider).type,
+                                    onApply: (selected) {
+                                      ref.read(catalogFiltersProvider.notifier).updateFilters(
+                                            ref.read(catalogFiltersProvider).copyWith(
+                                                  type: selected.cast<WineType>(),
+                                                ),
+                                          );
+                                    },
+                                  );
+                                },
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    );
+                  } else if (filterType == CatalogFilterType.year) {
+                    showModalBottomSheet<void>(
+                      context: context,
+                      isScrollControlled: true,
+                      builder: (BuildContext context) {
+                        return Consumer(
+                          builder: (context, ref, _) {
+                            final availableVintagesAsync = ref.watch(availableVintagesProvider);
+                            return SizedBox(
+                              height: MediaQuery.of(context).size.height * (2 / 3),
+                              width: double.infinity,
+                              child: availableVintagesAsync.when(
+                                loading: () => const ShimmerLoadingIndicator(),
+                                error: (err, stack) => Center(child: Text('Ошибка: $err')),
+                                data: (availableVintages) {
+                                  return SimpleFilterWidget(
+                                    title: 'Винтаж',
+                                    allOptions: availableVintages,
+                                    selectedOptions: ref.watch(catalogFiltersProvider).vintages,
+                                    onApply: (selected) {
+  ref.read(catalogFiltersProvider.notifier).updateFilters(
+    ref.read(catalogFiltersProvider).copyWith(
+      vintages: selected.map((e) => e as int).toList(),
+    ),
+  );
+},
+                                  );
+                                },
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    );
+                  } else if (filterType == CatalogFilterType.volume) {
+                    showModalBottomSheet<void>(
+                      context: context,
+                      isScrollControlled: true,
+                      builder: (BuildContext context) {
+                        return Consumer(
+                          builder: (context, ref, _) {
+                            final allBottleSizesAsync = ref.watch(availableBottleSizesProvider);
+                            return SizedBox(
+                              height: MediaQuery.of(context).size.height * (2 / 3),
+                              width: double.infinity,
+                              child: allBottleSizesAsync.when(
+                                loading: () => const ShimmerLoadingIndicator(),
+                                error: (err, stack) => Center(child: Text('Ошибка: $err')),
+                                data: (availableBottleSizes) {
+                                  // Получаем ID выбранных размеров
+                                  final selectedIds = ref.watch(catalogFiltersProvider.select((filters) => filters.bottleSizeIds));
+                                  // Находим соответствующие объекты BottleSize
+                                  final selectedObjects = availableBottleSizes.where((size) => selectedIds.contains(size.id)).toList();
+                                  return SimpleFilterWidget(
+                                    title: 'Объем',
+                                    allOptions: availableBottleSizes,
+                                    selectedOptions: selectedObjects,
+                                    onApply: (selected) => ref.read(catalogFiltersProvider.notifier).updateFilters(ref.read(catalogFiltersProvider).copyWith(bottleSizeIds: selected.map((e) => (e as BottleSize).id).where((id) => id != null).cast<String>().toList())),
+                                  );
+                                },
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    );
+                  } else if (filterType == CatalogFilterType.rating) {
+                    showModalBottomSheet<void>(
+                      context: context,
+                      isScrollControlled: true,
+                      builder: (BuildContext context) {
                         return SizedBox(
-                          height: MediaQuery.of(context).size.height * (2 / 3),
+                          height: MediaQuery.of(context).size.height / 3,
                           width: double.infinity,
-                          child: SimpleFilterWidget(
-                            title: 'Сахар',
-                            allOptions: WineSugar.values,
-                            selectedOptions: ref.read(catalogFiltersProvider).sugar,
-                            onApply: (selected) => ref.read(catalogFiltersProvider.notifier).updateFilters(
-                              ref.read(catalogFiltersProvider).copyWith(sugar: selected.cast<WineSugar>()),
-                            ),
-                          ),
+                          child: const RatingFilterWidget(),
                         );
                       },
                     );

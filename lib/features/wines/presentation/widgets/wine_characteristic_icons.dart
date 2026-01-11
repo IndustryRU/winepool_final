@@ -8,17 +8,18 @@ import 'package:winepool_final/features/wines/domain/winery.dart';
 import 'package:winepool_final/features/wines/domain/country.dart';
 import 'package:winepool_final/features/wines/domain/grape_variety.dart';
 import 'package:winepool_final/features/wines/presentation/wine_details_screen.dart';
+import 'package:winepool_final/features/offers/domain/offer.dart';
 
 /// Виджет для отображения пиктограммы цвета вина
 class WineColorIcon extends StatefulWidget {
   final WineColor? color;
-  final double size;
+ final double size;
 
   const WineColorIcon({
     super.key,
     this.color,
     this.size = 20.0,
-  });
+ });
 
   @override
   State<WineColorIcon> createState() => _WineColorIconState();
@@ -84,6 +85,8 @@ class _WineColorIconState extends State<WineColorIcon>
         colorDescription = 'Белое вино';
       case WineColor.rose:
         colorDescription = 'Розовое вино';
+      case WineColor.orange:
+        colorDescription = 'Оранжевое вино';
       default:
         return;
     }
@@ -146,7 +149,9 @@ class _WineColorIconState extends State<WineColorIcon>
       case WineColor.white:
         iconColor = Colors.white;
       case WineColor.rose:
-        iconColor = Colors.pink;
+        iconColor = Colors.pink.shade100;
+      case WineColor.orange:
+        iconColor = Colors.orange;
       case WineColor.unknown:
         return const SizedBox.shrink();
       default:
@@ -167,7 +172,7 @@ class _WineColorIconState extends State<WineColorIcon>
         ),
       ),
     );
-  }
+ }
 }
 
 /// Виджет для отображения пиктограммы содержания сахара вине
@@ -197,7 +202,7 @@ class _WineSugarIconState extends State<WineSugarIcon>
   void initState() {
     super.initState();
     _animationController = AnimationController(
-      duration: const Duration(milliseconds: 1000), // Увеличил duration
+      duration: const Duration(milliseconds: 100), // Увеличил duration
       vsync: this,
     );
     _scaleAnimation = Tween<double>(
@@ -286,7 +291,7 @@ class _WineSugarIconState extends State<WineSugarIcon>
 
     Overlay.of(context).insert(_overlayEntry!);
     _animationController.forward().then((_) {
-      Future.delayed(const Duration(milliseconds: 2000)).then((_) {
+      Future.delayed(const Duration(milliseconds: 200)).then((_) {
         if (_overlayEntry != null) {
           _overlayEntry!.remove();
           _overlayEntry = null;
@@ -327,11 +332,11 @@ class _WineSugarIconState extends State<WineSugarIcon>
           mainAxisAlignment: MainAxisAlignment.end,
           children: List.generate(
             4,
-                (index) => Expanded(
+            (index) => Expanded(
               child: Container(
                 margin: const EdgeInsets.symmetric(vertical: 1),
                 decoration: BoxDecoration(
-                  color: index < filledSegments ? Colors.orange : Colors.grey[300],
+                  color: index < filledSegments ? Colors.orange.shade300 : Colors.grey[300],
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -354,7 +359,7 @@ class WineAlcoholIcon extends StatefulWidget {
     this.size = 20.0,
   });
 
-  @override
+ @override
   State<WineAlcoholIcon> createState() => _WineAlcoholIconState();
 }
 
@@ -370,7 +375,7 @@ class _WineAlcoholIconState extends State<WineAlcoholIcon>
   void initState() {
     super.initState();
     _animationController = AnimationController(
-      duration: const Duration(milliseconds: 1000), // Увеличил duration
+      duration: const Duration(milliseconds: 100), // Увеличил duration
       vsync: this,
     );
     _scaleAnimation = Tween<double>(
@@ -447,7 +452,7 @@ class _WineAlcoholIconState extends State<WineAlcoholIcon>
 
     Overlay.of(context).insert(_overlayEntry!);
     _animationController.forward().then((_) {
-      Future.delayed(const Duration(milliseconds: 2000)).then((_) {
+      Future.delayed(const Duration(milliseconds: 200)).then((_) {
         if (_overlayEntry != null) {
           _overlayEntry!.remove();
           _overlayEntry = null;
@@ -471,7 +476,7 @@ class _WineAlcoholIconState extends State<WineAlcoholIcon>
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
           decoration: BoxDecoration(
-            color: Colors.brown.withOpacity(0.2),
+            color: Colors.brown[100],
             borderRadius: BorderRadius.circular(widget.size / 2),
           ),
           child: Row(
@@ -480,7 +485,7 @@ class _WineAlcoholIconState extends State<WineAlcoholIcon>
               Icon(
                 Icons.local_drink,
                 size: widget.size * 0.6,
-                color: Colors.brown,
+                color: Colors.brown[800],
               ),
               const SizedBox(width: 2),
               FittedBox(
@@ -489,7 +494,7 @@ class _WineAlcoholIconState extends State<WineAlcoholIcon>
                   style: TextStyle(
                     fontSize: widget.size * 0.6, // Увеличено на 30%
                     fontWeight: FontWeight.w500,
-                    color: Colors.brown,
+                    color: Colors.brown[800],
                   ),
                 ),
               ),
@@ -501,10 +506,188 @@ class _WineAlcoholIconState extends State<WineAlcoholIcon>
   }
 }
 
+/// Виджет для отображения пиктограммы типа вина
+class WineTypeIcon extends StatefulWidget {
+  final WineType? type;
+  final double size;
+
+  const WineTypeIcon({
+    super.key,
+    this.type,
+    this.size = 20.0,
+  });
+
+  @override
+  State<WineTypeIcon> createState() => _WineTypeIconState();
+}
+
+class _WineTypeIconState extends State<WineTypeIcon>
+    with TickerProviderStateMixin {
+  late AnimationController _animationController;
+  late Animation<double> _scaleAnimation;
+  late Animation<double> _opacityAnimation;
+  late Animation<Offset> _offsetAnimation;
+  OverlayEntry? _overlayEntry;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 1000),
+      vsync: this,
+    );
+    _scaleAnimation = Tween<double>(
+      begin: 0.8,
+      end: 1.2,
+    ).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.elasticOut,
+    ));
+    _opacityAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeInOut,
+    ));
+    _offsetAnimation = Tween<Offset>(
+      begin: const Offset(-0.1, -0.1),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.elasticOut,
+    ));
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    _overlayEntry?.remove();
+    super.dispose();
+  }
+
+  void _showTypeDescription() {
+    if (_overlayEntry != null) return;
+
+    final renderBox = context.findRenderObject() as RenderBox;
+    final position = renderBox.localToGlobal(Offset.zero);
+    final size = renderBox.size;
+
+    String typeDescription = '';
+    switch (widget.type) {
+      case WineType.still:
+        typeDescription = 'Тихое вино';
+      case WineType.sparkling:
+        typeDescription = 'Игристое вино';
+      case WineType.fortified:
+        typeDescription = 'Креплёное вино';
+      default:
+        return;
+    }
+
+    _overlayEntry = OverlayEntry(
+      builder: (context) => Positioned(
+        top: position.dy - 50,
+        left: position.dx + size.width / 2 - 60,
+        child: FadeTransition(
+          opacity: _opacityAnimation,
+          child: SlideTransition(
+            position: _offsetAnimation,
+            child: ScaleTransition(
+              scale: _scaleAnimation,
+              child: Material(
+                color: Colors.transparent,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.7),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Text(
+                    typeDescription,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    Overlay.of(context).insert(_overlayEntry!);
+    _animationController.forward().then((_) {
+      Future.delayed(const Duration(milliseconds: 200)).then((_) {
+        if (_overlayEntry != null) {
+          _overlayEntry!.remove();
+          _overlayEntry = null;
+          _animationController.reset();
+        }
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (widget.type == null) {
+      return const SizedBox.shrink();
+    }
+
+    Color color;
+    switch (widget.type) {
+      case WineType.still:
+        color = Colors.blue;
+      case WineType.sparkling:
+        color = Colors.amber;
+      case WineType.fortified:
+        color = Colors.deepPurple;
+      case WineType.unknown:
+        return const SizedBox.shrink();
+      default:
+        return const SizedBox.shrink();
+    }
+
+    IconData iconData;
+    switch (widget.type) {
+      case WineType.still:
+        iconData = Icons.waves;
+      case WineType.sparkling:
+        iconData = Icons.bubble_chart;
+      case WineType.fortified:
+        iconData = Icons.local_bar;
+      case WineType.unknown:
+        return const SizedBox.shrink();
+      default:
+        return const SizedBox.shrink();
+    }
+
+    return GestureDetector(
+      onTap: _showTypeDescription,
+      child: Container(
+        width: widget.size,
+        height: widget.size,
+        padding: const EdgeInsets.all(2),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.1),
+          shape: BoxShape.circle,
+        ),
+        child: Icon(
+          iconData,
+          size: widget.size * 0.8,
+          color: color,
+        ),
+      ),
+    );
+  }
+}
+
 /// Виджет для отображения пиктограммы страны производства
 class WineCountryIcon extends StatefulWidget {
   final Country? country;
-  final double size;
+ final double size;
 
   const WineCountryIcon({
     super.key,
@@ -564,7 +747,7 @@ class _WineCountryIconState extends State<WineCountryIcon>
     super.dispose();
   }
 
-  void _showCountryDescription() {
+ void _showCountryDescription() {
     if (_overlayEntry != null) return;
 
     final renderBox = context.findRenderObject() as RenderBox;
@@ -615,7 +798,7 @@ class _WineCountryIconState extends State<WineCountryIcon>
 
     Overlay.of(context).insert(_overlayEntry!);
     _animationController.forward().then((_) {
-      Future.delayed(const Duration(milliseconds: 2000)).then((_) {
+      Future.delayed(const Duration(milliseconds: 200)).then((_) {
         if (_overlayEntry != null) {
           _overlayEntry!.remove();
           _overlayEntry = null;
@@ -656,7 +839,7 @@ class _WineCountryIconState extends State<WineCountryIcon>
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
               decoration: BoxDecoration(
-                color: Colors.blue.withOpacity(0.2),
+                color: Colors.blue[100],
                 borderRadius: BorderRadius.circular(widget.size / 2),
               ),
               child: Row(
@@ -673,6 +856,7 @@ class _WineCountryIconState extends State<WineCountryIcon>
                       style: TextStyle(
                       fontSize: widget.size * 0.6,
                       fontWeight: FontWeight.w500,
+                      color: Colors.blue[800],
                     ),
                   ),
                 ],
@@ -690,7 +874,7 @@ class _WineCountryIconState extends State<WineCountryIcon>
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
               decoration: BoxDecoration(
-                color: Colors.blue.withOpacity(0.2),
+                color: Colors.blue[100],
                 borderRadius: BorderRadius.circular(widget.size / 2),
               ),
               child: Text(
@@ -698,7 +882,7 @@ class _WineCountryIconState extends State<WineCountryIcon>
                 style: TextStyle(
                   fontSize: widget.size * 0.6,
                   fontWeight: FontWeight.w500,
-                  color: Colors.blue,
+                  color: Colors.blue[800],
                 ),
               ),
             ),
@@ -715,7 +899,7 @@ class _WineCountryIconState extends State<WineCountryIcon>
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
             decoration: BoxDecoration(
-              color: Colors.blue.withOpacity(0.2),
+              color: Colors.blue[100],
               borderRadius: BorderRadius.circular(widget.size / 2),
             ),
             child: Text(
@@ -723,7 +907,7 @@ class _WineCountryIconState extends State<WineCountryIcon>
               style: TextStyle(
                 fontSize: widget.size * 0.6,
                 fontWeight: FontWeight.w500,
-                color: Colors.blue,
+                color: Colors.blue[800],
               ),
             ),
           ),
@@ -736,6 +920,167 @@ class _WineCountryIconState extends State<WineCountryIcon>
     return code.length == 2 && code.toUpperCase() == code;
   }
   
+}
+
+/// Виджет для отображения пиктограммы винтажа
+class WineVintageIcon extends StatefulWidget {
+  final int? vintage;
+  final double size;
+
+  const WineVintageIcon({
+    super.key,
+    this.vintage,
+    this.size = 20.0,
+  });
+
+  @override
+  State<WineVintageIcon> createState() => _WineVintageIconState();
+}
+
+class _WineVintageIconState extends State<WineVintageIcon>
+    with TickerProviderStateMixin {
+  late AnimationController _animationController;
+  late Animation<double> _scaleAnimation;
+  late Animation<double> _opacityAnimation;
+  late Animation<Offset> _offsetAnimation;
+  OverlayEntry? _overlayEntry;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 1000),
+      vsync: this,
+    );
+    _scaleAnimation = Tween<double>(
+      begin: 0.8,
+      end: 1.2,
+    ).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.elasticOut,
+    ));
+    _opacityAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeInOut,
+    ));
+    _offsetAnimation = Tween<Offset>(
+      begin: const Offset(-0.1, -0.1),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.elasticOut,
+    ));
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    _overlayEntry?.remove();
+    super.dispose();
+  }
+
+  void _showVintageDescription() {
+    if (_overlayEntry != null) return;
+
+    final renderBox = context.findRenderObject() as RenderBox;
+    final position = renderBox.localToGlobal(Offset.zero);
+    final size = renderBox.size;
+
+    String vintageDescription = '';
+    if (widget.vintage != null) {
+      vintageDescription = 'Винтаж ${widget.vintage}';
+    } else {
+      return;
+    }
+
+    _overlayEntry = OverlayEntry(
+      builder: (context) => Positioned(
+        top: position.dy - 50,
+        left: position.dx + size.width / 2 - 60,
+        child: FadeTransition(
+          opacity: _opacityAnimation,
+          child: SlideTransition(
+            position: _offsetAnimation,
+            child: ScaleTransition(
+              scale: _scaleAnimation,
+              child: Material(
+                color: Colors.transparent,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.7),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Text(
+                    vintageDescription,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    Overlay.of(context).insert(_overlayEntry!);
+    _animationController.forward().then((_) {
+      Future.delayed(const Duration(milliseconds: 2000)).then((_) {
+        if (_overlayEntry != null) {
+          _overlayEntry!.remove();
+          _overlayEntry = null;
+          _animationController.reset();
+        }
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (widget.vintage == null) {
+      return const SizedBox.shrink();
+    }
+
+    return GestureDetector(
+      onTap: _showVintageDescription,
+      child: Container(
+        width: widget.size * 1.5, // Фиксированная ширина для WineVintageIcon
+        height: widget.size,
+        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+        decoration: BoxDecoration(
+          color: Colors.brown[200],
+          borderRadius: BorderRadius.circular(widget.size / 2),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.event,
+              size: widget.size * 0.6,
+              color: Colors.brown[800],
+            ),
+            const SizedBox(width: 2),
+            FittedBox(
+              child: Text(
+                widget.vintage.toString(),
+                style: TextStyle(
+                  fontSize: widget.size * 0.6,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.brown[800],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 
@@ -755,14 +1100,31 @@ class WineCharacteristicIconsRow extends ConsumerWidget {
     final ids = wine.grapeVarietyIds;
     final colorIcon = WineColorIcon(color: wine.color, size: iconSize);
     final sugarIcon = WineSugarIcon(sugar: wine.sugar, size: iconSize);
+    final typeIcon = WineTypeIcon(type: wine.type, size: iconSize);
     final alcoholIcon = WineAlcoholIcon(alcoholLevel: wine.alcoholLevel, size: iconSize);
     final countryIcon = WineCountryIcon(country: wine.winery?.country, size: iconSize);
+    
+    // Находим винтаж из доступных предложений
+    final int? wineVintage = _findMostRecentVintage(wine.offers);
 
     if (ids == null || ids.isEmpty) {
+      final vintageIcon = wineVintage != null ? WineVintageIcon(vintage: wineVintage, size: iconSize) : null;
+      final List<Widget> iconList = [
+        colorIcon, 
+        sugarIcon, 
+        typeIcon, 
+        alcoholIcon, 
+        countryIcon
+      ];
+      
+      if (vintageIcon != null) {
+        iconList.add(vintageIcon);
+      }
+      
       return Wrap(
         spacing: 6,
         runSpacing: 0,
-        children: [colorIcon, sugarIcon, alcoholIcon, countryIcon]
+        children: iconList
             .where((widget) => !(widget is SizedBox))
             .toList(),
       );
@@ -773,32 +1135,74 @@ class WineCharacteristicIconsRow extends ConsumerWidget {
     return grapeVarietiesAsync.when(
       data: (grapeVarieties) {
         final names = grapeVarieties.map((e) => e.name).join(', ');
+        final vintageIcon = wineVintage != null ? WineVintageIcon(vintage: wineVintage, size: iconSize) : null;
+        
+        final List<Widget> iconList = [
+          colorIcon,
+          sugarIcon,
+          typeIcon,
+          alcoholIcon,
+          countryIcon,
+        ];
+        
+        if (vintageIcon != null) {
+          iconList.add(vintageIcon);
+        }
+        
+        iconList.add(_buildGrapeVarietyIcon(names, iconSize));
+        
         return Wrap(
           spacing: 6,
           runSpacing: 0,
-          children: [
-            colorIcon,
-            sugarIcon,
-            alcoholIcon,
-            countryIcon,
-            _buildGrapeVarietyIcon(names, iconSize),
-          ].where((widget) => !(widget is SizedBox)).toList(),
+          children: iconList
+              .where((widget) => !(widget is SizedBox))
+              .toList(),
         );
       },
-      loading: () => Wrap(
-        spacing: 6,
-        runSpacing: 0,
-        children: [colorIcon, sugarIcon, alcoholIcon, countryIcon]
-            .where((widget) => !(widget is SizedBox))
-            .toList(),
-      ),
-      error: (error, stack) => Wrap(
-        spacing: 6,
-        runSpacing: 0,
-        children: [colorIcon, sugarIcon, alcoholIcon, countryIcon]
-            .where((widget) => !(widget is SizedBox))
-            .toList(),
-      ),
+      loading: () {
+        final vintageIcon = wineVintage != null ? WineVintageIcon(vintage: wineVintage, size: iconSize) : null;
+        final List<Widget> iconList = [
+          colorIcon, 
+          sugarIcon, 
+          typeIcon, 
+          alcoholIcon, 
+          countryIcon
+        ];
+        
+        if (vintageIcon != null) {
+          iconList.add(vintageIcon);
+        }
+        
+        return Wrap(
+          spacing: 6,
+          runSpacing: 0,
+          children: iconList
+              .where((widget) => !(widget is SizedBox))
+              .toList(),
+        );
+      },
+      error: (error, stack) {
+        final vintageIcon = wineVintage != null ? WineVintageIcon(vintage: wineVintage, size: iconSize) : null;
+        final List<Widget> iconList = [
+          colorIcon, 
+          sugarIcon, 
+          typeIcon, 
+          alcoholIcon, 
+          countryIcon
+        ];
+        
+        if (vintageIcon != null) {
+          iconList.add(vintageIcon);
+        }
+        
+        return Wrap(
+          spacing: 6,
+          runSpacing: 0,
+          children: iconList
+              .where((widget) => !(widget is SizedBox))
+              .toList(),
+        );
+      },
     );
   }
 
@@ -838,15 +1242,34 @@ class WineCharacteristicIconsRow extends ConsumerWidget {
       ),
     );
   }
+  
+  /// Метод для нахождения самого недавнего винтажа из списка предложений
+  int? _findMostRecentVintage(List<Offer>? offers) {
+    if (offers == null || offers.isEmpty) {
+      return null;
+    }
+    
+    // Находим максимальный винтаж (самый недавний год)
+    int? maxVintage;
+    for (final offer in offers) {
+      if (offer.vintage != null) {
+        if (maxVintage == null || offer.vintage! > maxVintage) {
+          maxVintage = offer.vintage!;
+        }
+      }
+    }
+    
+    return maxVintage;
+  }
 }
 
-/// Виджет для отображения всех пиктограмм характеристик вина в вертикальном расположении
+/// Виджет для отображения всех пиктограмм характеристик вина вертикальном расположении
 class WineCharacteristicIconsColumn extends ConsumerWidget {
   final Wine wine;
   final double iconSize;
   final bool isSearch;
 
-  const WineCharacteristicIconsColumn({
+ const WineCharacteristicIconsColumn({
     super.key,
     required this.wine,
     this.iconSize = 20.0,
@@ -855,7 +1278,7 @@ class WineCharacteristicIconsColumn extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    log('--- ГДЕ ЭТОТ КОММЕНТАРИЙ? ---');
+    log('--- ГДЕ ЭТОТ КОМЕНТАРИЙ? ---');
     if (wine.winery != null) {
       log(wine.winery.toString());
     }
@@ -863,6 +1286,7 @@ class WineCharacteristicIconsColumn extends ConsumerWidget {
     final ids = wine.grapeVarietyIds;
     final colorIcon = wine.color != null ? WineColorIcon(color: wine.color, size: iconSize) : null;
     final sugarIcon = wine.sugar != null ? WineSugarIcon(sugar: wine.sugar, size: iconSize) : null;
+    final typeIcon = wine.type != null ? WineTypeIcon(type: wine.type, size: iconSize) : null;
     final alcoholIcon = wine.alcoholLevel != null ? WineAlcoholIcon(alcoholLevel: wine.alcoholLevel, size: iconSize) : null;
     Widget? countryIcon;
     if (wine.winery?.country != null) {
@@ -873,12 +1297,18 @@ class WineCharacteristicIconsColumn extends ConsumerWidget {
         size: iconSize,
       );
     }
+    
+    // Находим винтаж из доступных предложений
+    final int? wineVintage = _findMostRecentVintage(wine.offers);
+    final vintageIcon = wineVintage != null ? WineVintageIcon(vintage: wineVintage, size: iconSize) : null;
 
     final iconsList = <Widget>[];
     if (colorIcon != null) iconsList.add(colorIcon);
     if (sugarIcon != null) iconsList.add(sugarIcon);
+    if (typeIcon != null) iconsList.add(typeIcon);
     if (alcoholIcon != null) iconsList.add(alcoholIcon);
     if (countryIcon != null) iconsList.add(countryIcon);
+    if (vintageIcon != null) iconsList.add(vintageIcon);
 
     if (ids == null || ids.isEmpty) {
       return Wrap(
@@ -952,5 +1382,24 @@ class WineCharacteristicIconsColumn extends ConsumerWidget {
         ],
       ),
     );
+  }
+  
+  /// Метод для нахождения самого недавнего винтажа из списка предложений
+  int? _findMostRecentVintage(List<Offer>? offers) {
+    if (offers == null || offers.isEmpty) {
+      return null;
+    }
+    
+    // Находим максимальный винтаж (самый недавний год)
+    int? maxVintage;
+    for (final offer in offers) {
+      if (offer.vintage != null) {
+        if (maxVintage == null || offer.vintage! > maxVintage) {
+          maxVintage = offer.vintage!;
+        }
+      }
+    }
+    
+    return maxVintage;
   }
 }

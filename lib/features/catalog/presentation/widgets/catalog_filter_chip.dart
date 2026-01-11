@@ -30,7 +30,7 @@ class CatalogFilterChip extends ConsumerWidget {
   });
 
   @override
- Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context, WidgetRef ref) {
     // Подписываемся на состояние фильтров, чтобы получить информацию об активности и количестве выбранных элементов.
     // Используем поля из CatalogFiltersState напрямую
     final filterState = ref.watch(catalogFiltersProvider.select((state) {
@@ -82,12 +82,9 @@ class CatalogFilterChip extends ConsumerWidget {
             'count': 0,
           };
         case CatalogFilterType.year:
-          final defaultMinYear = 1900;
-          final defaultMaxYear = DateTime.now().year;
           return {
-            'isActive': (state.minYear != defaultMinYear) ||
-                (state.maxYear != null && state.maxYear != defaultMaxYear),
-            'count': 0,
+            'isActive': state.vintages.isNotEmpty,
+            'count': state.vintages.length,
           };
         case CatalogFilterType.volume:
           return {
@@ -104,38 +101,33 @@ class CatalogFilterChip extends ConsumerWidget {
 
     final isActive = filterState['isActive'] as bool;
     final count = filterState['count'] as int;
+    
+    final isRatingFilter = filterType == CatalogFilterType.rating;
+    final ratingValue = isRatingFilter ? (ref.watch(catalogFiltersProvider).minRating ?? 0.0) : 0.0;
 
-    log('--- CatalogFilterChip REBUILT --- Type: $filterType, IsActive: $isActive, Count: $count');
+    // Основной контент чипа (иконки и текст)
+    final chipContent = Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Иконка для специфических типов фильтров
+        if (filterType == CatalogFilterType.winery) ...[
+          const Icon(Icons.business, size: 16),
+          const SizedBox(width: 4),
+        ] else if (filterType == CatalogFilterType.price) ...[
+          const Icon(Icons.monetization_on_outlined, size: 16),
+          const SizedBox(width: 4),
+        ] else if (filterType == CatalogFilterType.rating) ...[
+          const Icon(Icons.star_border_outlined, size: 16),
+          const SizedBox(width: 4),
+        ] else if (filterType == CatalogFilterType.sort) ...[
+          const Icon(Icons.sort, size: 16),
+          const SizedBox(width: 4),
+        ],
+        Text(_getFilterTitle(filterType)),
+      ],
+    );
 
     return InputChip(
-      label: badges.Badge(
-        // Показываем бейдж с количеством только если счетчик > 0
-        showBadge: count > 0,
-        badgeContent: Text(count.toString(), style: const TextStyle(fontSize: 10)),
-        badgeStyle: badges.BadgeStyle(
-          badgeColor: Colors.grey[200]!,
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Иконка для специфических типов фильтров
-            if (filterType == CatalogFilterType.winery) ...[
-              const Icon(Icons.business, size: 16),
-              const SizedBox(width: 4),
-            ] else if (filterType == CatalogFilterType.price) ...[
-              const Icon(Icons.monetization_on_outlined, size: 16),
-              const SizedBox(width: 4),
-            ] else if (filterType == CatalogFilterType.rating) ...[
-              const Icon(Icons.star_border_outlined, size: 16),
-              const SizedBox(width: 4),
-            ] else if (filterType == CatalogFilterType.sort) ...[
-              const Icon(Icons.sort, size: 16),
-              const SizedBox(width: 4),
-            ],
-            Text(_getFilterTitle(filterType)),
-          ],
-        ),
-      ),
       selected: isActive,
       selectedColor: Colors.grey[600],
       deleteIconColor: Colors.white,
@@ -172,7 +164,7 @@ class CatalogFilterChip extends ConsumerWidget {
             ref.read(catalogFiltersProvider.notifier).resetRatingFilter();
             break;
           case CatalogFilterType.year:
-            ref.read(catalogFiltersProvider.notifier).resetYearFilter();
+            ref.read(catalogFiltersProvider.notifier).resetVintageFilter();
             break;
           case CatalogFilterType.volume:
             ref.read(catalogFiltersProvider.notifier).clearBottleSizes();
@@ -184,6 +176,21 @@ class CatalogFilterChip extends ConsumerWidget {
             break;
         }
       } : null,
+      label: badges.Badge(
+        showBadge: isActive, // Показываем бейдж всегда, когда фильтр активен
+        position: badges.BadgePosition.topEnd(top: -8, end: -10),
+        badgeStyle: badges.BadgeStyle(
+          badgeColor: Colors.grey[200]!,
+          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+          // Делаем прямоугольник для рейтинга
+          borderRadius: BorderRadius.circular(isRatingFilter ? 8 : 12),
+        ),
+        badgeContent: Text(
+          isRatingFilter ? '${ratingValue.toInt()}★' : count.toString(),
+          style: const TextStyle(fontSize: 10, color: Colors.black),
+        ),
+        child: chipContent, // Оборачиваем основной контент
+      ),
     );
   }
 
@@ -220,7 +227,7 @@ class CatalogFilterChip extends ConsumerWidget {
 
 /// Перечисление типов фильтров, используемых в каталоге.
 enum CatalogFilterType {
- sort,
+  sort,
   color,
   type,
   sugar,

@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'wineries_provider.dart';
+part of 'filter_options_provider.dart';
 
 // **************************************************************************
 // RiverpodGenerator
@@ -87,6 +87,84 @@ final class AvailableColorsProvider
 
 String _$availableColorsHash() => r'227b705d864d352553a939d67e15fb6068307384';
 
+@ProviderFor(availableSugars)
+const availableSugarsProvider = AvailableSugarsProvider._();
+
+final class AvailableSugarsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<WineSugar>>,
+          List<WineSugar>,
+          FutureOr<List<WineSugar>>
+        >
+    with $FutureModifier<List<WineSugar>>, $FutureProvider<List<WineSugar>> {
+  const AvailableSugarsProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'availableSugarsProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$availableSugarsHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<List<WineSugar>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<WineSugar>> create(Ref ref) {
+    return availableSugars(ref);
+  }
+}
+
+String _$availableSugarsHash() => r'eca9e7ee9bf7037ecf36d8db13996377e40b14c8';
+
+@ProviderFor(availableTypes)
+const availableTypesProvider = AvailableTypesProvider._();
+
+final class AvailableTypesProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<WineType>>,
+          List<WineType>,
+          FutureOr<List<WineType>>
+        >
+    with $FutureModifier<List<WineType>>, $FutureProvider<List<WineType>> {
+  const AvailableTypesProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'availableTypesProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$availableTypesHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<List<WineType>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<WineType>> create(Ref ref) {
+    return availableTypes(ref);
+  }
+}
+
+String _$availableTypesHash() => r'e0c7ea455471d6be19a90a6e90f69eeb492fa508';
+
 @ProviderFor(partnerWineries)
 const partnerWineriesProvider = PartnerWineriesProvider._();
 
@@ -125,3 +203,41 @@ final class PartnerWineriesProvider
 }
 
 String _$partnerWineriesHash() => r'b2c5bb262870aef8dd44149ed153e212ce15b826';
+
+@ProviderFor(availableVintages)
+const availableVintagesProvider = AvailableVintagesProvider._();
+
+final class AvailableVintagesProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<int>>,
+          List<int>,
+          FutureOr<List<int>>
+        >
+    with $FutureModifier<List<int>>, $FutureProvider<List<int>> {
+  const AvailableVintagesProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'availableVintagesProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$availableVintagesHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<List<int>> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<int>> create(Ref ref) {
+    return availableVintages(ref);
+  }
+}
+
+String _$availableVintagesHash() => r'0e0aa99117cc8425b28963a02bb2108cc447b89e';

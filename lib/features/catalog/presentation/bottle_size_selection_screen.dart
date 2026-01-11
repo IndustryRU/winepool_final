@@ -15,8 +15,8 @@ class BottleSizeSelectionScreen extends ConsumerStatefulWidget {
 
 class _BottleSizeSelectionScreenState extends ConsumerState<BottleSizeSelectionScreen> {
   @override
-  Widget build(BuildContext context) {
-    final bottleSizesAsync = ref.watch(allBottleSizesProvider);
+ Widget build(BuildContext context) {
+    final bottleSizesAsync = ref.watch(availableBottleSizesProvider);
     final currentFilters = ref.watch(catalogFiltersProvider);
 
     return Scaffold(
@@ -57,7 +57,7 @@ class BottleSizeSelectionBody extends ConsumerStatefulWidget {
   });
 
   final List<BottleSize> allBottleSizes;
-  final List<String> selectedBottleSizeIds;
+ final List<String> selectedBottleSizeIds;
   final WidgetRef ref;
 
   @override
@@ -69,7 +69,7 @@ class _BottleSizeSelectionBodyState extends ConsumerState<BottleSizeSelectionBod
   List<BottleSize> _filteredBottleSizes = [];
 
   @override
-  void initState() {
+ void initState() {
     super.initState();
     _filteredBottleSizes = widget.allBottleSizes;
     _searchController.addListener(_onSearchChanged);
@@ -99,7 +99,7 @@ class _BottleSizeSelectionBodyState extends ConsumerState<BottleSizeSelectionBod
  }
 
   @override
-  Widget build(BuildContext context) {
+ Widget build(BuildContext context) {
     return Column(
       children: [
         Padding(

@@ -6,7 +6,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:winepool_final/features/catalog/application/catalog_filters_provider.dart';
-import 'package:winepool_final/features/catalog/application/wineries_provider.dart';
+import 'package:winepool_final/features/catalog/application/filter_options_provider.dart';
 import 'package:winepool_final/features/catalog/application/temporary_winery_ids_provider.dart';
 import 'package:winepool_final/core/widgets/custom_search_field.dart';
 import 'package:winepool_final/features/wines/domain/winery.dart';

@@ -96,6 +96,7 @@ Future<List<Wine>> winesWithActiveFilters(Ref ref) async {
         wineryIds: filters.wineryIds.isEmpty ? null : filters.wineryIds,
         minRating: filters.minRating,
         bottleSizeIds: filters.bottleSizeIds.isEmpty ? null : filters.bottleSizeIds,
+        vintages: filters.vintages.isEmpty ? null : filters.vintages,
         showUnavailable: filters.showUnavailable,
         sortOption: filters.sortOption,
         includeDeleted: showDeleted,

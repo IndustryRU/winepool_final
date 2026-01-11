@@ -8,7 +8,7 @@ import 'package:winepool_final/features/offers/domain/bottle_size.dart';
 import '../application/all_bottle_sizes_provider.dart';
 
 class EditOfferScreen extends HookConsumerWidget {
-  const EditOfferScreen({super.key, required this.offer});
+ const EditOfferScreen({super.key, required this.offer});
   final Offer offer;
 
   @override
@@ -21,7 +21,7 @@ class EditOfferScreen extends HookConsumerWidget {
     final selectedVintage = useState<int?>(offer.vintage);
     final selectedBottleSize = useState<BottleSize?>(offer.bottleSize);
     final formKey = useMemoized(() => GlobalKey<FormState>());
-    final bottleSizesState = ref.watch(allBottleSizesProvider);
+    final bottleSizesState = ref.watch(availableBottleSizesProvider);
 
     ref.listen(offersMutationProvider, (previous, next) {
       if (next is AsyncError) {

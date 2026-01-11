@@ -12,7 +12,7 @@ import 'package:winepool_final/features/catalog/presentation/widgets/winery_list
 import 'package:winepool_final/common/widgets/shimmer_loading_indicator.dart';
 
 import '../application/catalog_filters_provider.dart';
-import '../application/wineries_provider.dart';
+import '../application/filter_options_provider.dart';
 import '../application/temporary_winery_ids_provider.dart';
 
 class WinerySelectionScreen extends HookConsumerWidget {

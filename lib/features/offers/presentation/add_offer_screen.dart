@@ -27,7 +27,7 @@ class AddOfferScreen extends HookConsumerWidget {
     final selectedBottleSize = useState<BottleSize?>(null);
     final formKey = useMemoized(() => GlobalKey<FormState>());
     final winesState = ref.watch(allWinesProvider);
-    final bottleSizesState = ref.watch(allBottleSizesProvider);
+    final bottleSizesState = ref.watch(availableBottleSizesProvider);
     final selectedWine = useState<Wine?>(null);
    
    // Добавляем слушатель для offersMutationProvider

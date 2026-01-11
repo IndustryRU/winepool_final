@@ -792,12 +792,13 @@ Widget _buildFilterContentWithCallbacks(
         },
       );
     case 'min_rating':
-      return RatingFilterWidget(
-        initialRating: tempRating.value,
-        onRatingChanged: (rating) {
-          tempRating.value = rating;
-        },
-      );
+      return Container();
+      //return RatingFilterWidget(
+      //  initialRating: tempRating.value,
+      //  onRatingChanged: (rating) {
+      //    tempRating.value = rating;
+      //  },
+      //);
     case 'year':
       final currentFilters = ref.read(catalogFiltersProvider);
       final currentMinYear = currentFilters['min_year']?.toInt() ?? 1900;
@@ -1037,13 +1038,14 @@ void _showSortModal(
        case 'grape':
          return const GrapeFilterWidget();
        case 'min_rating':
-         return RatingFilterWidget(
-           initialRating: selectedFilters.value['min_rating']?.toDouble() ?? 0.0,
-           onRatingChanged: (rating) {
-             selectedFilters.value['min_rating'] = rating;
-             selectedFilters.value = Map.from(selectedFilters.value);
-           },
-         );
+         return Container();
+         //return RatingFilterWidget(
+           //initialRating: selectedFilters.value['min_rating']?.toDouble() ?? 0.0,
+           //onRatingChanged: (rating) {
+            // selectedFilters.value['min_rating'] = rating;
+            // selectedFilters.value = Map.from(selectedFilters.value);
+           //},
+         //);
        case 'year':
          return buildYearFilter(context, selectedFilters);
        case 'volume':

@@ -1,0 +1,6 @@
+CREATE OR REPLACE FUNCTION get_available_sugars()
+RETURNS SETOF wine_sugar AS $$
+BEGIN
+  RETURN QUERY SELECT DISTINCT sugar FROM wines WHERE sugar IS NOT NULL;
+END;
+$$ LANGUAGE plpgsql;

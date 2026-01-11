@@ -281,6 +281,7 @@ class WinesRepository {
          List<String>? wineryIds,
          double? minRating,
          List<String>? bottleSizeIds,
+         List<int>? vintages,
          bool showUnavailable = false,
          String? sortOption,
          bool includeDeleted = false,
@@ -293,6 +294,7 @@ class WinesRepository {
          grapeIds = grapeIds ?? [];
          wineryIds = wineryIds ?? [];
          bottleSizeIds = bottleSizeIds ?? [];
+         vintages = vintages ?? [];
 
          log('WinesRepository: Fetching with wineryIds: $wineryIds');
          try {
@@ -349,6 +351,22 @@ class WinesRepository {
            }
            if (bottleSizeIds.isNotEmpty) {
              query = query.inFilter('offers.bottle_size_id', bottleSizeIds);
+           }
+           
+           if (vintages.isNotEmpty) {
+             final offersResponse = await _supabaseClient
+                 .from('offers')
+                 .select('wine_id')
+                 .inFilter('vintage', vintages);
+             
+             final List<dynamic> offersData = offersResponse as List<dynamic>;
+             if (offersData.isNotEmpty) {
+               final wineIds = offersData.map((item) => item['wine_id'] as String).toSet().toList();
+               query = query.inFilter('id', wineIds);
+             } else {
+               // Если нет предложений с таким винтажом, возвращаем пустой список
+               return [];
+             }
            }
            
            if (!showUnavailable) {

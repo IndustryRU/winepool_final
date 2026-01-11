@@ -1,0 +1,6 @@
+CREATE OR REPLACE FUNCTION get_available_types()
+RETURNS SETOF wine_type AS $$
+BEGIN
+  RETURN QUERY SELECT DISTINCT type FROM wines WHERE type IS NOT NULL;
+END;
+$$ LANGUAGE plpgsql;
