@@ -13,13 +13,13 @@ import 'package:winepool_final/features/offers/domain/offer.dart';
 /// Виджет для отображения пиктограммы цвета вина
 class WineColorIcon extends StatefulWidget {
   final WineColor? color;
- final double size;
+  final double size;
 
   const WineColorIcon({
     super.key,
     this.color,
     this.size = 20.0,
- });
+  });
 
   @override
   State<WineColorIcon> createState() => _WineColorIconState();
@@ -37,7 +37,7 @@ class _WineColorIconState extends State<WineColorIcon>
   void initState() {
     super.initState();
     _animationController = AnimationController(
-      duration: const Duration(milliseconds: 1000), // Увеличил duration
+      duration: const Duration(milliseconds: 1000),
       vsync: this,
     );
     _scaleAnimation = Tween<double>(
@@ -45,7 +45,7 @@ class _WineColorIconState extends State<WineColorIcon>
       end: 1.2,
     ).animate(CurvedAnimation(
       parent: _animationController,
-      curve: Curves.elasticOut, // Изменил кривую для более плавной анимации
+      curve: Curves.elasticOut,
     ));
     _opacityAnimation = Tween<double>(
       begin: 0.0,
@@ -55,11 +55,11 @@ class _WineColorIconState extends State<WineColorIcon>
       curve: Curves.easeInOut,
     ));
     _offsetAnimation = Tween<Offset>(
-      begin: const Offset(-0.1, -0.1), // Диагональное смещение
+      begin: const Offset(-0.1, -0.1),
       end: Offset.zero,
     ).animate(CurvedAnimation(
       parent: _animationController,
-      curve: Curves.elasticOut, // Изменил кривую для более плавной анимации
+      curve: Curves.elasticOut,
     ));
   }
 
@@ -172,7 +172,7 @@ class _WineColorIconState extends State<WineColorIcon>
         ),
       ),
     );
- }
+  }
 }
 
 /// Виджет для отображения пиктограммы содержания сахара вине
@@ -202,7 +202,7 @@ class _WineSugarIconState extends State<WineSugarIcon>
   void initState() {
     super.initState();
     _animationController = AnimationController(
-      duration: const Duration(milliseconds: 100), // Увеличил duration
+      duration: const Duration(milliseconds: 100),
       vsync: this,
     );
     _scaleAnimation = Tween<double>(
@@ -210,7 +210,7 @@ class _WineSugarIconState extends State<WineSugarIcon>
       end: 1.2,
     ).animate(CurvedAnimation(
       parent: _animationController,
-      curve: Curves.elasticOut, // Изменил кривую для более плавной анимации
+      curve: Curves.elasticOut,
     ));
     _opacityAnimation = Tween<double>(
       begin: 0.0,
@@ -220,11 +220,11 @@ class _WineSugarIconState extends State<WineSugarIcon>
       curve: Curves.easeInOut,
     ));
     _offsetAnimation = Tween<Offset>(
-      begin: const Offset(-0.1, -0.1), // Диагональное смещение
+      begin: const Offset(-0.1, -0.1),
       end: Offset.zero,
     ).animate(CurvedAnimation(
       parent: _animationController,
-      curve: Curves.elasticOut, // Изменил кривую для более плавной анимации
+      curve: Curves.elasticOut,
     ));
   }
 
@@ -359,7 +359,7 @@ class WineAlcoholIcon extends StatefulWidget {
     this.size = 20.0,
   });
 
- @override
+  @override
   State<WineAlcoholIcon> createState() => _WineAlcoholIconState();
 }
 
@@ -375,7 +375,7 @@ class _WineAlcoholIconState extends State<WineAlcoholIcon>
   void initState() {
     super.initState();
     _animationController = AnimationController(
-      duration: const Duration(milliseconds: 100), // Увеличил duration
+      duration: const Duration(milliseconds: 100),
       vsync: this,
     );
     _scaleAnimation = Tween<double>(
@@ -383,7 +383,7 @@ class _WineAlcoholIconState extends State<WineAlcoholIcon>
       end: 1.2,
     ).animate(CurvedAnimation(
       parent: _animationController,
-      curve: Curves.elasticOut, // Изменил кривую для более плавной анимации
+      curve: Curves.elasticOut,
     ));
     _opacityAnimation = Tween<double>(
       begin: 0.0,
@@ -393,11 +393,11 @@ class _WineAlcoholIconState extends State<WineAlcoholIcon>
       curve: Curves.easeInOut,
     ));
     _offsetAnimation = Tween<Offset>(
-      begin: const Offset(-0.1, -0.1), // Диагональное смещение
+      begin: const Offset(-0.1, -0.1),
       end: Offset.zero,
     ).animate(CurvedAnimation(
       parent: _animationController,
-      curve: Curves.elasticOut, // Изменил кривую для более плавной анимации
+      curve: Curves.elasticOut,
     ));
   }
 
@@ -492,7 +492,7 @@ class _WineAlcoholIconState extends State<WineAlcoholIcon>
                 child: Text(
                   '${widget.alcoholLevel!.toStringAsFixed(1)}%',
                   style: TextStyle(
-                    fontSize: widget.size * 0.6, // Увеличено на 30%
+                    fontSize: widget.size * 0.6,
                     fontWeight: FontWeight.w500,
                     color: Colors.brown[800],
                   ),
@@ -714,7 +714,7 @@ class _WineCountryIconState extends State<WineCountryIcon>
       log(widget.country!.name);
     }
     _animationController = AnimationController(
-      duration: const Duration(milliseconds: 1000), // Увеличил duration
+      duration: const Duration(milliseconds: 1000),
       vsync: this,
     );
     _scaleAnimation = Tween<double>(
@@ -722,7 +722,7 @@ class _WineCountryIconState extends State<WineCountryIcon>
       end: 1.2,
     ).animate(CurvedAnimation(
       parent: _animationController,
-      curve: Curves.elasticOut, // Изменил кривую для более плавной анимации
+      curve: Curves.elasticOut,
     ));
     _opacityAnimation = Tween<double>(
       begin: 0.0,
@@ -732,11 +732,11 @@ class _WineCountryIconState extends State<WineCountryIcon>
       curve: Curves.easeInOut,
     ));
     _offsetAnimation = Tween<Offset>(
-      begin: const Offset(-0.1, -0.1), // Диагональное смещение
+      begin: const Offset(-0.1, -0.1),
       end: Offset.zero,
     ).animate(CurvedAnimation(
       parent: _animationController,
-      curve: Curves.elasticOut, // Изменил кривую для более плавной анимации
+      curve: Curves.elasticOut,
     ));
   }
 
@@ -747,7 +747,7 @@ class _WineCountryIconState extends State<WineCountryIcon>
     super.dispose();
   }
 
- void _showCountryDescription() {
+  void _showCountryDescription() {
     if (_overlayEntry != null) return;
 
     final renderBox = context.findRenderObject() as RenderBox;
@@ -852,8 +852,8 @@ class _WineCountryIconState extends State<WineCountryIcon>
                   ),
                   const SizedBox(width: 4),
                   Text(
-                      displayCountryCode,
-                      style: TextStyle(
+                    displayCountryCode,
+                    style: TextStyle(
                       fontSize: widget.size * 0.6,
                       fontWeight: FontWeight.w500,
                       color: Colors.blue[800],
@@ -914,12 +914,11 @@ class _WineCountryIconState extends State<WineCountryIcon>
         ),
       );
     }
- }
+  }
 
   bool _isValidCountryCode(String code) {
     return code.length == 2 && code.toUpperCase() == code;
   }
-  
 }
 
 /// Виджет для отображения пиктограммы винтажа
@@ -983,23 +982,18 @@ class _WineVintageIconState extends State<WineVintageIcon>
   }
 
   void _showVintageDescription() {
-    if (_overlayEntry != null) return;
+    if (_overlayEntry != null || widget.vintage == null) return;
 
     final renderBox = context.findRenderObject() as RenderBox;
     final position = renderBox.localToGlobal(Offset.zero);
     final size = renderBox.size;
 
-    String vintageDescription = '';
-    if (widget.vintage != null) {
-      vintageDescription = 'Винтаж ${widget.vintage}';
-    } else {
-      return;
-    }
+    final vintageDescription = 'Винтаж ${widget.vintage}';
 
     _overlayEntry = OverlayEntry(
       builder: (context) => Positioned(
-        top: position.dy - 50,
-        left: position.dx + size.width / 2 - 60,
+        top: position.dy - 30, // Скорректируем позицию, чтобы было видно
+        left: position.dx + size.width / 2 - (vintageDescription.length * 4), // Примерный расчет центра
         child: FadeTransition(
           opacity: _opacityAnimation,
           child: SlideTransition(
@@ -1047,42 +1041,37 @@ class _WineVintageIconState extends State<WineVintageIcon>
       return const SizedBox.shrink();
     }
 
+    // Используем твой оригинальный дизайн
+    final shortYear = widget.vintage.toString().length > 2
+        ? widget.vintage.toString().substring(widget.vintage.toString().length - 2)
+        : widget.vintage.toString();
+
     return GestureDetector(
       onTap: _showVintageDescription,
       child: Container(
-        width: widget.size * 1.5, // Фиксированная ширина для WineVintageIcon
+        width: widget.size,
         height: widget.size,
-        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
         decoration: BoxDecoration(
-          color: Colors.brown[200],
-          borderRadius: BorderRadius.circular(widget.size / 2),
+          shape: BoxShape.circle,
+          border: Border.all(
+            color: Colors.grey.shade600,
+            width: 1.0,
+          ),
         ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.event,
-              size: widget.size * 0.6,
-              color: Colors.brown[800],
+        child: Center(
+          child: Text(
+            "'$shortYear",
+            style: TextStyle(
+              color: Colors.grey.shade800,
+              fontWeight: FontWeight.bold,
+              fontSize: widget.size * 0.5,
             ),
-            const SizedBox(width: 2),
-            FittedBox(
-              child: Text(
-                widget.vintage.toString(),
-                style: TextStyle(
-                  fontSize: widget.size * 0.6,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.brown[800],
-                ),
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );
   }
 }
-
 
 /// Виджет для отображения всех пиктограмм характеристик вина
 class WineCharacteristicIconsRow extends ConsumerWidget {
@@ -1104,11 +1093,14 @@ class WineCharacteristicIconsRow extends ConsumerWidget {
     final alcoholIcon = WineAlcoholIcon(alcoholLevel: wine.alcoholLevel, size: iconSize);
     final countryIcon = WineCountryIcon(country: wine.winery?.country, size: iconSize);
     
-    // Находим винтаж из доступных предложений
-    final int? wineVintage = _findMostRecentVintage(wine.offers);
+    // Получаем все уникальные винтажи из доступных предложений
+    final uniqueVintages = _getUniqueSortedVintages(wine.offers);
+    final vintageIcons = uniqueVintages.map((v) => Padding(
+      padding: const EdgeInsets.only(right: 6.0), // Добавляем отступ между иконками винтажа
+      child: WineVintageIcon(vintage: v, size: iconSize),
+    )).toList();
 
     if (ids == null || ids.isEmpty) {
-      final vintageIcon = wineVintage != null ? WineVintageIcon(vintage: wineVintage, size: iconSize) : null;
       final List<Widget> iconList = [
         colorIcon, 
         sugarIcon, 
@@ -1117,12 +1109,10 @@ class WineCharacteristicIconsRow extends ConsumerWidget {
         countryIcon
       ];
       
-      if (vintageIcon != null) {
-        iconList.add(vintageIcon);
-      }
+      iconList.addAll(vintageIcons);
       
       return Wrap(
-        spacing: 6,
+        spacing: 3,
         runSpacing: 0,
         children: iconList
             .where((widget) => !(widget is SizedBox))
@@ -1135,7 +1125,6 @@ class WineCharacteristicIconsRow extends ConsumerWidget {
     return grapeVarietiesAsync.when(
       data: (grapeVarieties) {
         final names = grapeVarieties.map((e) => e.name).join(', ');
-        final vintageIcon = wineVintage != null ? WineVintageIcon(vintage: wineVintage, size: iconSize) : null;
         
         final List<Widget> iconList = [
           colorIcon,
@@ -1145,14 +1134,12 @@ class WineCharacteristicIconsRow extends ConsumerWidget {
           countryIcon,
         ];
         
-        if (vintageIcon != null) {
-          iconList.add(vintageIcon);
-        }
+        iconList.addAll(vintageIcons);
         
         iconList.add(_buildGrapeVarietyIcon(names, iconSize));
         
         return Wrap(
-          spacing: 6,
+          spacing: 3,
           runSpacing: 0,
           children: iconList
               .where((widget) => !(widget is SizedBox))
@@ -1160,7 +1147,6 @@ class WineCharacteristicIconsRow extends ConsumerWidget {
         );
       },
       loading: () {
-        final vintageIcon = wineVintage != null ? WineVintageIcon(vintage: wineVintage, size: iconSize) : null;
         final List<Widget> iconList = [
           colorIcon, 
           sugarIcon, 
@@ -1169,12 +1155,10 @@ class WineCharacteristicIconsRow extends ConsumerWidget {
           countryIcon
         ];
         
-        if (vintageIcon != null) {
-          iconList.add(vintageIcon);
-        }
+        iconList.addAll(vintageIcons);
         
         return Wrap(
-          spacing: 6,
+          spacing: 3,
           runSpacing: 0,
           children: iconList
               .where((widget) => !(widget is SizedBox))
@@ -1182,7 +1166,6 @@ class WineCharacteristicIconsRow extends ConsumerWidget {
         );
       },
       error: (error, stack) {
-        final vintageIcon = wineVintage != null ? WineVintageIcon(vintage: wineVintage, size: iconSize) : null;
         final List<Widget> iconList = [
           colorIcon, 
           sugarIcon, 
@@ -1191,12 +1174,10 @@ class WineCharacteristicIconsRow extends ConsumerWidget {
           countryIcon
         ];
         
-        if (vintageIcon != null) {
-          iconList.add(vintageIcon);
-        }
+        iconList.addAll(vintageIcons);
         
         return Wrap(
-          spacing: 6,
+          spacing: 3,
           runSpacing: 0,
           children: iconList
               .where((widget) => !(widget is SizedBox))
@@ -1243,23 +1224,19 @@ class WineCharacteristicIconsRow extends ConsumerWidget {
     );
   }
   
-  /// Метод для нахождения самого недавнего винтажа из списка предложений
-  int? _findMostRecentVintage(List<Offer>? offers) {
+  /// Метод для получения всех уникальных винтажей из списка предложений
+  List<int> _getUniqueSortedVintages(List<Offer>? offers) {
     if (offers == null || offers.isEmpty) {
-      return null;
+      return [];
     }
-    
-    // Находим максимальный винтаж (самый недавний год)
-    int? maxVintage;
-    for (final offer in offers) {
-      if (offer.vintage != null) {
-        if (maxVintage == null || offer.vintage! > maxVintage) {
-          maxVintage = offer.vintage!;
-        }
-      }
-    }
-    
-    return maxVintage;
+    final vintages = offers
+        .map((offer) => offer.vintage)
+        .where((v) => v != null)
+        .cast<int>()
+        .toSet()
+        .toList();
+    vintages.sort((a, b) => b.compareTo(a)); // Сортируем по убыванию (сначала новые)
+    return vintages;
   }
 }
 
@@ -1269,7 +1246,7 @@ class WineCharacteristicIconsColumn extends ConsumerWidget {
   final double iconSize;
   final bool isSearch;
 
- const WineCharacteristicIconsColumn({
+  const WineCharacteristicIconsColumn({
     super.key,
     required this.wine,
     this.iconSize = 20.0,
@@ -1298,9 +1275,12 @@ class WineCharacteristicIconsColumn extends ConsumerWidget {
       );
     }
     
-    // Находим винтаж из доступных предложений
-    final int? wineVintage = _findMostRecentVintage(wine.offers);
-    final vintageIcon = wineVintage != null ? WineVintageIcon(vintage: wineVintage, size: iconSize) : null;
+    // Получаем все уникальные винтажи из доступных предложений
+    final uniqueVintages = _getUniqueSortedVintages(wine.offers);
+    final vintageIcons = uniqueVintages.map((v) => Padding(
+      padding: const EdgeInsets.only(right: 3.0), // Добавляем отступ между иконками винтажа
+      child: WineVintageIcon(vintage: v, size: iconSize),
+    )).toList();
 
     final iconsList = <Widget>[];
     if (colorIcon != null) iconsList.add(colorIcon);
@@ -1308,11 +1288,13 @@ class WineCharacteristicIconsColumn extends ConsumerWidget {
     if (typeIcon != null) iconsList.add(typeIcon);
     if (alcoholIcon != null) iconsList.add(alcoholIcon);
     if (countryIcon != null) iconsList.add(countryIcon);
-    if (vintageIcon != null) iconsList.add(vintageIcon);
+
+    // Добавляем все винтажные иконки
+    iconsList.addAll(vintageIcons);
 
     if (ids == null || ids.isEmpty) {
       return Wrap(
-        spacing: 8.0,
+        spacing: 4.0,
         runSpacing: 4.0,
         alignment: WrapAlignment.center,
         children: iconsList,
@@ -1326,20 +1308,20 @@ class WineCharacteristicIconsColumn extends ConsumerWidget {
         final names = grapeVarieties.map((e) => e.name).join(', ');
         final grapeIcon = _buildGrapeVarietyIcon(names, iconSize);
         return Wrap(
-          spacing: 8.0,
+          spacing: 4.0,
           runSpacing: 4.0,
           alignment: WrapAlignment.center,
           children: [...iconsList, grapeIcon],
         );
       },
       loading: () => Wrap(
-        spacing: 8.0,
+        spacing: 4.0,
         runSpacing: 4.0,
         alignment: WrapAlignment.center,
         children: iconsList,
       ),
       error: (error, stack) => Wrap(
-        spacing: 8.0,
+        spacing: 4.0,
         runSpacing: 4.0,
         alignment: WrapAlignment.center,
         children: iconsList,
@@ -1384,22 +1366,18 @@ class WineCharacteristicIconsColumn extends ConsumerWidget {
     );
   }
   
-  /// Метод для нахождения самого недавнего винтажа из списка предложений
-  int? _findMostRecentVintage(List<Offer>? offers) {
+  /// Метод для получения всех уникальных винтажей из списка предложений
+  List<int> _getUniqueSortedVintages(List<Offer>? offers) {
     if (offers == null || offers.isEmpty) {
-      return null;
+      return [];
     }
-    
-    // Находим максимальный винтаж (самый недавний год)
-    int? maxVintage;
-    for (final offer in offers) {
-      if (offer.vintage != null) {
-        if (maxVintage == null || offer.vintage! > maxVintage) {
-          maxVintage = offer.vintage!;
-        }
-      }
-    }
-    
-    return maxVintage;
+    final vintages = offers
+        .map((offer) => offer.vintage)
+        .where((v) => v != null)
+        .cast<int>()
+        .toSet()
+        .toList();
+    vintages.sort((a, b) => b.compareTo(a)); // Сортируем по убыванию (сначала новые)
+    return vintages;
   }
 }

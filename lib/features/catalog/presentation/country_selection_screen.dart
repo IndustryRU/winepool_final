@@ -1,168 +1,87 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:winepool_final/features/catalog/application/countries_provider.dart';
+import 'package:winepool_final/core/widgets/custom_search_field.dart';
 import 'package:winepool_final/features/wines/domain/country.dart';
+import 'package:winepool_final/features/catalog/presentation/widgets/country_list_item.dart';
+import 'package:winepool_final/common/widgets/shimmer_loading_indicator.dart';
+import '../application/catalog_filters_provider.dart';
+import '../application/filter_options_provider.dart';
+import '../application/temporary_selection_providers.dart';
 
-part 'country_selection_screen.g.dart';
-
-@riverpod
-class SelectedCountries extends _$SelectedCountries {
-  @override
-  List<String> build() {
-    return [];
-  }
-}
-
-class CountrySelectionScreen extends ConsumerStatefulWidget {
-  const CountrySelectionScreen({
-    super.key,
-    this.initialSelectedCountries = const [],
-  });
-
-  final List<String> initialSelectedCountries;
+class CountrySelectionScreen extends HookConsumerWidget {
+  const CountrySelectionScreen({super.key});
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _CountrySelectionScreenState();
-}
-
-class _CountrySelectionScreenState extends ConsumerState<CountrySelectionScreen> {
-  @override
-  void initState() {
-    super.initState();
-    // Инициализируем состояние выбранных стран при первом построении
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(selectedCountriesProvider.notifier).state = widget.initialSelectedCountries;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final countriesAsync = ref.watch(countriesListProvider);
-    final selectedCountries = ref.watch(selectedCountriesProvider);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final selectedCodes = ref.watch(temporaryCountryCodesProvider);
+    final searchQuery = useState('');
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Выберите страны'),
+        title: const Text('Страны'),
         actions: [
-          TextButton(
+          IconButton(
+            icon: const Icon(Icons.refresh),
             onPressed: () {
-              ref.read(selectedCountriesProvider.notifier).state = [];
+              ref.read(temporaryCountryCodesProvider.notifier).clear();
             },
-            child: const Text('Сбросить'),
           ),
-          TextButton(
+          IconButton(
+            icon: const Icon(Icons.check),
             onPressed: () {
-              Navigator.pop(context, selectedCountries);
+              // Здесь мы не применяем фильтр, а просто возвращаемся назад,
+              // т.к. состояние уже обновлено в temporary-провайдере.
+              // Применение произойдет в CountryFilterWidget.
+              context.pop();
             },
-            child: const Text('Применить'),
           ),
         ],
       ),
-      body: countriesAsync.when(
-        data: (allCountries) {
-          return CountrySelectionBody(
-            allCountries: allCountries,
-            selectedCountries: selectedCountries,
-            ref: ref,
-          );
-        },
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => Center(
-          child: Text('Ошибка загрузки стран: $error'),
-        ),
-      ),
-    );
-  }
-}
-
-class CountrySelectionBody extends ConsumerStatefulWidget {
-  const CountrySelectionBody({
-    super.key,
-    required this.allCountries,
-    required this.selectedCountries,
-    required this.ref,
-  });
-
-  final List<Country> allCountries;
-  final List<String> selectedCountries;
-  final WidgetRef ref;
-
-  @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _CountrySelectionBodyState();
-}
-
-class _CountrySelectionBodyState extends ConsumerState<CountrySelectionBody> {
-  final TextEditingController _searchController = TextEditingController();
-  List<Country> _filteredCountries = [];
-
-  @override
-  void initState() {
-    super.initState();
-    _filteredCountries = widget.allCountries;
-    _searchController.addListener(_onSearchChanged);
-  }
-
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
-  }
-
-  void _onSearchChanged() {
-    final query = _searchController.text.toLowerCase();
-    if (query.isEmpty) {
-      setState(() {
-        _filteredCountries = widget.allCountries;
-      });
-    } else {
-      setState(() {
-        _filteredCountries = widget.allCountries
-            .where((country) => country.name.toLowerCase().contains(query))
-            .toList();
-      });
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: TextField(
-            controller: _searchController,
-            decoration: const InputDecoration(
-              labelText: 'Поиск по стране',
-              prefixIcon: Icon(Icons.search),
-              border: OutlineInputBorder(),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: CustomSearchField(
+              onChanged: (value) {
+                searchQuery.value = value;
+              },
+              hintText: 'Поиск стран...',
             ),
           ),
-        ),
-        Expanded(
-          child: ListView.builder(
-            itemCount: _filteredCountries.length,
-            itemBuilder: (context, index) {
-              final country = _filteredCountries[index];
-              final isSelected = widget.selectedCountries.contains(country.code);
+          Expanded(
+            child: ref.watch(allCountriesProvider).when(
+                  loading: () => const ShimmerLoadingIndicator(),
+                  error: (error, stack) => Center(child: Text('Ошибка: $error')),
+                  data: (countries) {
+                    final filteredCountries = countries.where((country) {
+                      final nameLower = country.name.toLowerCase();
+                      final searchLower = searchQuery.value.toLowerCase();
+                      return nameLower.contains(searchLower);
+                    }).toList();
 
-              return CheckboxListTile(
-                title: Text(country.name),
-                value: isSelected,
-                onChanged: (bool? value) {
-                  final selectedCountries = List<String>.from(widget.selectedCountries);
-                  if (value == true) {
-                    selectedCountries.add(country.code);
-                  } else {
-                    selectedCountries.remove(country.code);
-                  }
-                  widget.ref.read(selectedCountriesProvider.notifier).state = selectedCountries;
-                },
-              );
-            },
+                    return ListView.separated(
+                      itemCount: filteredCountries.length,
+                      separatorBuilder: (context, index) => const SizedBox(height: 2),
+                      itemBuilder: (context, index) {
+                        final country = filteredCountries[index];
+                        final isSelected = selectedCodes.contains(country.code);
+
+                        return CountryListItem(
+                          country: country,
+                          isSelected: isSelected,
+                          onChanged: (selected) {
+                            ref.read(temporaryCountryCodesProvider.notifier).toggle(country.code);
+                          },
+                        );
+                      },
+                    );
+                  },
+                ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

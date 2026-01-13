@@ -84,7 +84,8 @@ Future<List<Wine>> winesWithActiveFilters(Ref ref) async {
   final filters = ref.watch(catalogFiltersProvider);
   final showDeleted = ref.watch(adminViewSettingsProvider);
 
-  return ref.watch(winesRepositoryProvider).fetchWinesWithFilters(
+  // Сначала получаем вина от репозитория
+  final wines = await ref.watch(winesRepositoryProvider).fetchWinesWithFilters(
         color: filters.color.isEmpty ? null : filters.color,
         type: filters.type.isEmpty ? null : filters.type,
         sugar: filters.sugar.isEmpty ? null : filters.sugar,
@@ -96,11 +97,24 @@ Future<List<Wine>> winesWithActiveFilters(Ref ref) async {
         wineryIds: filters.wineryIds.isEmpty ? null : filters.wineryIds,
         minRating: filters.minRating,
         bottleSizeIds: filters.bottleSizeIds.isEmpty ? null : filters.bottleSizeIds,
-        vintages: filters.vintages.isEmpty ? null : filters.vintages,
         showUnavailable: filters.showUnavailable,
         sortOption: filters.sortOption,
         includeDeleted: showDeleted,
       );
+
+  // Если выбран фильтр по винтажу, фильтруем на клиенте
+  if (filters.vintages.isNotEmpty) {
+    return wines.where((wine) {
+      if (wine.offers == null || wine.offers!.isEmpty) {
+        return false;
+      }
+      // Проверяем, есть ли хотя бы одно предложение с подходящим винтажом
+      return wine.offers!.any((offer) => offer.vintage != null && filters.vintages.contains(offer.vintage));
+    }).toList();
+  }
+
+  // Если фильтр по винтажу не активен, возвращаем как есть
+  return wines;
 }
 
 @Riverpod(keepAlive: true)

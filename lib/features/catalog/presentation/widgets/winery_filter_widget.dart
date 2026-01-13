@@ -7,7 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:winepool_final/features/catalog/application/catalog_filters_provider.dart';
 import 'package:winepool_final/features/catalog/application/filter_options_provider.dart';
-import 'package:winepool_final/features/catalog/application/temporary_winery_ids_provider.dart';
+import 'package:winepool_final/features/catalog/application/temporary_selection_providers.dart';
 import 'package:winepool_final/core/widgets/custom_search_field.dart';
 import 'package:winepool_final/features/wines/domain/winery.dart';
 import 'package:winepool_final/features/catalog/presentation/widgets/winery_list_item.dart';
@@ -100,9 +100,9 @@ class WineryFilterWidget extends ConsumerWidget {
                                 
                                 final notifier = ref.read(temporaryWineryIdsProvider.notifier);
                                 if (isSelected == true) {
-                                  notifier.add(winery.id!);
+                                  notifier.toggle(winery.id!);
                                 } else {
-                                  notifier.remove(winery.id!);
+                                  notifier.toggle(winery.id!);
                                 }
                               },
                             );
@@ -142,7 +142,7 @@ class WineryFilterWidget extends ConsumerWidget {
                                       return Chip(
                                         label: Text(winery.name ?? ''),
                                         onDeleted: () {
-                                          ref.read(temporaryWineryIdsProvider.notifier).remove(winery.id ?? '');
+                                          ref.read(temporaryWineryIdsProvider.notifier).toggle(winery.id ?? '');
                                         },
                                       );
                                     }).toList(),
@@ -179,47 +179,47 @@ class WineryFilterWidget extends ConsumerWidget {
       ],
     );
   }
+}
 
-  void _showWineryFilterBottomSheet(BuildContext context, WidgetRef ref) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (BuildContext context) {
-        return SizedBox(
-          height: MediaQuery.of(context).size.height * 0.85,
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Row(
-                  children: [
-                    const Text('Винодельни', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                    const Spacer(),
-                    IconButton(
-                      onPressed: () {
-                        ref.read(catalogFiltersProvider.notifier).clearWineries();
-                        Navigator.of(context).pop();
-                      },
-                      icon: const Icon(Icons.refresh),
-                    ),
-                    IconButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      icon: const Icon(Icons.check),
-                    ),
-                  ],
-                ),
+void _showWineryFilterBottomSheet(BuildContext context, WidgetRef ref) {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    builder: (BuildContext context) {
+      return SizedBox(
+        height: MediaQuery.of(context).size.height * 0.85,
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                children: [
+                  const Text('Винодельни', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  const Spacer(),
+                  IconButton(
+                    onPressed: () {
+                      ref.read(catalogFiltersProvider.notifier).clearWineries();
+                      Navigator.of(context).pop();
+                    },
+                    icon: const Icon(Icons.refresh),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    icon: const Icon(Icons.check),
+                  ),
+                ],
               ),
-              Expanded(
-                child: _WineryFilterContent(),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
+            ),
+            Expanded(
+              child: _WineryFilterContent(),
+            ),
+          ],
+        ),
+      );
+    },
+  );
 }
 
 class _WineryFilterContent extends ConsumerWidget {

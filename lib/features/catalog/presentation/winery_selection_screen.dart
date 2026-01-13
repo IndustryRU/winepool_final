@@ -13,7 +13,7 @@ import 'package:winepool_final/common/widgets/shimmer_loading_indicator.dart';
 
 import '../application/catalog_filters_provider.dart';
 import '../application/filter_options_provider.dart';
-import '../application/temporary_winery_ids_provider.dart';
+import '../application/temporary_selection_providers.dart';
 
 class WinerySelectionScreen extends HookConsumerWidget {
   const WinerySelectionScreen({super.key});
@@ -82,13 +82,8 @@ class WinerySelectionScreen extends HookConsumerWidget {
                           onChanged: (selected) {
                             if (winery.id == null) return;
 
-                            if (selected == true) {
-                              ref.read(temporaryWineryIdsProvider.notifier).add(winery.id!);
-                            } else {
-                              // Проверяем, что winery.id не равно null перед передачей в remove
-                              if (winery.id != null) {
-                                ref.read(temporaryWineryIdsProvider.notifier).remove(winery.id!);
-                              }
+                            if (winery.id != null) {
+                              ref.read(temporaryWineryIdsProvider.notifier).toggle(winery.id!);
                             }
                           },
                         );

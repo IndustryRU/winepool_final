@@ -771,12 +771,12 @@ Widget _buildFilterContentWithCallbacks(
         initialShowUnavailable: initialShowUnavailable,
       );
     case 'country':
-      return ValueListenableBuilder<List<String>>(
-        valueListenable: tempCountries,
-        builder: (context, countries, child) {
-          return buildCountryFilter(context, selectedFilters);
-        },
-      );
+      //return ValueListenableBuilder<List<String>>(
+       // valueListenable: tempCountries,
+      //  builder: (context, countries, child) {
+          //return buildCountryFilter(context, selectedFilters);
+       // },
+     // );
     case 'region':
       return ValueListenableBuilder<List<String>>(
         valueListenable: tempRegions,
@@ -1032,7 +1032,7 @@ void _showSortModal(
            );
          }
        case 'country':
-         return buildCountryFilter(context, selectedFilters);
+         //return buildCountryFilter(context, selectedFilters);
        case 'region':
          return const RegionFilterWidget();
        case 'grape':

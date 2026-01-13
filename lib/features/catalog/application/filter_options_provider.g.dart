@@ -241,3 +241,81 @@ final class AvailableVintagesProvider
 }
 
 String _$availableVintagesHash() => r'0e0aa99117cc8425b28963a02bb2108cc447b89e';
+
+@ProviderFor(allCountries)
+const allCountriesProvider = AllCountriesProvider._();
+
+final class AllCountriesProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<Country>>,
+          List<Country>,
+          FutureOr<List<Country>>
+        >
+    with $FutureModifier<List<Country>>, $FutureProvider<List<Country>> {
+  const AllCountriesProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'allCountriesProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$allCountriesHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<List<Country>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<Country>> create(Ref ref) {
+    return allCountries(ref);
+  }
+}
+
+String _$allCountriesHash() => r'a7682901d6b2876a2eeeb2dd563d65e2e532d857';
+
+@ProviderFor(popularCountries)
+const popularCountriesProvider = PopularCountriesProvider._();
+
+final class PopularCountriesProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<Country>>,
+          List<Country>,
+          FutureOr<List<Country>>
+        >
+    with $FutureModifier<List<Country>>, $FutureProvider<List<Country>> {
+  const PopularCountriesProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'popularCountriesProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$popularCountriesHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<List<Country>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<Country>> create(Ref ref) {
+    return popularCountries(ref);
+  }
+}
+
+String _$popularCountriesHash() => r'e44c1ae84f7f6454b5e2d54e4e2679c38413c324';

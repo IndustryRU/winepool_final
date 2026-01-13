@@ -10,6 +10,7 @@ import 'package:winepool_final/common/widgets/shimmer_loading_indicator.dart';
 import 'package:winepool_final/features/offers/domain/bottle_size.dart';
 import 'package:winepool_final/features/offers/application/all_bottle_sizes_provider.dart';
 import 'package:winepool_final/features/catalog/presentation/widgets/rating_filter_widget.dart';
+import 'package:winepool_final/features/catalog/presentation/widgets/country_filter_widget.dart';
 import 'dart:developer';
 
 /// Виджет панели фильтров для экрана каталога.
@@ -82,7 +83,7 @@ class CatalogFiltersPanel extends ConsumerWidget {
                               height: MediaQuery.of(context).size.height * (2 / 3),
                               width: double.infinity,
                               child: availableColorsAsync.when(
-                                loading: () => const ShimmerLoadingIndicator(),
+                                loading: () => const Center(child: ShimmerLoadingIndicator()),
                                 error: (err, stack) => Center(child: Text('Ошибка: $err')),
                                 data: (availableColors) {
                                   return SimpleFilterWidget(
@@ -116,7 +117,7 @@ class CatalogFiltersPanel extends ConsumerWidget {
                               height: MediaQuery.of(context).size.height * (2 / 3),
                               width: double.infinity,
                               child: availableSugarsAsync.when(
-                                loading: () => const ShimmerLoadingIndicator(),
+                                loading: () => const Center(child: ShimmerLoadingIndicator()),
                                 error: (err, stack) => Center(child: Text('Ошибка: $err')),
                                 data: (availableSugars) {
                                   return SimpleFilterWidget(
@@ -150,7 +151,7 @@ class CatalogFiltersPanel extends ConsumerWidget {
                               height: MediaQuery.of(context).size.height * (2 / 3),
                               width: double.infinity,
                               child: availableTypesAsync.when(
-                                loading: () => const ShimmerLoadingIndicator(),
+                                loading: () => const Center(child: ShimmerLoadingIndicator()),
                                 error: (err, stack) => Center(child: Text('Ошибка: $err')),
                                 data: (availableTypes) {
                                   return SimpleFilterWidget(
@@ -172,6 +173,18 @@ class CatalogFiltersPanel extends ConsumerWidget {
                         );
                       },
                     );
+                  } else if (filterType == CatalogFilterType.country) {
+                    showModalBottomSheet<void>(
+                      context: context,
+                      isScrollControlled: true,
+                      builder: (BuildContext context) {
+                        return SizedBox(
+                          height: MediaQuery.of(context).size.height * (2 / 3),
+                          width: double.infinity,
+                          child: const CountryFilterWidget(),
+                        );
+                      },
+                    );
                   } else if (filterType == CatalogFilterType.year) {
                     showModalBottomSheet<void>(
                       context: context,
@@ -184,7 +197,7 @@ class CatalogFiltersPanel extends ConsumerWidget {
                               height: MediaQuery.of(context).size.height * (2 / 3),
                               width: double.infinity,
                               child: availableVintagesAsync.when(
-                                loading: () => const ShimmerLoadingIndicator(),
+                                loading: () => const Center(child: ShimmerLoadingIndicator()),
                                 error: (err, stack) => Center(child: Text('Ошибка: $err')),
                                 data: (availableVintages) {
                                   return SimpleFilterWidget(
@@ -218,7 +231,7 @@ class CatalogFiltersPanel extends ConsumerWidget {
                               height: MediaQuery.of(context).size.height * (2 / 3),
                               width: double.infinity,
                               child: allBottleSizesAsync.when(
-                                loading: () => const ShimmerLoadingIndicator(),
+                                loading: () => const Center(child: ShimmerLoadingIndicator()),
                                 error: (err, stack) => Center(child: Text('Ошибка: $err')),
                                 data: (availableBottleSizes) {
                                   // Получаем ID выбранных размеров

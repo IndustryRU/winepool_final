@@ -195,8 +195,8 @@ class WineriesRepository {
      debugPrint('--- CALLING deleteWinery with ID: ${winery.id} ---');
      await deleteWinery(winery.id!);
  }
-    
-   Future<List<Region>> getRegions() async {
+
+    Future<List<Region>> getRegions() async {
      final response = await _supabaseClient
          .from('regions')
          .select('id, name, country_code');
@@ -209,5 +209,17 @@ class WineriesRepository {
          .from('wineries')
          .update({'is_deleted': false})
          .eq('id', wineryId);
+   }
+
+   Future<List<Country>> fetchAllCountries() async {
+     final response = await _supabaseClient.from('countries').select().order('name', ascending: true);
+     final List<dynamic> data = response as List<dynamic>;
+     return data.map((e) => Country.fromJson(e as Map<String, dynamic>)).toList();
+   }
+
+   Future<List<Country>> fetchPopularCountries() async {
+     final response = await _supabaseClient.from('countries').select().eq('is_popular', true).order('name', ascending: true);
+     final List<dynamic> data = response as List<dynamic>;
+     return data.map((e) => Country.fromJson(e as Map<String, dynamic>)).toList();
    }
 }

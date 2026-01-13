@@ -3,6 +3,7 @@ import 'package:winepool_final/core/providers.dart';
 import 'package:winepool_final/features/wines/domain/wine_characteristics.dart';
 import 'package:winepool_final/features/wines/domain/winery.dart';
 import 'package:winepool_final/features/wines/data/wineries_repository.dart';
+import 'package:winepool_final/features/wines/domain/country.dart';
 
 part 'filter_options_provider.g.dart';
 
@@ -59,4 +60,14 @@ Future<List<int>> availableVintages(Ref ref) async {
     }).where((v) => v != 0).toList();
   }
   return [];
+}
+
+@riverpod
+Future<List<Country>> allCountries(Ref ref) {
+  return ref.watch(wineriesRepositoryProvider).fetchAllCountries();
+}
+
+@riverpod
+Future<List<Country>> popularCountries(Ref ref) {
+  return ref.watch(wineriesRepositoryProvider).fetchPopularCountries();
 }
