@@ -127,3 +127,123 @@ abstract class _$TemporaryCountryCodes extends $Notifier<List<String>> {
     element.handleValue(ref, created);
   }
 }
+
+/// Временное хранилище для ID сортов винограда, выбранных в фильтре
+
+@ProviderFor(TemporaryGrapeVarietyIds)
+const temporaryGrapeVarietyIdsProvider = TemporaryGrapeVarietyIdsProvider._();
+
+/// Временное хранилище для ID сортов винограда, выбранных в фильтре
+final class TemporaryGrapeVarietyIdsProvider
+    extends $NotifierProvider<TemporaryGrapeVarietyIds, List<String>> {
+  /// Временное хранилище для ID сортов винограда, выбранных в фильтре
+  const TemporaryGrapeVarietyIdsProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'temporaryGrapeVarietyIdsProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$temporaryGrapeVarietyIdsHash();
+
+  @$internal
+  @override
+  TemporaryGrapeVarietyIds create() => TemporaryGrapeVarietyIds();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(List<String> value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<List<String>>(value),
+    );
+  }
+}
+
+String _$temporaryGrapeVarietyIdsHash() =>
+    r'6166f7027fe62d6cf8ea3fe974a35abc41161034';
+
+/// Временное хранилище для ID сортов винограда, выбранных в фильтре
+
+abstract class _$TemporaryGrapeVarietyIds extends $Notifier<List<String>> {
+  List<String> build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final created = build();
+    final ref = this.ref as $Ref<List<String>, List<String>>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<List<String>, List<String>>,
+              List<String>,
+              Object?,
+              Object?
+            >;
+    element.handleValue(ref, created);
+  }
+}
+
+/// Временное хранилище для ID регионов, выбранных в фильтре
+
+@ProviderFor(TemporaryRegionIds)
+const temporaryRegionIdsProvider = TemporaryRegionIdsProvider._();
+
+/// Временное хранилище для ID регионов, выбранных в фильтре
+final class TemporaryRegionIdsProvider
+    extends $NotifierProvider<TemporaryRegionIds, List<String>> {
+  /// Временное хранилище для ID регионов, выбранных в фильтре
+  const TemporaryRegionIdsProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'temporaryRegionIdsProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$temporaryRegionIdsHash();
+
+  @$internal
+  @override
+  TemporaryRegionIds create() => TemporaryRegionIds();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(List<String> value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<List<String>>(value),
+    );
+  }
+}
+
+String _$temporaryRegionIdsHash() =>
+    r'6420902c6cc8631975826df4523e1067430bbce6';
+
+/// Временное хранилище для ID регионов, выбранных в фильтре
+
+abstract class _$TemporaryRegionIds extends $Notifier<List<String>> {
+  List<String> build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final created = build();
+    final ref = this.ref as $Ref<List<String>, List<String>>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<List<String>, List<String>>,
+              List<String>,
+              Object?,
+              Object?
+            >;
+    element.handleValue(ref, created);
+  }
+}

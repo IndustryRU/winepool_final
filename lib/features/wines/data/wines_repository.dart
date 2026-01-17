@@ -330,7 +330,7 @@ class WinesRepository {
              query = query.inFilter('wineries.country_code', country);
            }
            if (region.isNotEmpty) {
-             query = query.inFilter('wineries.region', region);
+             query = query.inFilter('wineries.region_id', region);
            }
            if (wineryIds.isNotEmpty) {
              query = query.inFilter('winery_id', wineryIds);

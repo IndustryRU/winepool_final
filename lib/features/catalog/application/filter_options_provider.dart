@@ -4,6 +4,10 @@ import 'package:winepool_final/features/wines/domain/wine_characteristics.dart';
 import 'package:winepool_final/features/wines/domain/winery.dart';
 import 'package:winepool_final/features/wines/data/wineries_repository.dart';
 import 'package:winepool_final/features/wines/domain/country.dart';
+import 'package:winepool_final/features/wines/domain/grape_variety.dart';
+import 'package:winepool_final/features/wines/data/grape_variety_repository.dart';
+import 'package:winepool_final/features/wines/domain/region.dart';
+import 'package:winepool_final/features/wines/data/regions_repository.dart';
 
 part 'filter_options_provider.g.dart';
 
@@ -70,4 +74,24 @@ Future<List<Country>> allCountries(Ref ref) {
 @riverpod
 Future<List<Country>> popularCountries(Ref ref) {
   return ref.watch(wineriesRepositoryProvider).fetchPopularCountries();
+}
+
+@riverpod
+Future<List<GrapeVariety>> allGrapeVarieties(Ref ref) {
+  return ref.watch(grapeVarietyRepositoryProvider).fetchAllGrapeVarieties();
+}
+
+@riverpod
+Future<List<GrapeVariety>> popularGrapeVarieties(Ref ref) {
+  return ref.watch(grapeVarietyRepositoryProvider).fetchPopularGrapeVarieties();
+}
+
+@riverpod
+Future<List<Region>> allRegions(Ref ref) {
+  return ref.watch(regionsRepositoryProvider).fetchAllRegions();
+}
+
+@riverpod
+Future<List<Region>> popularRegions(Ref ref) {
+  return ref.watch(regionsRepositoryProvider).fetchPopularRegions();
 }

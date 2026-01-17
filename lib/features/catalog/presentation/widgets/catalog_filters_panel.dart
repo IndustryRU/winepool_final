@@ -11,6 +11,8 @@ import 'package:winepool_final/features/offers/domain/bottle_size.dart';
 import 'package:winepool_final/features/offers/application/all_bottle_sizes_provider.dart';
 import 'package:winepool_final/features/catalog/presentation/widgets/rating_filter_widget.dart';
 import 'package:winepool_final/features/catalog/presentation/widgets/country_filter_widget.dart';
+import 'package:winepool_final/features/catalog/presentation/widgets/grape_variety_filter_widget.dart';
+import 'package:winepool_final/features/catalog/presentation/widgets/region_filter_widget.dart';
 import 'dart:developer';
 
 /// Виджет панели фильтров для экрана каталога.
@@ -185,6 +187,18 @@ class CatalogFiltersPanel extends ConsumerWidget {
                         );
                       },
                     );
+                  } else if (filterType == CatalogFilterType.region) {
+                    showModalBottomSheet<void>(
+                      context: context,
+                      isScrollControlled: true,
+                      builder: (BuildContext context) {
+                        return SizedBox(
+                          height: MediaQuery.of(context).size.height * (2 / 3),
+                          width: double.infinity,
+                          child: const RegionFilterWidget(),
+                        );
+                      },
+                    );
                   } else if (filterType == CatalogFilterType.year) {
                     showModalBottomSheet<void>(
                       context: context,
@@ -260,6 +274,18 @@ class CatalogFiltersPanel extends ConsumerWidget {
                           height: MediaQuery.of(context).size.height / 3,
                           width: double.infinity,
                           child: const RatingFilterWidget(),
+                        );
+                      },
+                    );
+                  } else if (filterType == CatalogFilterType.grape) {
+                    showModalBottomSheet<void>(
+                      context: context,
+                      isScrollControlled: true,
+                      builder: (BuildContext context) {
+                        return SizedBox(
+                          height: MediaQuery.of(context).size.height * (2 / 3),
+                          width: double.infinity,
+                          child: const GrapeVarietyFilterWidget(),
                         );
                       },
                     );

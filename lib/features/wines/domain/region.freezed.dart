@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Region {
 
- String? get id;@JsonKey(name: 'name') String? get name;@JsonKey(name: 'country_code') String? get countryCode;
+ String? get id; String? get name; String? get countryCode; bool get isPopular;@JsonKey(name: 'countries') Country? get country;
 /// Create a copy of Region
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $RegionCopyWith<Region> get copyWith => _$RegionCopyWithImpl<Region>(this as Reg
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Region&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.countryCode, countryCode) || other.countryCode == countryCode));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Region&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.countryCode, countryCode) || other.countryCode == countryCode)&&(identical(other.isPopular, isPopular) || other.isPopular == isPopular)&&(identical(other.country, country) || other.country == country));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,countryCode);
+int get hashCode => Object.hash(runtimeType,id,name,countryCode,isPopular,country);
 
 @override
 String toString() {
-  return 'Region(id: $id, name: $name, countryCode: $countryCode)';
+  return 'Region(id: $id, name: $name, countryCode: $countryCode, isPopular: $isPopular, country: $country)';
 }
 
 
@@ -48,11 +48,11 @@ abstract mixin class $RegionCopyWith<$Res>  {
   factory $RegionCopyWith(Region value, $Res Function(Region) _then) = _$RegionCopyWithImpl;
 @useResult
 $Res call({
- String? id,@JsonKey(name: 'name') String? name,@JsonKey(name: 'country_code') String? countryCode
+ String? id, String? name, String? countryCode, bool isPopular,@JsonKey(name: 'countries') Country? country
 });
 
 
-
+$CountryCopyWith<$Res>? get country;
 
 }
 /// @nodoc
@@ -65,15 +65,29 @@ class _$RegionCopyWithImpl<$Res>
 
 /// Create a copy of Region
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? name = freezed,Object? countryCode = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? name = freezed,Object? countryCode = freezed,Object? isPopular = null,Object? country = freezed,}) {
   return _then(_self.copyWith(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String?,name: freezed == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String?,countryCode: freezed == countryCode ? _self.countryCode : countryCode // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,isPopular: null == isPopular ? _self.isPopular : isPopular // ignore: cast_nullable_to_non_nullable
+as bool,country: freezed == country ? _self.country : country // ignore: cast_nullable_to_non_nullable
+as Country?,
   ));
 }
+/// Create a copy of Region
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$CountryCopyWith<$Res>? get country {
+    if (_self.country == null) {
+    return null;
+  }
 
+  return $CountryCopyWith<$Res>(_self.country!, (value) {
+    return _then(_self.copyWith(country: value));
+  });
+}
 }
 
 
@@ -155,10 +169,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? id, @JsonKey(name: 'name')  String? name, @JsonKey(name: 'country_code')  String? countryCode)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? id,  String? name,  String? countryCode,  bool isPopular, @JsonKey(name: 'countries')  Country? country)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Region() when $default != null:
-return $default(_that.id,_that.name,_that.countryCode);case _:
+return $default(_that.id,_that.name,_that.countryCode,_that.isPopular,_that.country);case _:
   return orElse();
 
 }
@@ -176,10 +190,10 @@ return $default(_that.id,_that.name,_that.countryCode);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? id, @JsonKey(name: 'name')  String? name, @JsonKey(name: 'country_code')  String? countryCode)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? id,  String? name,  String? countryCode,  bool isPopular, @JsonKey(name: 'countries')  Country? country)  $default,) {final _that = this;
 switch (_that) {
 case _Region():
-return $default(_that.id,_that.name,_that.countryCode);case _:
+return $default(_that.id,_that.name,_that.countryCode,_that.isPopular,_that.country);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -196,10 +210,10 @@ return $default(_that.id,_that.name,_that.countryCode);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? id, @JsonKey(name: 'name')  String? name, @JsonKey(name: 'country_code')  String? countryCode)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? id,  String? name,  String? countryCode,  bool isPopular, @JsonKey(name: 'countries')  Country? country)?  $default,) {final _that = this;
 switch (_that) {
 case _Region() when $default != null:
-return $default(_that.id,_that.name,_that.countryCode);case _:
+return $default(_that.id,_that.name,_that.countryCode,_that.isPopular,_that.country);case _:
   return null;
 
 }
@@ -211,12 +225,14 @@ return $default(_that.id,_that.name,_that.countryCode);case _:
 @JsonSerializable()
 
 class _Region implements Region {
-  const _Region({this.id, @JsonKey(name: 'name') this.name, @JsonKey(name: 'country_code') this.countryCode});
+  const _Region({this.id, this.name, this.countryCode, this.isPopular = false, @JsonKey(name: 'countries') this.country});
   factory _Region.fromJson(Map<String, dynamic> json) => _$RegionFromJson(json);
 
 @override final  String? id;
-@override@JsonKey(name: 'name') final  String? name;
-@override@JsonKey(name: 'country_code') final  String? countryCode;
+@override final  String? name;
+@override final  String? countryCode;
+@override@JsonKey() final  bool isPopular;
+@override@JsonKey(name: 'countries') final  Country? country;
 
 /// Create a copy of Region
 /// with the given fields replaced by the non-null parameter values.
@@ -231,16 +247,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Region&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.countryCode, countryCode) || other.countryCode == countryCode));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Region&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.countryCode, countryCode) || other.countryCode == countryCode)&&(identical(other.isPopular, isPopular) || other.isPopular == isPopular)&&(identical(other.country, country) || other.country == country));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,countryCode);
+int get hashCode => Object.hash(runtimeType,id,name,countryCode,isPopular,country);
 
 @override
 String toString() {
-  return 'Region(id: $id, name: $name, countryCode: $countryCode)';
+  return 'Region(id: $id, name: $name, countryCode: $countryCode, isPopular: $isPopular, country: $country)';
 }
 
 
@@ -251,11 +267,11 @@ abstract mixin class _$RegionCopyWith<$Res> implements $RegionCopyWith<$Res> {
   factory _$RegionCopyWith(_Region value, $Res Function(_Region) _then) = __$RegionCopyWithImpl;
 @override @useResult
 $Res call({
- String? id,@JsonKey(name: 'name') String? name,@JsonKey(name: 'country_code') String? countryCode
+ String? id, String? name, String? countryCode, bool isPopular,@JsonKey(name: 'countries') Country? country
 });
 
 
-
+@override $CountryCopyWith<$Res>? get country;
 
 }
 /// @nodoc
@@ -268,16 +284,30 @@ class __$RegionCopyWithImpl<$Res>
 
 /// Create a copy of Region
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? name = freezed,Object? countryCode = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? name = freezed,Object? countryCode = freezed,Object? isPopular = null,Object? country = freezed,}) {
   return _then(_Region(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String?,name: freezed == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String?,countryCode: freezed == countryCode ? _self.countryCode : countryCode // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,isPopular: null == isPopular ? _self.isPopular : isPopular // ignore: cast_nullable_to_non_nullable
+as bool,country: freezed == country ? _self.country : country // ignore: cast_nullable_to_non_nullable
+as Country?,
   ));
 }
 
+/// Create a copy of Region
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$CountryCopyWith<$Res>? get country {
+    if (_self.country == null) {
+    return null;
+  }
 
+  return $CountryCopyWith<$Res>(_self.country!, (value) {
+    return _then(_self.copyWith(country: value));
+  });
+}
 }
 
 // dart format on

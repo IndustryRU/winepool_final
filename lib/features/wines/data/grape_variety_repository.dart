@@ -20,6 +20,15 @@ class GrapeVarietyRepository {
     return response.map((json) => GrapeVariety.fromJson(json)).toList();
   }
 
+  Future<List<GrapeVariety>> fetchPopularGrapeVarieties() async {
+    final response = await _supabaseClient
+        .from('grape_varieties')
+        .select('*')
+        .eq('is_popular', true)
+        .order('name', ascending: true);
+    return response.map((json) => GrapeVariety.fromJson(json)).toList();
+  }
+
   Future<GrapeVariety> fetchGrapeVariety(String id) async {
     final response = await _supabaseClient
         .from('grape_varieties')

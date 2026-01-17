@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$GrapeVariety {
 
- String? get id;@JsonKey(name: 'name') String? get name;@JsonKey(name: 'created_at') DateTime? get createdAt;@JsonKey(name: 'updated_at') DateTime? get updatedAt;
+ String? get id; String? get name; String? get description; String? get originRegion; DateTime? get createdAt; DateTime? get updatedAt; bool get isPopular;
 /// Create a copy of GrapeVariety
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $GrapeVarietyCopyWith<GrapeVariety> get copyWith => _$GrapeVarietyCopyWithImpl<G
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is GrapeVariety&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is GrapeVariety&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.description, description) || other.description == description)&&(identical(other.originRegion, originRegion) || other.originRegion == originRegion)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.isPopular, isPopular) || other.isPopular == isPopular));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,createdAt,updatedAt);
+int get hashCode => Object.hash(runtimeType,id,name,description,originRegion,createdAt,updatedAt,isPopular);
 
 @override
 String toString() {
-  return 'GrapeVariety(id: $id, name: $name, createdAt: $createdAt, updatedAt: $updatedAt)';
+  return 'GrapeVariety(id: $id, name: $name, description: $description, originRegion: $originRegion, createdAt: $createdAt, updatedAt: $updatedAt, isPopular: $isPopular)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $GrapeVarietyCopyWith<$Res>  {
   factory $GrapeVarietyCopyWith(GrapeVariety value, $Res Function(GrapeVariety) _then) = _$GrapeVarietyCopyWithImpl;
 @useResult
 $Res call({
- String? id,@JsonKey(name: 'name') String? name,@JsonKey(name: 'created_at') DateTime? createdAt,@JsonKey(name: 'updated_at') DateTime? updatedAt
+ String? id, String? name, String? description, String? originRegion, DateTime? createdAt, DateTime? updatedAt, bool isPopular
 });
 
 
@@ -65,13 +65,16 @@ class _$GrapeVarietyCopyWithImpl<$Res>
 
 /// Create a copy of GrapeVariety
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? name = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? name = freezed,Object? description = freezed,Object? originRegion = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,Object? isPopular = null,}) {
   return _then(_self.copyWith(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String?,name: freezed == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String?,description: freezed == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
+as String?,originRegion: freezed == originRegion ? _self.originRegion : originRegion // ignore: cast_nullable_to_non_nullable
 as String?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,updatedAt: freezed == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
-as DateTime?,
+as DateTime?,isPopular: null == isPopular ? _self.isPopular : isPopular // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 
@@ -156,10 +159,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? id, @JsonKey(name: 'name')  String? name, @JsonKey(name: 'created_at')  DateTime? createdAt, @JsonKey(name: 'updated_at')  DateTime? updatedAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? id,  String? name,  String? description,  String? originRegion,  DateTime? createdAt,  DateTime? updatedAt,  bool isPopular)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _GrapeVariety() when $default != null:
-return $default(_that.id,_that.name,_that.createdAt,_that.updatedAt);case _:
+return $default(_that.id,_that.name,_that.description,_that.originRegion,_that.createdAt,_that.updatedAt,_that.isPopular);case _:
   return orElse();
 
 }
@@ -177,10 +180,10 @@ return $default(_that.id,_that.name,_that.createdAt,_that.updatedAt);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? id, @JsonKey(name: 'name')  String? name, @JsonKey(name: 'created_at')  DateTime? createdAt, @JsonKey(name: 'updated_at')  DateTime? updatedAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? id,  String? name,  String? description,  String? originRegion,  DateTime? createdAt,  DateTime? updatedAt,  bool isPopular)  $default,) {final _that = this;
 switch (_that) {
 case _GrapeVariety():
-return $default(_that.id,_that.name,_that.createdAt,_that.updatedAt);case _:
+return $default(_that.id,_that.name,_that.description,_that.originRegion,_that.createdAt,_that.updatedAt,_that.isPopular);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -197,10 +200,10 @@ return $default(_that.id,_that.name,_that.createdAt,_that.updatedAt);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? id, @JsonKey(name: 'name')  String? name, @JsonKey(name: 'created_at')  DateTime? createdAt, @JsonKey(name: 'updated_at')  DateTime? updatedAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? id,  String? name,  String? description,  String? originRegion,  DateTime? createdAt,  DateTime? updatedAt,  bool isPopular)?  $default,) {final _that = this;
 switch (_that) {
 case _GrapeVariety() when $default != null:
-return $default(_that.id,_that.name,_that.createdAt,_that.updatedAt);case _:
+return $default(_that.id,_that.name,_that.description,_that.originRegion,_that.createdAt,_that.updatedAt,_that.isPopular);case _:
   return null;
 
 }
@@ -209,16 +212,19 @@ return $default(_that.id,_that.name,_that.createdAt,_that.updatedAt);case _:
 }
 
 /// @nodoc
-@JsonSerializable()
 
+@JsonSerializable(fieldRename: FieldRename.snake)
 class _GrapeVariety implements GrapeVariety {
-  const _GrapeVariety({this.id, @JsonKey(name: 'name') this.name, @JsonKey(name: 'created_at') this.createdAt, @JsonKey(name: 'updated_at') this.updatedAt});
+  const _GrapeVariety({this.id, this.name, this.description, this.originRegion, this.createdAt, this.updatedAt, this.isPopular = false});
   factory _GrapeVariety.fromJson(Map<String, dynamic> json) => _$GrapeVarietyFromJson(json);
 
 @override final  String? id;
-@override@JsonKey(name: 'name') final  String? name;
-@override@JsonKey(name: 'created_at') final  DateTime? createdAt;
-@override@JsonKey(name: 'updated_at') final  DateTime? updatedAt;
+@override final  String? name;
+@override final  String? description;
+@override final  String? originRegion;
+@override final  DateTime? createdAt;
+@override final  DateTime? updatedAt;
+@override@JsonKey() final  bool isPopular;
 
 /// Create a copy of GrapeVariety
 /// with the given fields replaced by the non-null parameter values.
@@ -233,16 +239,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _GrapeVariety&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _GrapeVariety&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.description, description) || other.description == description)&&(identical(other.originRegion, originRegion) || other.originRegion == originRegion)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.isPopular, isPopular) || other.isPopular == isPopular));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,createdAt,updatedAt);
+int get hashCode => Object.hash(runtimeType,id,name,description,originRegion,createdAt,updatedAt,isPopular);
 
 @override
 String toString() {
-  return 'GrapeVariety(id: $id, name: $name, createdAt: $createdAt, updatedAt: $updatedAt)';
+  return 'GrapeVariety(id: $id, name: $name, description: $description, originRegion: $originRegion, createdAt: $createdAt, updatedAt: $updatedAt, isPopular: $isPopular)';
 }
 
 
@@ -253,7 +259,7 @@ abstract mixin class _$GrapeVarietyCopyWith<$Res> implements $GrapeVarietyCopyWi
   factory _$GrapeVarietyCopyWith(_GrapeVariety value, $Res Function(_GrapeVariety) _then) = __$GrapeVarietyCopyWithImpl;
 @override @useResult
 $Res call({
- String? id,@JsonKey(name: 'name') String? name,@JsonKey(name: 'created_at') DateTime? createdAt,@JsonKey(name: 'updated_at') DateTime? updatedAt
+ String? id, String? name, String? description, String? originRegion, DateTime? createdAt, DateTime? updatedAt, bool isPopular
 });
 
 
@@ -270,13 +276,16 @@ class __$GrapeVarietyCopyWithImpl<$Res>
 
 /// Create a copy of GrapeVariety
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? name = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? name = freezed,Object? description = freezed,Object? originRegion = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,Object? isPopular = null,}) {
   return _then(_GrapeVariety(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String?,name: freezed == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String?,description: freezed == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
+as String?,originRegion: freezed == originRegion ? _self.originRegion : originRegion // ignore: cast_nullable_to_non_nullable
 as String?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,updatedAt: freezed == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
-as DateTime?,
+as DateTime?,isPopular: null == isPopular ? _self.isPopular : isPopular // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 

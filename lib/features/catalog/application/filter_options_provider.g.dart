@@ -319,3 +319,164 @@ final class PopularCountriesProvider
 }
 
 String _$popularCountriesHash() => r'e44c1ae84f7f6454b5e2d54e4e2679c38413c324';
+
+@ProviderFor(allGrapeVarieties)
+const allGrapeVarietiesProvider = AllGrapeVarietiesProvider._();
+
+final class AllGrapeVarietiesProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<GrapeVariety>>,
+          List<GrapeVariety>,
+          FutureOr<List<GrapeVariety>>
+        >
+    with
+        $FutureModifier<List<GrapeVariety>>,
+        $FutureProvider<List<GrapeVariety>> {
+  const AllGrapeVarietiesProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'allGrapeVarietiesProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$allGrapeVarietiesHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<List<GrapeVariety>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<GrapeVariety>> create(Ref ref) {
+    return allGrapeVarieties(ref);
+  }
+}
+
+String _$allGrapeVarietiesHash() => r'c9cef1ba83c39e15d0945db076d7a311dce1aba2';
+
+@ProviderFor(popularGrapeVarieties)
+const popularGrapeVarietiesProvider = PopularGrapeVarietiesProvider._();
+
+final class PopularGrapeVarietiesProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<GrapeVariety>>,
+          List<GrapeVariety>,
+          FutureOr<List<GrapeVariety>>
+        >
+    with
+        $FutureModifier<List<GrapeVariety>>,
+        $FutureProvider<List<GrapeVariety>> {
+  const PopularGrapeVarietiesProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'popularGrapeVarietiesProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$popularGrapeVarietiesHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<List<GrapeVariety>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<GrapeVariety>> create(Ref ref) {
+    return popularGrapeVarieties(ref);
+  }
+}
+
+String _$popularGrapeVarietiesHash() =>
+    r'6cb165c2e7dc88117471579d64ac136998489a4d';
+
+@ProviderFor(allRegions)
+const allRegionsProvider = AllRegionsProvider._();
+
+final class AllRegionsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<Region>>,
+          List<Region>,
+          FutureOr<List<Region>>
+        >
+    with $FutureModifier<List<Region>>, $FutureProvider<List<Region>> {
+  const AllRegionsProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'allRegionsProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$allRegionsHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<List<Region>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<Region>> create(Ref ref) {
+    return allRegions(ref);
+  }
+}
+
+String _$allRegionsHash() => r'f777d241666a49c8c7a9cb139a7b843dca7a0bca';
+
+@ProviderFor(popularRegions)
+const popularRegionsProvider = PopularRegionsProvider._();
+
+final class PopularRegionsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<Region>>,
+          List<Region>,
+          FutureOr<List<Region>>
+        >
+    with $FutureModifier<List<Region>>, $FutureProvider<List<Region>> {
+  const PopularRegionsProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'popularRegionsProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$popularRegionsHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<List<Region>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<Region>> create(Ref ref) {
+    return popularRegions(ref);
+  }
+}
+
+String _$popularRegionsHash() => r'351236efe1b23073c3bd39b8020398bb8f3c33c1';

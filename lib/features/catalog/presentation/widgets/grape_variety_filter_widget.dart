@@ -4,12 +4,12 @@ import 'package:go_router/go_router.dart';
 import 'package:winepool_final/features/catalog/application/catalog_filters_provider.dart';
 import 'package:winepool_final/features/catalog/application/filter_options_provider.dart';
 import 'package:winepool_final/features/catalog/application/temporary_selection_providers.dart';
-import 'package:winepool_final/features/wines/domain/region.dart';
-import 'package:winepool_final/features/catalog/presentation/widgets/region_list_item.dart';
+import 'package:winepool_final/features/wines/domain/grape_variety.dart';
+import 'package:winepool_final/features/catalog/presentation/widgets/grape_variety_list_item.dart';
 import 'package:winepool_final/common/widgets/shimmer_loading_indicator.dart';
 
-class RegionFilterWidget extends ConsumerWidget {
-  const RegionFilterWidget({super.key});
+class GrapeVarietyFilterWidget extends ConsumerWidget {
+  const GrapeVarietyFilterWidget({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -34,18 +34,18 @@ class RegionFilterWidget extends ConsumerWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: Row(
             children: [
-              Text('Регионы', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+              Text('Сорт винограда', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
               const Spacer(),
               IconButton(
                 onPressed: () {
-                  ref.read(temporaryRegionIdsProvider.notifier).clear();
+                  ref.read(temporaryGrapeVarietyIdsProvider.notifier).clear();
                 },
                 icon: const Icon(Icons.refresh),
               ),
               IconButton(
                 onPressed: () {
-                  final temporaryIds = ref.read(temporaryRegionIdsProvider);
-                  ref.read(catalogFiltersProvider.notifier).updateFilters(ref.read(catalogFiltersProvider).copyWith(region: temporaryIds));
+                  final temporaryIds = ref.read(temporaryGrapeVarietyIdsProvider);
+                  ref.read(catalogFiltersProvider.notifier).updateFilters(ref.read(catalogFiltersProvider).copyWith(grapeIds: temporaryIds));
                   Navigator.of(context).pop();
                 },
                 icon: const Icon(Icons.check),
@@ -53,52 +53,52 @@ class RegionFilterWidget extends ConsumerWidget {
             ],
           ),
         ),
-        // Список популярных регионов
+        // Список популярных сортов
         Expanded(
           child: Consumer(
             builder: (context, ref, child) {
-              final popularRegionsAsync = ref.watch(popularRegionsProvider);
-              final temporaryRegionIds = ref.watch(temporaryRegionIdsProvider);
+              final popularGrapesAsync = ref.watch(popularGrapeVarietiesProvider);
+              final temporaryGrapeIds = ref.watch(temporaryGrapeVarietyIdsProvider);
 
-              return popularRegionsAsync.when(
+              return popularGrapesAsync.when(
                 loading: () => const Center(child: ShimmerLoadingIndicator()),
                 error: (error, stack) => Center(child: Text('Ошибка: $error')),
-                data: (regions) {
+                data: (grapes) {
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Padding(
                         padding: EdgeInsets.fromLTRB(16, 8, 16, 8),
-                        child: Text('Популярные регионы', style: TextStyle(fontWeight: FontWeight.bold)),
+                        child: Text('Популярные сорта', style: TextStyle(fontWeight: FontWeight.bold)),
                       ),
                       Expanded(
                         child: ListView.builder(
-                          itemCount: regions.length,
+                          itemCount: grapes.length,
                           itemBuilder: (context, index) {
-                            final region = regions[index];
-                            return RegionListItem(
-                              region: region,
-                              isSelected: temporaryRegionIds.contains(region.id),
+                            final grape = grapes[index];
+                            return GrapeVarietyListItem(
+                              grapeVariety: grape,
+                              isSelected: temporaryGrapeIds.contains(grape.id),
                               onChanged: (isSelected) {
-                                if(region.id != null) {
-                                  ref.read(temporaryRegionIdsProvider.notifier).toggle(region.id!);
+                                if(grape.id != null) {
+                                  ref.read(temporaryGrapeVarietyIdsProvider.notifier).toggle(grape.id!);
                                 }
                               },
                             );
                           },
                         ),
                       ),
-                      // Выбранные регионы, не входящие в популярные
+                      // Выбранные сорта, не входящие в популярные
                       Builder(
                         builder: (context) {
-                          final allRegionsAsync = ref.watch(allRegionsProvider);
-                          final popularRegionIds = regions.map((r) => r.id).toSet();
-                          final selectedNotPopularIds = temporaryRegionIds.where((id) => !popularRegionIds.contains(id)).toList();
+                          final allGrapesAsync = ref.watch(allGrapeVarietiesProvider);
+                          final popularGrapeIds = grapes.map((g) => g.id).toSet();
+                          final selectedNotPopularIds = temporaryGrapeIds.where((id) => !popularGrapeIds.contains(id)).toList();
 
-                          if (selectedNotPopularIds.isNotEmpty && allRegionsAsync is AsyncData<List<Region>>) {
-                            final allRegionsData = allRegionsAsync.value;
-                            final selectedRegions = selectedNotPopularIds.map((id) {
-                              return allRegionsData.firstWhere((r) => r.id == id, orElse: () => Region(id: id, name: '...', country: null, isPopular: false));
+                          if (selectedNotPopularIds.isNotEmpty && allGrapesAsync is AsyncData<List<GrapeVariety>>) {
+                            final allGrapesData = allGrapesAsync.value;
+                            final selectedGrapes = selectedNotPopularIds.map((id) {
+                              return allGrapesData.firstWhere((g) => g.id == id, orElse: () => GrapeVariety(id: id, name: '...'));
                             }).toList();
 
                             return Column(
@@ -114,12 +114,12 @@ class RegionFilterWidget extends ConsumerWidget {
                                   child: Wrap(
                                     spacing: 8.0,
                                     runSpacing: 4.0,
-                                    children: selectedRegions.map((region) {
+                                    children: selectedGrapes.map((grape) {
                                       return Chip(
-                                        label: Text(region.name ?? 'Название отсутствует'),
+                                        label: Text(grape.name ?? ''),
                                         onDeleted: () {
-                                          if(region.id != null) {
-                                            ref.read(temporaryRegionIdsProvider.notifier).toggle(region.id!);
+                                          if(grape.id != null) {
+                                            ref.read(temporaryGrapeVarietyIdsProvider.notifier).toggle(grape.id!);
                                           }
                                         },
                                       );
@@ -145,9 +145,9 @@ class RegionFilterWidget extends ConsumerWidget {
           padding: const EdgeInsets.all(16.0),
           child: InkWell(
             onTap: () {
-              context.go('/wines-catalog/region-selection');
+              context.go('/wines-catalog/grape-variety-selection');
             },
-            child: Text('Все регионы', style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.blue)),
+            child: Text('Все сорта', style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.blue)),
           ),
         ),
       ],
