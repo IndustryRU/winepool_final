@@ -13,6 +13,7 @@ import 'package:winepool_final/features/catalog/presentation/widgets/rating_filt
 import 'package:winepool_final/features/catalog/presentation/widgets/country_filter_widget.dart';
 import 'package:winepool_final/features/catalog/presentation/widgets/grape_variety_filter_widget.dart';
 import 'package:winepool_final/features/catalog/presentation/widgets/region_filter_widget.dart';
+import 'package:winepool_final/features/catalog/presentation/widgets/price_filter_widget.dart';
 import 'dart:developer';
 
 /// Виджет панели фильтров для экрана каталога.
@@ -286,6 +287,24 @@ class CatalogFiltersPanel extends ConsumerWidget {
                           height: MediaQuery.of(context).size.height * (2 / 3),
                           width: double.infinity,
                           child: const GrapeVarietyFilterWidget(),
+                        );
+                      },
+                    );
+                  } else if (filterType == CatalogFilterType.price) {
+                    showModalBottomSheet<void>(
+                      context: context,
+                      isScrollControlled: true,
+                      builder: (BuildContext context) {
+                        return Padding(
+                          padding: EdgeInsets.only(
+                            bottom: MediaQuery.of(context).viewInsets.bottom,
+                          ),
+                          child: SingleChildScrollView( // Добавляем скролл на случай, если контент не поместится
+                            child: Container(
+                              padding: const EdgeInsets.all(16.0),
+                              child: const PriceFilterWidget(),
+                            ),
+                          ),
                         );
                       },
                     );

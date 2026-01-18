@@ -7,6 +7,7 @@ part 'catalog_filters_provider.g.dart';
 
 @freezed
 abstract class CatalogFiltersState with _$CatalogFiltersState {
+  @JsonSerializable(fieldRename: FieldRename.snake)
   const factory CatalogFiltersState({
     @Default([]) List<String> wineryIds,
     @Default([]) List<String> region,
@@ -25,6 +26,9 @@ abstract class CatalogFiltersState with _$CatalogFiltersState {
     @Default([]) List<int> vintages,  // Добавляем поле для фильтрации по винтажам
     @Default(false) bool showUnavailable, // Добавляем поле для показа недоступных
   }) = _CatalogFiltersState;
+
+  // Добавляем factory конструктор fromJson
+  factory CatalogFiltersState.fromJson(Map<String, dynamic> json) => _$CatalogFiltersStateFromJson(json);
 
   // Private constructor for freezed
   const CatalogFiltersState._();
@@ -102,7 +106,7 @@ class CatalogFiltersNotifier extends _$CatalogFiltersNotifier {
   void resetSugarFilter() => state = state.copyWith(sugar: []);
   void resetPriceFilter() => state = state.copyWith(minPrice: null, maxPrice: null);
   void resetCountryFilter() => state = state.copyWith(country: []);
-  void resetRatingFilter() => state = state.copyWith(minRating: null);
+ void resetRatingFilter() => state = state.copyWith(minRating: null);
   void resetYearFilter() => state = state.copyWith(minYear: 1900, maxYear: DateTime.now().year);
   void clearBottleSizes() => state = state.copyWith(bottleSizeIds: []);
 

@@ -114,3 +114,28 @@ class TemporaryRegionIds extends _$TemporaryRegionIds {
     state = [];
   }
 }
+
+// Используем typedef для удобства
+typedef PriceRange = (double?, double?);
+
+/// Временное хранилище для диапазона цен, выбранного в фильтре
+@riverpod
+class TemporaryPriceRange extends _$TemporaryPriceRange {
+  @override
+  PriceRange build() {
+    // Провайдер просто хранит состояние, не пытаясь его угадать.
+    return (null, null);
+  }
+
+  void setMin(double? min) {
+    state = (min, state.$2);
+  }
+  
+  void setMax(double? max) {
+    state = (state.$1, max);
+  }
+
+  void setRange(double min, double max) {
+    state = (min, max);
+  }
+}

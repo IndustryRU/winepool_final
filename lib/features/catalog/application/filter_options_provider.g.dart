@@ -9,6 +9,47 @@ part of 'filter_options_provider.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
+@ProviderFor(priceRange)
+const priceRangeProvider = PriceRangeProvider._();
+
+final class PriceRangeProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<Map<String, double>>,
+          Map<String, double>,
+          FutureOr<Map<String, double>>
+        >
+    with
+        $FutureModifier<Map<String, double>>,
+        $FutureProvider<Map<String, double>> {
+  const PriceRangeProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'priceRangeProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$priceRangeHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<Map<String, double>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<Map<String, double>> create(Ref ref) {
+    return priceRange(ref);
+  }
+}
+
+String _$priceRangeHash() => r'4f1bbba414430a8377b4d99d7b2690dcc1fe0067';
+
 @ProviderFor(allWineries)
 const allWineriesProvider = AllWineriesProvider._();
 

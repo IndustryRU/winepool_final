@@ -185,10 +185,12 @@ class CatalogFilterChip extends ConsumerWidget {
           // Делаем прямоугольник для рейтинга
           borderRadius: BorderRadius.circular(isRatingFilter ? 8 : 12),
         ),
-        badgeContent: Text(
-          isRatingFilter ? '${ratingValue.toInt()}★' : count.toString(),
-          style: const TextStyle(fontSize: 10, color: Colors.black),
-        ),
+        badgeContent: (filterType == CatalogFilterType.price && isActive)
+            ? const Icon(Icons.check, size: 10, color: Colors.black)
+            : (isRatingFilter
+                ? Text('${ratingValue.toInt()}★', style: const TextStyle(fontSize: 10, color: Colors.black))
+                : Text(count.toString(), style: const TextStyle(fontSize: 10, color: Colors.black))
+            ),
         child: chipContent, // Оборачиваем основной контент
       ),
     );

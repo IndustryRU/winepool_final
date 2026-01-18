@@ -1,5 +1,8 @@
+import 'dart:convert';
+import 'dart:developer';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:winepool_final/core/providers.dart';
+import 'package:winepool_final/features/catalog/application/catalog_filters_provider.dart';
 import 'package:winepool_final/features/wines/domain/wine_characteristics.dart';
 import 'package:winepool_final/features/wines/domain/winery.dart';
 import 'package:winepool_final/features/wines/data/wineries_repository.dart';
@@ -10,6 +13,55 @@ import 'package:winepool_final/features/wines/domain/region.dart';
 import 'package:winepool_final/features/wines/data/regions_repository.dart';
 
 part 'filter_options_provider.g.dart';
+
+@riverpod
+Future<Map<String, double>> priceRange(Ref ref) async {
+      final filters = ref.watch(catalogFiltersProvider);
+      final supabase = ref.watch(supabaseClientProvider);
+
+      // Собираем Map для RPC вручную, включая только известные поля
+      final Map<String, dynamic> filtersForRpc = {
+        'color': filters.color.map((e) => e.name).toList(),
+        'type': filters.type.map((e) => e.name).toList(),
+        'sugar': filters.sugar.map((e) => e.toDbValue()).toList(),
+        'vintages': filters.vintages,
+        'min_rating': filters.minRating,
+        'winery_ids': filters.wineryIds,
+        'country': filters.country,
+        'region': filters.region,
+        'grape_ids': filters.grapeIds,
+        'bottle_size_ids': filters.bottleSizeIds,
+      };
+
+      // Удаляем пустые списки и null значения, чтобы не отправлять их в RPC
+      filtersForRpc.removeWhere((key, value) => (value is List && value.isEmpty) || value == null);
+
+      log('Calling RPC get_price_range with params: $filtersForRpc');
+
+      final response = await supabase.rpc(
+        'get_price_range',
+        params: {'filters': filtersForRpc},
+      );
+
+      log('RPC get_price_range response: $response');
+
+      if (response == null || response.isEmpty || response[0]['min_price'] == null) {
+        log('RPC response is null or empty, returning default range.');
+        return {'min_price': 0.0, 'max_price': 100000.0};
+      }
+
+      final data = response[0] as Map<String, dynamic>;
+      
+      final minPrice = (data['min_price'] as num?)?.toDouble() ?? 0.0;
+      final maxPrice = (data['max_price'] as num?)?.toDouble() ?? 100000.0;
+
+      log('Parsed price range: min=$minPrice, max=$maxPrice');
+
+      return {
+        'min_price': minPrice,
+        'max_price': maxPrice,
+      };
+    }
 
 @riverpod
 Future<List<Winery>> allWineries(Ref ref) async {
@@ -30,7 +82,7 @@ Future<List<WineColor>> availableColors(Ref ref) async {
 Future<List<WineSugar>> availableSugars(Ref ref) async {
   final client = ref.watch(supabaseClientProvider);
   final data = await client.rpc('get_available_sugars');
-  return (data as List).map((s) => WineSugar.values.firstWhere((e) => e.toDbValue() == s, orElse: () => WineSugar.unknown)).where((s) => s != WineSugar.unknown).toList();
+ return (data as List).map((s) => WineSugar.values.firstWhere((e) => e.toDbValue() == s, orElse: () => WineSugar.unknown)).where((s) => s != WineSugar.unknown).toList();
 }
 
 @riverpod

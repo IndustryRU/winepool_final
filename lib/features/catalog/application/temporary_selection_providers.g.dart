@@ -247,3 +247,63 @@ abstract class _$TemporaryRegionIds extends $Notifier<List<String>> {
     element.handleValue(ref, created);
   }
 }
+
+/// Временное хранилище для диапазона цен, выбранного в фильтре
+
+@ProviderFor(TemporaryPriceRange)
+const temporaryPriceRangeProvider = TemporaryPriceRangeProvider._();
+
+/// Временное хранилище для диапазона цен, выбранного в фильтре
+final class TemporaryPriceRangeProvider
+    extends $NotifierProvider<TemporaryPriceRange, PriceRange> {
+  /// Временное хранилище для диапазона цен, выбранного в фильтре
+  const TemporaryPriceRangeProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'temporaryPriceRangeProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$temporaryPriceRangeHash();
+
+  @$internal
+  @override
+  TemporaryPriceRange create() => TemporaryPriceRange();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(PriceRange value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<PriceRange>(value),
+    );
+  }
+}
+
+String _$temporaryPriceRangeHash() =>
+    r'1c45a47427a2b75cdfc3a0862e71992a4c1487b5';
+
+/// Временное хранилище для диапазона цен, выбранного в фильтре
+
+abstract class _$TemporaryPriceRange extends $Notifier<PriceRange> {
+  PriceRange build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final created = build();
+    final ref = this.ref as $Ref<PriceRange, PriceRange>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<PriceRange, PriceRange>,
+              PriceRange,
+              Object?,
+              Object?
+            >;
+    element.handleValue(ref, created);
+  }
+}

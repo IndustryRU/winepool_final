@@ -765,10 +765,10 @@ Widget _buildFilterContentWithCallbacks(
       final currentMaxPrice = currentFilters['max_price']?.toDouble();
       final initialShowUnavailable = currentFilters['show_unavailable'] ?? false;
       return PriceFilterWidget(
-        selectedFilters: selectedFilters,
+      /*  selectedFilters: selectedFilters,
         initialMinPrice: currentMinPrice,
         initialMaxPrice: currentMaxPrice,
-        initialShowUnavailable: initialShowUnavailable,
+        initialShowUnavailable: initialShowUnavailable,*/
       );
     case 'country':
       //return ValueListenableBuilder<List<String>>(
@@ -1004,20 +1004,20 @@ void _showSortModal(
            final currentMaxPrice = currentFilters['max_price']?.toDouble();
            final initialShowUnavailable = currentFilters['show_unavailable'] ?? false;
            return PriceFilterWidget(
-             selectedFilters: selectedFilters,
-             onRangeChanged: (newValues) {
-               Future.microtask(() {
-                 onPriceRangeChanged(newValues);
-               });
-             },
-             onShowUnavailableChanged: (showUnavailable) {
-               Future.microtask(() {
-                 onShowUnavailableChanged?.call(showUnavailable);
-               });
-             },
-             initialMinPrice: currentMinPrice,
-             initialMaxPrice: currentMaxPrice,
-             initialShowUnavailable: initialShowUnavailable,
+             //selectedFilters: selectedFilters,
+             //onRangeChanged: (newValues) {
+              // Future.microtask(() {
+              //   onPriceRangeChanged(newValues);
+              // });
+            // },
+             //onShowUnavailableChanged: (showUnavailable) {
+             //  Future.microtask(() {
+             //    onShowUnavailableChanged?.call(showUnavailable);
+             //  });
+             //},
+             //initialMinPrice: currentMinPrice,
+             //initialMaxPrice: currentMaxPrice,
+             //initialShowUnavailable: initialShowUnavailable,
            );
          } else {
            final currentFilters = ref.read(catalogFiltersProvider);
@@ -1025,10 +1025,10 @@ void _showSortModal(
            final currentMaxPrice = currentFilters['max_price']?.toDouble();
            final initialShowUnavailable = currentFilters['show_unavailable'] ?? false;
            return PriceFilterWidget(
-             selectedFilters: selectedFilters,
-             initialMinPrice: currentMinPrice,
-             initialMaxPrice: currentMaxPrice,
-             initialShowUnavailable: initialShowUnavailable,
+            // selectedFilters: selectedFilters,
+            //// initialMinPrice: currentMinPrice,
+           //  initialMaxPrice: currentMaxPrice,
+            // initialShowUnavailable: initialShowUnavailable,
            );
          }
        case 'country':
