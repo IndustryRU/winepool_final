@@ -1,3 +1,6 @@
+import 'package:collection/collection.dart';
+import 'dart:developer';
+
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:winepool_final/features/admin/providers/admin_view_settings_provider.dart';
 import 'package:winepool_final/features/catalog/application/catalog_filters_provider.dart';
@@ -82,39 +85,41 @@ Future<List<Wine>> newWines(Ref ref) async {
 @riverpod
 Future<List<Wine>> winesWithActiveFilters(Ref ref) async {
   final filters = ref.watch(catalogFiltersProvider);
+  log('--- WINES_CONTROLLER: winesWithActiveFilters triggered. Sort option: "${filters.sortOption}"');
+
   final showDeleted = ref.watch(adminViewSettingsProvider);
 
-  // Сначала получаем вина от репозитория
-  final wines = await ref.watch(winesRepositoryProvider).fetchWinesWithFilters(
-        color: filters.color.isEmpty ? null : filters.color,
-        type: filters.type.isEmpty ? null : filters.type,
-        sugar: filters.sugar.isEmpty ? null : filters.sugar,
-        minPrice: filters.minPrice,
-        maxPrice: filters.maxPrice,
-        country: filters.country.isEmpty ? null : filters.country,
-        region: filters.region.isEmpty ? null : filters.region,
-        grapeIds: filters.grapeIds.isEmpty ? null : filters.grapeIds,
-        wineryIds: filters.wineryIds.isEmpty ? null : filters.wineryIds,
-        minRating: filters.minRating,
-        bottleSizeIds: filters.bottleSizeIds.isEmpty ? null : filters.bottleSizeIds,
-        showUnavailable: filters.showUnavailable,
-        sortOption: filters.sortOption,
-        includeDeleted: showDeleted,
-      );
+  final allWines = await ref.watch(winesRepositoryProvider).fetchWinesWithFilters(
+    color: filters.color.isEmpty ? null : filters.color,
+    type: filters.type.isEmpty ? null : filters.type,
+    sugar: filters.sugar.isEmpty ? null : filters.sugar,
+    minPrice: filters.minPrice,
+    maxPrice: filters.maxPrice,
+    country: filters.country.isEmpty ? null : filters.country,
+    region: filters.region.isEmpty ? null : filters.region,
+    grapeIds: filters.grapeIds.isEmpty ? null : filters.grapeIds,
+    wineryIds: filters.wineryIds.isEmpty ? null : filters.wineryIds,
+    minRating: filters.minRating,
+    bottleSizeIds: filters.bottleSizeIds.isEmpty ? null : filters.bottleSizeIds,
+    showUnavailable: filters.showUnavailable,
+    sortOption: filters.sortOption,
+    includeDeleted: showDeleted,
+  );
 
-  // Если выбран фильтр по винтажу, фильтруем на клиенте
+  log('--- WINES_CONTROLLER: Fetched ${allWines.length} wines from repository.');
+
+  List<Wine> filteredWines = allWines;
   if (filters.vintages.isNotEmpty) {
-    return wines.where((wine) {
-      if (wine.offers == null || wine.offers!.isEmpty) {
-        return false;
-      }
-      // Проверяем, есть ли хотя бы одно предложение с подходящим винтажом
+    filteredWines = filteredWines.where((wine) {
+      if (wine.offers == null || wine.offers!.isEmpty) return false;
       return wine.offers!.any((offer) => offer.vintage != null && filters.vintages.contains(offer.vintage));
     }).toList();
   }
 
-  // Если фильтр по винтажу не активен, возвращаем как есть
-  return wines;
+  final sortedWines = List.of(filteredWines);
+
+  log('--- WINES_CONTROLLER: Returning ${sortedWines.length} wines.');
+  return sortedWines;
 }
 
 @Riverpod(keepAlive: true)

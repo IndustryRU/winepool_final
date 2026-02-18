@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:winepool_final/features/catalog/presentation/widgets/catalog_filter_chip.dart';
+import 'package:winepool_final/features/catalog/presentation/widgets/sort_filter_widget.dart';
 import 'package:winepool_final/features/catalog/presentation/widgets/winery_filter_widget.dart';
 import 'package:winepool_final/features/catalog/application/catalog_filters_provider.dart';
 import 'package:winepool_final/features/catalog/presentation/widgets/simple_filter_widget.dart';
@@ -62,7 +63,14 @@ class CatalogFiltersPanel extends ConsumerWidget {
                 // Временно используем пустые функции
                 onTap: () {
                   log('Tapped on filter: $filterType');
-                  if (filterType == CatalogFilterType.winery) {
+                  if (filterType == CatalogFilterType.sort) {
+                    showModalBottomSheet<void>(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return const SortFilterWidget();
+                      },
+                    );
+                  } else if (filterType == CatalogFilterType.winery) {
                     showModalBottomSheet<void>(
                       context: context,
                       isScrollControlled: true,

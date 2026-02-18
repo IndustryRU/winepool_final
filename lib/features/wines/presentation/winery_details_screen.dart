@@ -3,7 +3,6 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:winepool_final/features/wines/application/wineries_controller.dart';
 import 'package:winepool_final/features/wines/domain/winery.dart';
-import 'package:winepool_final/features/wines/domain/region.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:winepool_final/common/widgets/shimmer_loading_indicator.dart';
 
@@ -18,7 +17,8 @@ class WineryDetailsScreen extends ConsumerWidget {
     final wineryAsync = ref.watch(fetchWineryByIdProvider(winery.id!));
 
     return PopScope(
-      onPopInvoked: (didPop) {
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
         if (didPop) {
           return;
         } else {
@@ -246,43 +246,43 @@ class WineryDetailsScreen extends ConsumerWidget {
 
  Widget _buildWebsiteCard(BuildContext context, String website) {
     final Uri url = Uri.parse(website.startsWith('http') ? website : 'https://$website');
-    
+
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
-      child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Row(
-          children: [
-            Icon(Icons.public, color: Theme.of(context).primaryColor),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Веб-сайт',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: Theme.of(context).hintColor,
-                        ),
-                  ),
-                  InkWell(
-                    onTap: () async {
-                      if (await canLaunchUrl(url)) {
-                        await launchUrl(url);
-                      }
-                    },
-                    child: Text(
+      child: InkWell(
+        onTap: () async {
+          if (await canLaunchUrl(url)) {
+            await launchUrl(url);
+          }
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Row(
+            children: [
+              Icon(Icons.public, color: Theme.of(context).primaryColor),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Веб-сайт',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            color: Theme.of(context).hintColor,
+                          ),
+                    ),
+                    Text(
                       website,
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                             color: Theme.of(context).primaryColor,
                             decoration: TextDecoration.underline,
                           ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

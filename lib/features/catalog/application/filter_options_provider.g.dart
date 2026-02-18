@@ -48,7 +48,7 @@ final class PriceRangeProvider
   }
 }
 
-String _$priceRangeHash() => r'4f1bbba414430a8377b4d99d7b2690dcc1fe0067';
+String _$priceRangeHash() => r'685fc8f906eeac129e7efd7e53af143954d7210c';
 
 @ProviderFor(allWineries)
 const allWineriesProvider = AllWineriesProvider._();

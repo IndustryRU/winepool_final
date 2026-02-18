@@ -5,7 +5,6 @@ import 'package:winepool_final/features/auth/application/auth_controller.dart';
 import 'package:winepool_final/features/cellar/application/cellar_controller.dart';
 import 'package:winepool_final/features/offers/application/all_offers_controller.dart';
 import 'package:winepool_final/features/reviews/application/reviews_controller.dart';
-import 'package:winepool_final/features/reviews/domain/review.dart';
 import 'package:winepool_final/features/wines/data/grape_variety_repository.dart';
 import 'package:winepool_final/features/wines/domain/grape_variety.dart';
 import 'package:winepool_final/features/wines/domain/wine.dart';
@@ -24,7 +23,7 @@ class WineDetailsScreen extends ConsumerWidget {
 
     return PopScope(
       canPop: false, // Отключаем стандартное поведение кнопки "назад"
-      onPopInvoked: (didPop) {
+      onPopInvokedWithResult: (didPop, result) {
         if (!didPop) {
           context.pop(); // Используем GoRouter для навигации
         }
@@ -122,7 +121,7 @@ class WineDetailsScreen extends ConsumerWidget {
                             const Icon(Icons.star, color: Colors.amber, size: 20),
                             const SizedBox(width: 4),
                             Text(
-                              '${wine.averageRating?.toStringAsFixed(1) ?? '0.0'}',
+                              wine.averageRating?.toStringAsFixed(1) ?? '0.0',
                               style: Theme.of(context).textTheme.titleMedium,
                             ),
                             Text(
@@ -419,7 +418,7 @@ void _showStorageFormDialog(BuildContext context, WidgetRef ref) {
                           context: dialogContext,
                           initialDate: selectedDate,
                           firstDate: DateTime(1900),
-                          lastDate: DateTime.now().add(const Duration(days: 365)), // Можно выбрать дату до года вперед
+                          lastDate: DateTime.now().add(const Duration(days: 365)),
                         );
                         if (date != null) {
                           setState(() {
@@ -436,20 +435,19 @@ void _showStorageFormDialog(BuildContext context, WidgetRef ref) {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(dialogContext).pop(); // Закрываем диалог
+                Navigator.of(dialogContext).pop();
               },
               child: const Text('Отмена'),
             ),
             ElevatedButton(
               onPressed: () async {
-                // Валидация всех полей
                 final quantityStr = quantityController.text;
                 final priceStr = priceController.text;
                 final vintageStr = vintageController.text;
 
                 if (quantityStr.isEmpty) {
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
+                  if (dialogContext.mounted) {
+                    ScaffoldMessenger.of(dialogContext).showSnackBar(
                       const SnackBar(content: Text('Введите количество')),
                     );
                   }
@@ -458,8 +456,8 @@ void _showStorageFormDialog(BuildContext context, WidgetRef ref) {
 
                 final quantity = int.tryParse(quantityStr);
                 if (quantity == null || quantity <= 0) {
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
+                  if (dialogContext.mounted) {
+                    ScaffoldMessenger.of(dialogContext).showSnackBar(
                       const SnackBar(content: Text('Введите корректное количество')),
                     );
                   }
@@ -467,8 +465,8 @@ void _showStorageFormDialog(BuildContext context, WidgetRef ref) {
                 }
 
                 if (priceStr.isEmpty) {
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
+                  if (dialogContext.mounted) {
+                    ScaffoldMessenger.of(dialogContext).showSnackBar(
                       const SnackBar(content: Text('Введите цену')),
                     );
                   }
@@ -477,8 +475,8 @@ void _showStorageFormDialog(BuildContext context, WidgetRef ref) {
 
                 final price = double.tryParse(priceStr);
                 if (price == null || price < 0) {
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
+                  if (dialogContext.mounted) {
+                    ScaffoldMessenger.of(dialogContext).showSnackBar(
                       const SnackBar(content: Text('Введите корректную цену')),
                     );
                   }
@@ -486,8 +484,8 @@ void _showStorageFormDialog(BuildContext context, WidgetRef ref) {
                 }
 
                 if (vintageStr.isEmpty) {
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
+                  if (dialogContext.mounted) {
+                    ScaffoldMessenger.of(dialogContext).showSnackBar(
                       const SnackBar(content: Text('Введите год урожая')),
                     );
                   }
@@ -496,8 +494,8 @@ void _showStorageFormDialog(BuildContext context, WidgetRef ref) {
 
                 final vintage = int.tryParse(vintageStr);
                 if (vintage == null) {
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
+                  if (dialogContext.mounted) {
+                    ScaffoldMessenger.of(dialogContext).showSnackBar(
                       const SnackBar(content: Text('Введите корректный год урожая')),
                     );
                   }
@@ -505,9 +503,9 @@ void _showStorageFormDialog(BuildContext context, WidgetRef ref) {
                 }
 
                 final currentYear = DateTime.now().year;
-                if (vintage > currentYear + 1) { // Разрешаем на 1 год вперед для будущих вин
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
+                if (vintage > currentYear + 1) {
+                  if (dialogContext.mounted) {
+                    ScaffoldMessenger.of(dialogContext).showSnackBar(
                       const SnackBar(content: Text('Год урожая не может быть в будущем')),
                     );
                   }
@@ -515,8 +513,8 @@ void _showStorageFormDialog(BuildContext context, WidgetRef ref) {
                 }
 
                 if (vintage < 100) {
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
+                  if (dialogContext.mounted) {
+                    ScaffoldMessenger.of(dialogContext).showSnackBar(
                       const SnackBar(content: Text('Введите корректный год')),
                     );
                   }
@@ -530,23 +528,26 @@ void _showStorageFormDialog(BuildContext context, WidgetRef ref) {
                     quantity: quantity,
                     purchasePrice: price,
                     purchaseDate: selectedDate,
-                    idealDrinkFrom: vintage, // Используем поле idealDrinkFrom для хранения года урожая
+                    idealDrinkFrom: vintage,
                   );
-                  
+
                   ref.invalidate(cellarStorageProvider);
-                  
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
+
+                  // Закрываем диалог перед показом SnackBar
+                  if (!dialogContext.mounted) return;
+                  Navigator.of(dialogContext).pop();
+
+                  // Используем dialogContext вместо context
+                  if (dialogContext.mounted) {
+                    ScaffoldMessenger.of(dialogContext).showSnackBar(
                       const SnackBar(
                         content: Text('Вино добавлено в ваш погребок'),
                       ),
                     );
                   }
-                  
-                  Navigator.of(dialogContext).pop(); // Закрываем диалог
                 } catch (e) {
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
+                  if (dialogContext.mounted) {
+                    ScaffoldMessenger.of(dialogContext).showSnackBar(
                       SnackBar(content: Text('Ошибка при добавлении вина: $e')),
                     );
                   }

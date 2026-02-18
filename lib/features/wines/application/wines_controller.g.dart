@@ -312,7 +312,7 @@ final class WinesWithActiveFiltersProvider
 }
 
 String _$winesWithActiveFiltersHash() =>
-    r'6293ced99a472a1dc265bd631418c8505ccd98f1';
+    r'17ee8c224b323efb7b210d09ea60bc578237b2cf';
 
 @ProviderFor(WineMutation)
 const wineMutationProvider = WineMutationProvider._();

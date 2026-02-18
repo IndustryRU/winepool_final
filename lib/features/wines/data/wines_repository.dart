@@ -296,85 +296,146 @@ class WinesRepository {
          bottleSizeIds = bottleSizeIds ?? [];
          vintages = vintages ?? [];
 
-         try {
-           // Определяем, нужен ли нам INNER JOIN для связанных таблиц
-           final bool needsWineriesInnerJoin = country.isNotEmpty || region.isNotEmpty;
-           final bool needsOffersInnerJoin = bottleSizeIds.isNotEmpty || minPrice != null || maxPrice != null;
+         if (sortOption == 'price_asc' || sortOption == 'price_desc') {
+           try {
+             final params = {
+               'p_color_values': color.map((c) => c.name).toList(),
+               'p_type_values': type.map((t) => t.name).toList(),
+               'p_sugar_values': sugar.map((s) => s.toDbValue()).toList(),
+               'p_min_price': minPrice,
+               'p_max_price': maxPrice,
+               'p_country_codes': country,
+               'p_region_ids': region,
+               'p_grape_variety_ids': grapeIds,
+               'p_winery_ids': wineryIds,
+               'p_min_rating': minRating,
+               'p_bottle_size_ids': bottleSizeIds,
+               'p_vintages': vintages,
+               'p_include_deleted': includeDeleted,
+               'p_sort_option': sortOption,
+             };
+             log('--- REPO: Calling RPC with params: $params');
+             final sortedIds = await _supabaseClient.rpc(
+               'get_wines_with_filters_and_sorting',
+               params: params,
+             );
 
-           String wineriesJoin = needsWineriesInnerJoin ? 'wineries!inner(*, country:countries(*))' : 'wineries(*, country:countries(*))';
-           
-           // В offers!inner нужно перечислять все поля, которые могут понадобиться
-           String offersJoin = needsOffersInnerJoin ? 'offers!inner(id, vintage, bottle_size_id, price)' : 'offers(id, vintage)';
+             if (sortedIds == null || sortedIds.isEmpty) {
+               return [];
+             }
+             final List<String> wineIds = List<String>.from(sortedIds);
 
-           String selectString = '*, $wineriesJoin, grape_varieties(*), $offersJoin';
-           
-           dynamic query = _supabaseClient.from('wines').select(selectString);
+             final query = _supabaseClient
+                 .from('wines')
+                 .select('*, wineries(*, country:countries(*)), grape_varieties(*), offers(id, vintage)')
+                 .inFilter('id', wineIds);
 
-           // Применяем фильтры
-           if (color.isNotEmpty) {
-             query = query.inFilter('color', color.map((c) => c.name).toList());
-           }
-           if (type.isNotEmpty) {
-             query = query.inFilter('type', type.map((t) => t.name).toList());
-           }
-           if (sugar.isNotEmpty) {
-             query = query.inFilter('sugar', sugar.map((s) => s.toDbValue()).toList());
-           }
-           if (minPrice != null) {
-             query = query.gte('offers.price', minPrice);
-           }
-           if (maxPrice != null) {
-             query = query.lte('offers.price', maxPrice);
-           }
-           if (country.isNotEmpty) {
-             query = query.inFilter('wineries.country_code', country);
-           }
-           if (region.isNotEmpty) {
-             query = query.inFilter('wineries.region_id', region);
-           }
-           if (wineryIds.isNotEmpty) {
-             query = query.inFilter('winery_id', wineryIds);
-           }
-           if (minRating != null) {
-             query = query.gte('average_rating', minRating);
-           }
-           if (bottleSizeIds.isNotEmpty) {
-             query = query.inFilter('offers.bottle_size_id', bottleSizeIds);
-           }
-           if (grapeIds.isNotEmpty) {
-               final wineGrapeVarietyResponse = await _supabaseClient
-                   .from('wine_grape_varieties')
-                   .select('wine_id')
-                   .inFilter('grape_variety_id', grapeIds);
+             final response = await query;
+             final List<dynamic> data = response as List<dynamic>;
 
-               if (wineGrapeVarietyResponse.isNotEmpty) {
-                 final List<dynamic> data = wineGrapeVarietyResponse;
-                 final wineIds = data.map((item) => item['wine_id'] as String).toList();
-                 query = query.inFilter('id', wineIds);
-               } else {
-                 return [];
+             final wines = data.map((e) => Wine.fromJson(e as Map<String, dynamic>)).toList();
+
+             // Сортируем на клиенте по порядку id из RPC
+             final wineMap = {for (var wine in wines) wine.id: wine};
+             final sortedWines = wineIds.map((id) => wineMap[id]).where((wine) => wine != null).cast<Wine>().toList();
+
+             return sortedWines;
+           } catch (e) {
+             debugPrint('Error in fetchWinesWithFilters with RPC: $e');
+             rethrow;
+           }
+         } else {
+           try {
+             // Определяем, нужен ли нам INNER JOIN для связанных таблиц
+             final bool needsWineriesInnerJoin = country.isNotEmpty || region.isNotEmpty;
+             final bool needsOffersInnerJoin = bottleSizeIds.isNotEmpty || minPrice != null || maxPrice != null;
+
+             String wineriesJoin = needsWineriesInnerJoin ? 'wineries!inner(*, country:countries(*))' : 'wineries(*, country:countries(*))';
+             
+             // В offers!inner нужно перечислять все поля, которые могут понадобиться
+             String offersJoin = needsOffersInnerJoin ? 'offers!inner(id, vintage, bottle_size_id, price)' : 'offers(id, vintage)';
+
+             String selectString = '*, $wineriesJoin, grape_varieties(*), $offersJoin';
+             
+             dynamic query = _supabaseClient.from('wines').select(selectString);
+
+             // Применяем фильтры
+             if (color.isNotEmpty) {
+               query = query.inFilter('color', color.map((c) => c.name).toList());
+             }
+             if (type.isNotEmpty) {
+               query = query.inFilter('type', type.map((t) => t.name).toList());
+             }
+             if (sugar.isNotEmpty) {
+               query = query.inFilter('sugar', sugar.map((s) => s.toDbValue()).toList());
+             }
+             if (minPrice != null) {
+               query = query.gte('offers.price', minPrice);
+             }
+             if (maxPrice != null) {
+               query = query.lte('offers.price', maxPrice);
+             }
+             if (country.isNotEmpty) {
+               query = query.inFilter('wineries.country_code', country);
+             }
+             if (region.isNotEmpty) {
+               query = query.inFilter('wineries.region_id', region);
+             }
+             if (wineryIds.isNotEmpty) {
+               query = query.inFilter('winery_id', wineryIds);
+             }
+             if (minRating != null) {
+               query = query.gte('average_rating', minRating);
+             }
+             if (bottleSizeIds.isNotEmpty) {
+               query = query.inFilter('offers.bottle_size_id', bottleSizeIds);
+             }
+             if (grapeIds.isNotEmpty) {
+                 final wineGrapeVarietyResponse = await _supabaseClient
+                     .from('wine_grape_varieties')
+                     .select('wine_id')
+                     .inFilter('grape_variety_id', grapeIds);
+
+                 if (wineGrapeVarietyResponse.isNotEmpty) {
+                   final List<dynamic> data = wineGrapeVarietyResponse;
+                   final wineIds = data.map((item) => item['wine_id'] as String).toList();
+                   query = query.inFilter('id', wineIds);
+                 } else {
+                   return [];
+                 }
+             }
+             
+             if (sortOption != null) {
+               switch (sortOption) {
+                 case 'popular':
+                   query = query.order('average_rating', ascending: false);
+                   break;
+                 case 'newest':
+                   query = query.order('created_at', ascending: false);
+                   break;
+                 case 'rating_desc':
+                   query = query.order('average_rating', ascending: false);
+                   break;
                }
-           }
-           
-           if (sortOption != null) {
-             // ... (логика сортировки остается прежней)
-           } else {
-             query = query.order('created_at', ascending: false);
-           }
+             } else {
+               // Сортировка по умолчанию, если ничего не выбрано
+               query = query.order('created_at', ascending: false);
+             }
 
-           final response = await query;
-           final List<dynamic> data = response as List<dynamic>;
+             final response = await query;
+             final List<dynamic> data = response as List<dynamic>;
 
-           if (!includeDeleted) {
-             final filteredResponse = data.where((item) => item['is_deleted'] == false).toList();
-             return filteredResponse.map((e) => Wine.fromJson(e as Map<String, dynamic>)).toList();
+             if (!includeDeleted) {
+               final filteredResponse = data.where((item) => item['is_deleted'] == false).toList();
+               return filteredResponse.map((e) => Wine.fromJson(e as Map<String, dynamic>)).toList();
+             }
+             
+             return data.map((e) => Wine.fromJson(e as Map<String, dynamic>)).toList();
+
+           } catch (e) {
+             debugPrint('Error in fetchWinesWithFilters: $e');
+             rethrow;
            }
-           
-           return data.map((e) => Wine.fromJson(e as Map<String, dynamic>)).toList();
-
-         } catch (e) {
-           debugPrint('Error in fetchWinesWithFilters: $e');
-           rethrow;
          }
        }
 

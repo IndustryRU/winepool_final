@@ -3,9 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:io'; // Для работы с File
 import 'package:image_picker/image_picker.dart'; // Для выбора изображения
-// Для работы с File
-//import 'package:http/http.dart' as http; // Для сетевых запросов
-// Предполагаемый сервис для загрузки данных
 import 'package:winepool_final/services/storage_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../common/widgets/shimmer_loading_indicator.dart';
@@ -82,6 +79,7 @@ class _AddWineScreenState extends State<AddWineScreen> {
                   // --- 1. ВЫБОР ИЗОБРАЖЕНИЯ ---
                   GestureDetector(
                     onTap: _pickImage,
+                    behavior: HitTestBehavior.opaque,
                     child: Container(
                       height: 200,
                       decoration: BoxDecoration(
@@ -186,11 +184,9 @@ class UploadWineNotifier extends AsyncNotifier<bool> {
       // В реальном приложении здесь будет сложная логика HTTP multipart
       // Загружаем изображение и получаем URL
       final imageUrl = await StorageService(Supabase.instance.client).uploadFile('products', XFile(imageFile.path));
-      
+
       // Имитация отправки остальных данных на сервер
       await Future.delayed(const Duration(seconds: 2));
-      print('Имитация: Отправлены данные: $name, $price, $description');
-      print('Имитация: Отправлен файл с URL: $imageUrl');
 
       // Возвращаем true, чтобы показать успешное сохранение
       final success = true;
@@ -199,8 +195,6 @@ class UploadWineNotifier extends AsyncNotifier<bool> {
         state = const AsyncValue.data(true);
         // Через небольшую задержку возвращаем назад
         await Future.delayed(const Duration(milliseconds: 500));
-        // Убираем использование GlobalNavigatorKey, так как он не нужен в AsyncNotifier
-        // Вместо этого, обработка будет происходить в UI
       } else {
         state = const AsyncValue.error('Ошибка сохранения данных.', StackTrace.empty);
       }
